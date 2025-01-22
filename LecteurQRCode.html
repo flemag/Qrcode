@@ -160,6 +160,44 @@
     #document-view {
       display: none;
     }
+    /* Style pour le bouton de capture */
+    #capture-button {
+      display: block;
+      width: 100%;
+      max-width: 200px;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #28a745;
+      color: #fff;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    #capture-button:hover {
+      background-color: #218838;
+    }
+    /* Style pour le bouton Réessayer */
+    #retry-button {
+      display: none; /* Masqué par défaut */
+      width: 100%;
+      max-width: 200px;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #dc3545;
+      color: #fff;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    #retry-button:hover {
+      background-color: #c82333;
+    }
   </style>
 </head>
 <body>
@@ -169,6 +207,12 @@
     <video id="video" autoplay></video>
     <img id="image-preview" src="" alt="Aperçu de l'image">
     
+    <!-- Bouton pour capturer une image -->
+    <button id="capture-button">Prendre une photo</button>
+
+    <!-- Bouton pour réessayer -->
+    <button id="retry-button">Réessayer</button>
+
     <!-- Champ de fichier stylisé -->
     <label for="file-input" class="custom-file-upload">
       Charger une image de QR code
@@ -197,6 +241,8 @@
     const video = document.getElementById('video');
     const imagePreview = document.getElementById('image-preview');
     const fileInput = document.getElementById('file-input');
+    const captureButton = document.getElementById('capture-button');
+    const retryButton = document.getElementById('retry-button');
     const scannerSection = document.getElementById('scanner');
     const confirmationSection = document.getElementById('confirmation');
     const detectedTitle = document.getElementById('detected-title');
@@ -212,13 +258,18 @@
 
     // Démarrer la caméra
     function startCamera() {
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment', // Utiliser la caméra arrière
+          width: { ideal: 1280 },   // Résolution idéale
+          height: { ideal: 720 }    // Résolution idéale
+        }
+      })
         .then((newStream) => {
           stream = newStream;
           video.srcObject = stream;
           video.play();
           cameraError.style.display = 'none'; // Masquer le message d'erreur
-          requestAnimationFrame(scanQRCode);
         })
         .catch((err) => {
           console.error('Erreur d\'accès à la caméra :', err);
@@ -235,25 +286,38 @@
       }
     }
 
-    // Scanner le QR code à partir de la caméra
-    function scanQRCode() {
-      if (!stream) return; // Ne pas scanner si la caméra est arrêtée
-
+    // Capturer une image et scanner le QR code
+    captureButton.addEventListener('click', () => {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
+
+      // Ajuster la taille du canvas à celle de la vidéo
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
+
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+      // Afficher l'image capturée dans l'aperçu
+      imagePreview.src = canvas.toDataURL('image/png');
+      imagePreview.style.display = 'block';
+      video.style.display = 'none';
+
+      // Scanner le QR code dans l'image capturée
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      const code = jsQR(imageData.data, imageData.width, canvas.height);
 
       if (code) {
         showConfirmation(code.data);
+      } else {
+        alert('Aucun QR code détecté dans l\'image.');
+        retryButton.style.display = 'block'; // Afficher le bouton Réessayer
       }
+    });
 
-      requestAnimationFrame(scanQRCode);
-    }
+    // Réessayer la capture
+    retryButton.addEventListener('click', () => {
+      resetScanner();
+    });
 
     // Charger une image et scanner le QR code
     fileInput.addEventListener('change', (event) => {
@@ -333,6 +397,7 @@
       imagePreview.style.display = 'none';
       fileInput.value = '';
       detectedData = null;
+      retryButton.style.display = 'none'; // Masquer le bouton Réessayer
       startCamera(); // Relancer la caméra
     }
 
