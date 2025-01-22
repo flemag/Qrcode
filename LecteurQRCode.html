@@ -84,57 +84,81 @@
     #image-preview {
       display: none;
     }
-    #load-image-button {
-      margin-top: 10px;
-    }
-    #document-view {
-      display: none;
-    }
-    #confirmation {
-      display: none;
-      margin-top: 20px;
-      text-align: center;
-    }
-    #confirmation p {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-    }
-    #confirmation button {
-      margin: 5px;
-    }
     #camera-error {
       display: none;
       color: #d9534f;
       text-align: center;
       margin-top: 20px;
     }
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 1.8rem;
-      }
-      h2 {
-        font-size: 1.3rem;
-      }
-      .container {
-        padding: 15px;
-      }
-      .back-button {
-        max-width: 100%;
-      }
+    /* Style pour le champ de fichier personnalisé */
+    .custom-file-upload {
+      display: inline-block;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      color: #007bff;
+      background-color: transparent;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-      h2 {
-        font-size: 1.2rem;
-      }
-      body {
-        padding: 10px;
-      }
-      .container {
-        padding: 10px;
-      }
+    .custom-file-upload:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+    /* Masquer le champ de fichier par défaut */
+    #file-input {
+      display: none;
+    }
+    /* Style pour la section de confirmation */
+    #confirmation {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #confirmation p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    #confirmation strong {
+      color: #007bff;
+      font-weight: bold;
+    }
+    #confirmation button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      margin: 5px;
+      transition: background-color 0.3s ease;
+    }
+    #open-document-button {
+      background-color: #007bff;
+      color: #fff;
+    }
+    #open-document-button:hover {
+      background-color: #0056b3;
+    }
+    #cancel-button {
+      background-color: #f8f9fa;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+    #cancel-button:hover {
+      background-color: #e2e6ea;
+    }
+    /* Masquer la section du document par défaut */
+    #document-view {
+      display: none;
     }
   </style>
 </head>
@@ -144,8 +168,13 @@
     <p>Scannez un QR code avec la caméra ou chargez une image pour tester.</p>
     <video id="video" autoplay></video>
     <img id="image-preview" src="" alt="Aperçu de l'image">
-    <button id="load-image-button">Charger une image de QR code</button>
+    
+    <!-- Champ de fichier stylisé -->
+    <label for="file-input" class="custom-file-upload">
+      Charger une image de QR code
+    </label>
     <input type="file" id="file-input" accept="image/*" />
+
     <p id="camera-error">L'accès à la caméra est nécessaire pour scanner un QR code. Veuillez autoriser l'accès.</p>
   </div>
 
@@ -168,7 +197,6 @@
     const video = document.getElementById('video');
     const imagePreview = document.getElementById('image-preview');
     const fileInput = document.getElementById('file-input');
-    const loadImageButton = document.getElementById('load-image-button');
     const scannerSection = document.getElementById('scanner');
     const confirmationSection = document.getElementById('confirmation');
     const detectedTitle = document.getElementById('detected-title');
@@ -228,10 +256,6 @@
     }
 
     // Charger une image et scanner le QR code
-    loadImageButton.addEventListener('click', () => {
-      fileInput.click();
-    });
-
     fileInput.addEventListener('change', (event) => {
       const file = event.target.files[0];
       if (file) {
