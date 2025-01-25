@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Scan QR Pro</title>
+  <title>Smart QR Scanner</title>
   <style>
     * {
       margin: 0;
@@ -34,6 +34,7 @@
       z-index: 1000;
       padding: 20px;
       text-align: center;
+      transition: opacity 0.3s;
     }
 
     .permission-button {
@@ -50,7 +51,8 @@
     #scanner-container {
       position: relative;
       height: 100%;
-      display: none;
+      opacity: 1;
+      transition: opacity 0.4s ease-in-out;
     }
 
     #video-stream {
@@ -70,7 +72,7 @@
       transform: translate(-50%, -50%);
       width: 70%;
       height: 70%;
-      border: 3px solid #007bff;
+      border: 3px solid rgba(0, 123, 255, 0.8);
       border-radius: 15px;
       box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.7);
       pointer-events: none;
@@ -100,10 +102,10 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: all 0.2s;
     }
 
     #document-view {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -113,50 +115,60 @@
       color: #333;
       padding: 20px;
       overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #document-view.visible {
+      transform: translateY(0);
+      opacity: 1;
     }
 
     .document-container {
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
+      flex: 1;
     }
 
-    #document-content h1 {
+    .document-title {
       color: #007bff;
-      margin-bottom: 20px;
       font-size: 1.8em;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #007bff;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    #document-content {
+      line-height: 1.6;
     }
 
     #document-content h2 {
       color: #0056b3;
-      margin: 15px 0;
+      margin: 1.2em 0 0.8em;
       font-size: 1.4em;
     }
 
     #document-content p {
-      margin: 10px 0;
-      line-height: 1.5;
+      margin: 0.8em 0;
     }
 
     #document-content ul,
     #document-content ol {
-      margin: 10px 0 10px 20px;
+      margin: 0.8em 0 0.8em 2em;
     }
 
     #document-content li {
-      margin-bottom: 8px;
+      margin-bottom: 0.6em;
     }
-
-    #document-content .important {
-      color: #d9534f;
-      font-weight: bold;
-    }
-
-    .back-button {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+    
+     .back-button {
+      position: relative;
+      margin: 30px auto 20px;
       padding: 12px 30px;
       background: #007bff;
       color: white;
@@ -164,12 +176,31 @@
       border-radius: 25px;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      width: max-content;
     }
+
+    .important {
+      color: #d9534f !important;
+      font-weight: bold;
+    }
+
 
     @keyframes scan-pulse {
       0% { border-color: rgba(0, 123, 255, 0.8); }
       50% { border-color: rgba(0, 255, 136, 0.8); }
       100% { border-color: rgba(0, 123, 255, 0.8); }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
@@ -191,6 +222,7 @@
 
   <div id="document-view">
     <div class="document-container">
+      <h1 class="document-title" id="document-title"></h1>
       <div id="document-content"></div>
     </div>
     <button class="back-button" onclick="resetScanner()">Retour au scanner</button>
@@ -204,6 +236,7 @@
     const permissionOverlay = document.getElementById('permission-overlay');
     const scannerContainer = document.getElementById('scanner-container');
     const documentView = document.getElementById('document-view');
+    const documentTitle = document.getElementById('document-title');
     const documentContent = document.getElementById('document-content');
     
     let mediaStream = null;
@@ -211,6 +244,7 @@
     let isScanning = false;
     let lastScanResult = '';
 
+    // Gestion des permissions
     async function checkPermissions() {
       try {
         return await navigator.permissions.query({ name: 'camera' })
@@ -220,35 +254,40 @@
       }
     }
 
+    // Initialisation de la caméra
     async function initializeCamera() {
       try {
-        if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
-        
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(track => track.stop());
+        }
+
         const constraints = {
           video: {
             facingMode: isFrontCamera ? 'user' : 'environment',
             width: { ideal: 1280 },
-            height: { ideal: 720 }
+            height: { ideal: 720 },
+            frameRate: { ideal: 30 }
           }
         };
 
         mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
         videoElement.srcObject = mediaStream;
 
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           videoElement.onloadedmetadata = () => {
             videoElement.play().then(resolve).catch(resolve);
           };
         });
 
         permissionOverlay.style.display = 'none';
-        scannerContainer.style.display = 'block';
+        scannerContainer.style.opacity = '1';
         startQRDetection();
       } catch (error) {
         handleCameraError(error);
       }
     }
 
+    // Détection QR en temps réel
     function startQRDetection() {
       if (isScanning) return;
       isScanning = true;
@@ -283,6 +322,7 @@
       processFrame();
     }
 
+    // Affichage du document
     function handleQRDetection(data) {
       isScanning = false;
       lastScanResult = data;
@@ -292,17 +332,38 @@
     }
 
     function displayDocumentContent(htmlContent) {
-      scannerContainer.style.display = 'none';
+      scannerContainer.style.opacity = '0';
+      
       const parser = new DOMParser();
       const doc = parser.parseFromString(htmlContent, 'text/html');
       
-      documentContent.innerHTML = doc.body.innerHTML
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-      
+      // Extraction et sécurisation du contenu
+      const title = doc.querySelector('title')?.textContent || 'Document sans titre';
+      const bodyContent = doc.body.innerHTML.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+
+      documentTitle.textContent = title;
+      documentContent.innerHTML = bodyContent;
       applyDocumentStyles();
-      documentView.style.display = 'block';
+
+      setTimeout(() => {
+        documentView.classList.add('visible');
+        window.scrollTo(0, 0);
+      }, 50);
     }
 
+    // Réinitialisation du scanner
+    function resetScanner() {
+      documentView.classList.remove('visible');
+      scannerContainer.style.opacity = '1';
+      
+      setTimeout(() => {
+        documentView.style.display = 'none';
+        lastScanResult = '';
+        initializeCamera();
+      }, 400);
+    }
+
+    // Styles dynamiques
     function applyDocumentStyles() {
       documentContent.querySelectorAll('.important').forEach(el => {
         el.style.color = '#d9534f';
@@ -310,17 +371,25 @@
       });
     }
 
-    function resetScanner() {
-      documentView.style.display = 'none';
-      scannerContainer.style.display = 'block';
-      lastScanResult = '';
-      initializeCamera();
-    }
-
+    // Feedback haptique
     function triggerHapticFeedback() {
-      if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+      if (navigator.vibrate) {
+        navigator.vibrate([50, 50, 50]);
+      }
     }
 
+    // Gestion des erreurs
+    function handleCameraError(error) {
+      console.error('Erreur caméra:', error);
+      permissionOverlay.style.display = 'flex';
+      scannerContainer.style.opacity = '0';
+      
+      if (error.name === 'NotAllowedError') {
+        permissionOverlay.querySelector('p').textContent = 'Permission refusée - Veuillez autoriser la caméra dans les paramètres';
+      }
+    }
+
+    // Événements
     document.getElementById('enable-camera').addEventListener('click', initializeCamera);
     
     document.getElementById('toggle-camera').addEventListener('click', () => {
@@ -350,6 +419,7 @@
       reader.readAsDataURL(file);
     });
 
+    // Initialisation
     async function init() {
       if (await checkPermissions()) {
         initializeCamera();
