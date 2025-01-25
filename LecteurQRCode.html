@@ -2,407 +2,363 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lecteur de QR code universel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Scan QR Pro</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
-      line-height: 1.6;
-      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+      background: #000;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
     }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: #fff;
+
+    .permission-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      color: #007bff;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 2rem;
     }
-    h2 {
-      color: #0056b3;
-      margin-top: 20px;
-      margin-bottom: 10px;
-      font-size: 1.5rem;
+
+    .permission-button {
+      margin-top: 25px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background: #007bff;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
-    p {
-      margin-bottom: 15px;
-      color: #555;
+
+    #scanner-container {
+      position: relative;
+      height: 100%;
+      display: none;
     }
-    ul, ol {
-      margin-bottom: 15px;
-      padding-left: 20px;
-    }
-    ul li, ol li {
-      margin-bottom: 10px;
-    }
-    .important {
-      color: #d9534f;
-      font-weight: bold;
-    }
-    .back-button {
-      display: block;
+
+    #video-stream {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 100%;
-      max-width: 200px;
-      margin: 30px auto 0;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .scan-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: 70%;
+      border: 3px solid #007bff;
+      border-radius: 15px;
+      box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.7);
+      pointer-events: none;
+      animation: scan-pulse 1.5s infinite;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 25px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      z-index: 100;
+    }
+
+    .control-button {
+      padding: 12px 24px;
       border: none;
-      border-radius: 5px;
-      background-color: #007bff;
-      color: #fff;
-      text-align: center;
-      text-decoration: none;
-      transition: background-color 0.3s ease;
-    }
-    .back-button:hover {
-      background-color: #0056b3;
-    }
-    #scanner {
-      text-align: center;
-    }
-    #video, #image-preview {
-      width: 100%;
-      max-width: 300px;
-      border: 2px solid #333;
-      border-radius: 10px;
-      margin: 10px auto;
-    }
-    #image-preview {
-      display: none;
-    }
-    #camera-error {
-      display: none;
-      color: #d9534f;
-      text-align: center;
-      margin-top: 20px;
-    }
-    /* Style pour le champ de fichier personnalisé */
-    .custom-file-upload {
-      display: inline-block;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      color: #007bff;
-      background-color: transparent;
-      border: 1px solid #007bff;
-      border-radius: 5px;
+      border-radius: 30px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    .custom-file-upload:hover {
-      background-color: #007bff;
+      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.15);
       color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    /* Masquer le champ de fichier par défaut */
-    #file-input {
-      display: none;
-    }
-    /* Style pour la section de confirmation */
-    #confirmation {
-      display: none;
-      margin-top: 20px;
-      text-align: center;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    #confirmation p {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    #confirmation strong {
-      color: #007bff;
-      font-weight: bold;
-    }
-    #confirmation button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      margin: 5px;
-      transition: background-color 0.3s ease;
-    }
-    #open-document-button {
-      background-color: #007bff;
-      color: #fff;
-    }
-    #open-document-button:hover {
-      background-color: #0056b3;
-    }
-    #cancel-button {
-      background-color: #f8f9fa;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-    #cancel-button:hover {
-      background-color: #e2e6ea;
-    }
-    /* Masquer la section du document par défaut */
+
     #document-view {
       display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #fff;
+      color: #333;
+      padding: 20px;
+      overflow-y: auto;
     }
-    /* Style pour le bouton de capture */
-    #capture-button {
-      display: block;
-      width: 100%;
-      max-width: 200px;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
+
+    .document-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    #document-content h1 {
+      color: #007bff;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+    }
+
+    #document-content h2 {
+      color: #0056b3;
+      margin: 15px 0;
+      font-size: 1.4em;
+    }
+
+    #document-content p {
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+
+    #document-content ul,
+    #document-content ol {
+      margin: 10px 0 10px 20px;
+    }
+
+    #document-content li {
+      margin-bottom: 8px;
+    }
+
+    #document-content .important {
+      color: #d9534f;
+      font-weight: bold;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 30px;
+      background: #007bff;
+      color: white;
       border: none;
-      border-radius: 5px;
-      background-color: #28a745;
-      color: #fff;
-      text-align: center;
-      transition: background-color 0.3s ease;
-    }
-    #capture-button:hover {
-      background-color: #218838;
-    }
-    /* Style pour le bouton Réessayer */
-    #retry-button {
-      display: none; /* Masqué par défaut */
-      width: 100%;
-      max-width: 200px;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 1rem;
+      border-radius: 25px;
       cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background-color: #dc3545;
-      color: #fff;
-      text-align: center;
-      transition: background-color 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-    #retry-button:hover {
-      background-color: #c82333;
+
+    @keyframes scan-pulse {
+      0% { border-color: rgba(0, 123, 255, 0.8); }
+      50% { border-color: rgba(0, 255, 136, 0.8); }
+      100% { border-color: rgba(0, 123, 255, 0.8); }
     }
   </style>
 </head>
 <body>
-  <div id="scanner">
-    <h1>Lecteur de QR code universel</h1>
-    <p>Scannez un QR code avec la caméra ou chargez une image pour tester.</p>
-    <video id="video" autoplay></video>
-    <img id="image-preview" src="" alt="Aperçu de l'image">
+  <div class="permission-overlay" id="permission-overlay">
+    <p>🔒 Autorisation caméra requise</p>
+    <button class="permission-button" id="enable-camera">Activer la caméra</button>
+  </div>
+
+  <div id="scanner-container">
+    <video id="video-stream" playsinline muted></video>
+    <div class="scan-overlay"></div>
     
-    <!-- Bouton pour capturer une image -->
-    <button id="capture-button">Prendre une photo</button>
-
-    <!-- Bouton pour réessayer -->
-    <button id="retry-button">Réessayer</button>
-
-    <!-- Champ de fichier stylisé -->
-    <label for="file-input" class="custom-file-upload">
-      Charger une image de QR code
-    </label>
-    <input type="file" id="file-input" accept="image/*" />
-
-    <p id="camera-error">L'accès à la caméra est nécessaire pour scanner un QR code. Veuillez autoriser l'accès.</p>
-  </div>
-
-  <div id="confirmation">
-    <p>Document détecté : <strong id="detected-title"></strong></p>
-    <button id="open-document-button">Ouvrir le document</button>
-    <button id="cancel-button">Annuler</button>
-  </div>
-
-  <div id="document-view">
-    <div class="container">
-      <h1 id="document-title">Titre du document</h1>
-      <div id="document-content"></div>
-      <button class="back-button" onclick="resetScanner()">Retour au scanner</button>
+    <div class="controls">
+      <button class="control-button" id="toggle-camera">🔄 Caméra</button>
+      <label class="control-button" for="file-input">📁 Importer</label>
     </div>
   </div>
 
+  <div id="document-view">
+    <div class="document-container">
+      <div id="document-content"></div>
+    </div>
+    <button class="back-button" onclick="resetScanner()">Retour au scanner</button>
+  </div>
+
+  <input type="file" id="file-input" accept="image/*" hidden>
+
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script>
-    const video = document.getElementById('video');
-    const imagePreview = document.getElementById('image-preview');
-    const fileInput = document.getElementById('file-input');
-    const captureButton = document.getElementById('capture-button');
-    const retryButton = document.getElementById('retry-button');
-    const scannerSection = document.getElementById('scanner');
-    const confirmationSection = document.getElementById('confirmation');
-    const detectedTitle = document.getElementById('detected-title');
-    const openDocumentButton = document.getElementById('open-document-button');
-    const cancelButton = document.getElementById('cancel-button');
+    const videoElement = document.getElementById('video-stream');
+    const permissionOverlay = document.getElementById('permission-overlay');
+    const scannerContainer = document.getElementById('scanner-container');
     const documentView = document.getElementById('document-view');
-    const documentTitle = document.getElementById('document-title');
     const documentContent = document.getElementById('document-content');
-    const cameraError = document.getElementById('camera-error');
+    
+    let mediaStream = null;
+    let isFrontCamera = false;
+    let isScanning = false;
+    let lastScanResult = '';
 
-    let detectedData = null;
-    let stream = null; // Pour stocker le flux de la caméra
-
-    // Démarrer la caméra
-    function startCamera() {
-      navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'environment', // Utiliser la caméra arrière
-          width: { ideal: 1280 },   // Résolution idéale
-          height: { ideal: 720 }    // Résolution idéale
-        }
-      })
-        .then((newStream) => {
-          stream = newStream;
-          video.srcObject = stream;
-          video.play();
-          cameraError.style.display = 'none'; // Masquer le message d'erreur
-        })
-        .catch((err) => {
-          console.error('Erreur d\'accès à la caméra :', err);
-          cameraError.style.display = 'block'; // Afficher le message d'erreur
-        });
-    }
-
-    // Arrêter la caméra
-    function stopCamera() {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-        stream = null;
-        video.srcObject = null;
+    async function checkPermissions() {
+      try {
+        return await navigator.permissions.query({ name: 'camera' })
+          .then(status => status.state === 'granted');
+      } catch {
+        return false;
       }
     }
 
-    // Capturer une image et scanner le QR code
-    captureButton.addEventListener('click', () => {
+    async function initializeCamera() {
+      try {
+        if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+        
+        const constraints = {
+          video: {
+            facingMode: isFrontCamera ? 'user' : 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          }
+        };
+
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoElement.srcObject = mediaStream;
+
+        await new Promise(resolve => {
+          videoElement.onloadedmetadata = () => {
+            videoElement.play().then(resolve).catch(resolve);
+          };
+        });
+
+        permissionOverlay.style.display = 'none';
+        scannerContainer.style.display = 'block';
+        startQRDetection();
+      } catch (error) {
+        handleCameraError(error);
+      }
+    }
+
+    function startQRDetection() {
+      if (isScanning) return;
+      isScanning = true;
+      
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
 
-      // Ajuster la taille du canvas à celle de la vidéo
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      const processFrame = () => {
+        if (!isScanning) return;
 
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        try {
+          canvas.width = videoElement.videoWidth;
+          canvas.height = videoElement.videoHeight;
+          context.drawImage(videoElement, 0, 0);
 
-      // Afficher l'image capturée dans l'aperçu
-      imagePreview.src = canvas.toDataURL('image/png');
-      imagePreview.style.display = 'block';
-      video.style.display = 'none';
+          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+          const qrCode = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: 'dontInvert',
+            maxScansPerSecond: 60
+          });
 
-      // Scanner le QR code dans l'image capturée
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, canvas.height);
+          if (qrCode && qrCode.data !== lastScanResult) {
+            handleQRDetection(qrCode.data);
+          }
+          requestAnimationFrame(processFrame);
+        } catch (error) {
+          console.error('Erreur de scan:', error);
+          requestAnimationFrame(processFrame);
+        }
+      };
 
-      if (code) {
-        showConfirmation(code.data);
-      } else {
-        alert('Aucun QR code détecté dans l\'image.');
-        retryButton.style.display = 'block'; // Afficher le bouton Réessayer
-      }
-    });
-
-    // Réessayer la capture
-    retryButton.addEventListener('click', () => {
-      resetScanner();
-    });
-
-    // Charger une image et scanner le QR code
-    fileInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          imagePreview.src = e.target.result;
-          imagePreview.style.display = 'block';
-          video.style.display = 'none';
-
-          const img = new Image();
-          img.src = e.target.result;
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-            if (code) {
-              showConfirmation(code.data);
-            } else {
-              alert('Aucun QR code détecté dans l\'image.');
-            }
-          };
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Afficher la confirmation avec le titre du document
-    function showConfirmation(data) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(data, 'text/html');
-      const title = doc.querySelector('title')?.textContent || "Document sans titre";
-
-      detectedTitle.textContent = title;
-      detectedData = data;
-      scannerSection.style.display = 'none';
-      confirmationSection.style.display = 'block';
+      processFrame();
     }
 
-    // Ouvrir le document après confirmation
-    openDocumentButton.addEventListener('click', () => {
-      stopCamera(); // Arrêter la caméra
-      confirmationSection.style.display = 'none';
-      displayDocument(detectedData);
-    });
+    function handleQRDetection(data) {
+      isScanning = false;
+      lastScanResult = data;
+      mediaStream.getTracks().forEach(track => track.stop());
+      displayDocumentContent(data);
+      triggerHapticFeedback();
+    }
 
-    // Annuler et revenir au scanner
-    cancelButton.addEventListener('click', () => {
-      resetScanner();
-    });
-
-    // Afficher le document en page unique
-    function displayDocument(data) {
+    function displayDocumentContent(htmlContent) {
+      scannerContainer.style.display = 'none';
       const parser = new DOMParser();
-      const doc = parser.parseFromString(data, 'text/html');
-      const title = doc.querySelector('title')?.textContent || "Document sans titre";
-      const content = doc.body.innerHTML;
-
-      documentTitle.textContent = title;
-      documentContent.innerHTML = content;
+      const doc = parser.parseFromString(htmlContent, 'text/html');
+      
+      documentContent.innerHTML = doc.body.innerHTML
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+      
+      applyDocumentStyles();
       documentView.style.display = 'block';
     }
 
-    // Revenir au scanner
-    function resetScanner() {
-      scannerSection.style.display = 'block';
-      confirmationSection.style.display = 'none';
-      documentView.style.display = 'none';
-      video.style.display = 'block';
-      imagePreview.style.display = 'none';
-      fileInput.value = '';
-      detectedData = null;
-      retryButton.style.display = 'none'; // Masquer le bouton Réessayer
-      startCamera(); // Relancer la caméra
+    function applyDocumentStyles() {
+      documentContent.querySelectorAll('.important').forEach(el => {
+        el.style.color = '#d9534f';
+        el.style.fontWeight = 'bold';
+      });
     }
 
-    // Démarrer la caméra au chargement de la page
-    startCamera();
+    function resetScanner() {
+      documentView.style.display = 'none';
+      scannerContainer.style.display = 'block';
+      lastScanResult = '';
+      initializeCamera();
+    }
+
+    function triggerHapticFeedback() {
+      if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+    }
+
+    document.getElementById('enable-camera').addEventListener('click', initializeCamera);
+    
+    document.getElementById('toggle-camera').addEventListener('click', () => {
+      isFrontCamera = !isFrontCamera;
+      initializeCamera();
+    });
+
+    document.getElementById('file-input').addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, img.width, img.height);
+          const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
+          if (qrCode) handleQRDetection(qrCode.data);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    async function init() {
+      if (await checkPermissions()) {
+        initializeCamera();
+      } else {
+        permissionOverlay.style.display = 'flex';
+      }
+    }
+
+    init();
   </script>
 </body>
 </html>
