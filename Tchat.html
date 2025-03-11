@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat Privé avec Pseudo (Fixe Mobile + Input Visible)</title>
     <style>
         body {
@@ -79,6 +81,58 @@
         }
         .message.received .username {
             text-align: left;
+        }
+
+        /* Styles améliorés pour mobile */
+        @media (max-width: 768px) {
+            .input-container {
+                padding: 5px;
+            }
+            #message-input {
+                font-size: 16px; /* Évite le zoom automatique sur iOS */
+            }
+            #send-button {
+                padding: 8px 12px;
+                font-size: 16px;
+            }
+        }
+
+        /* Nouveaux styles */
+        .message-time {
+            font-size: 0.7em;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .typing-indicator {
+            font-style: italic;
+            color: #666;
+            padding: 5px;
+            font-size: 0.8em;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            right: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            display: none;
+        }
+
+        #emoji-button {
+            padding: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .message img.emoji {
+            height: 1.2em;
+            vertical-align: middle;
         }
     </style>
     <script type="module">
@@ -168,6 +222,61 @@
                 });
             }
 
+            // Ajout du bouton emoji et du picker
+            const emojiButton = document.createElement('button');
+            emojiButton.id = 'emoji-button';
+            emojiButton.innerHTML = '😊';
+            const emojiPicker = document.createElement('div');
+            emojiPicker.className = 'emoji-picker';
+            const emojis = ['😊', '😂', '❤️', '👍', '😎', '🎉', '🤔', '😢'];
+            
+            emojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.textContent = emoji;
+                span.style.cursor = 'pointer';
+                span.style.padding = '2px';
+                span.onclick = () => {
+                    messageInput.value += emoji;
+                    emojiPicker.style.display = 'none';
+                };
+                emojiPicker.appendChild(span);
+            });
+
+            document.querySelector('.input-container').insertBefore(emojiButton, sendButton);
+            document.querySelector('.input-container').appendChild(emojiPicker);
+
+            emojiButton.onclick = () => {
+                emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+            };
+
+            // Indicateur de frappe
+            let typingTimeout;
+            messageInput.addEventListener('input', () => {
+                addDoc(collection(db, 'typing'), {
+                    userId: currentUserId,
+                    username: currentUsername,
+                    timestamp: serverTimestamp()
+                });
+                
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    // Effacer l'indication de frappe après 2 secondes
+                }, 2000);
+            });
+
+            // Son de notification
+            const notificationSound = new Audio('data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV6urq6urq6urq6urq6urq6urq6urq6urq6v////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAAASDs90hvAAAAAAAAAAAAAAAAAAAA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAAAAAAAAA0gAAAAARTMz//MUZAYAAAGkAAAAAAAAA0gAAAAARTMz//MUZAkAAAGkAAAAAAAAA0gAAAAARTMz');
+
+            function playNotification() {
+                notificationSound.play().catch(e => console.log("Erreur audio:", e));
+            }
+
+            function formatTimestamp(timestamp) {
+                if (!timestamp) return '';
+                const date = timestamp.toDate();
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
             function displayMessage(messageData, type) {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', type);
@@ -181,26 +290,34 @@
                 textDiv.textContent = messageData.text;
                 messageDiv.appendChild(textDiv);
 
+                const timeDiv = document.createElement('div');
+                timeDiv.classList.add('message-time');
+                timeDiv.textContent = formatTimestamp(messageData.timestamp);
+                messageDiv.appendChild(timeDiv);
 
                 messagesContainer.appendChild(messageDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                if (type === 'received' && document.hidden) {
+                    playNotification();
+                }
             }
 
             function loadMessages() {
-    const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
-    onSnapshot(messagesQuery, (snapshot) => {
-        // messagesContainer.innerHTML = ''; // Retirez cette ligne pour ne pas effacer l'historique à chaque mise à jour
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-                const messageData = change.doc.data();
-                const messageType = messageData.senderId === currentUserId ? 'sent' : 'received';
-                displayMessage(messageData, messageType);
+                const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
+                onSnapshot(messagesQuery, (snapshot) => {
+                    // messagesContainer.innerHTML = ''; // Retirez cette ligne pour ne pas effacer l'historique à chaque mise à jour
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === 'added') {
+                            const messageData = change.doc.data();
+                            const messageType = messageData.senderId === currentUserId ? 'sent' : 'received';
+                            displayMessage(messageData, messageType);
+                        }
+                    });
+                }, (error) => {
+                    console.error("Erreur lors de la récupération des messages:", error);
+                });
             }
-        });
-    }, (error) => {
-        console.error("Erreur lors de la récupération des messages:", error);
-    });
-}
 
         });
     </script>
