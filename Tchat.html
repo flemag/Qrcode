@@ -167,6 +167,47 @@
             height: 1.2em;
             vertical-align: middle;
         }
+
+        .theme-switch {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .dark-theme {
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
+        .dark-theme .message {
+            background-color: #2d2d2d;
+            color: #fff;
+        }
+
+        .file-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 5px 0;
+        }
+
+        .message-status {
+            font-size: 0.7em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .unread-messages {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: none;
+        }
     </style>
     <script type="module">
         // Import Firebase modules
@@ -240,9 +281,10 @@
                 }
             });
 
-            function sendMessage(message) {
+            function sendMessage(message, fileUrl = '') {
                 addDoc(collection(db, 'messages'), {
                     text: message,
+                    fileUrl: fileUrl,
                     senderId: currentUserId,
                     username: currentUsername,
                     timestamp: serverTimestamp()
@@ -323,6 +365,13 @@
                 textDiv.textContent = messageData.text;
                 messageDiv.appendChild(textDiv);
 
+                if (messageData.fileUrl) {
+                    const img = document.createElement('img');
+                    img.src = messageData.fileUrl;
+                    img.classList.add('file-preview');
+                    messageDiv.appendChild(img);
+                }
+
                 const timeDiv = document.createElement('div');
                 timeDiv.classList.add('message-time');
                 timeDiv.textContent = formatTimestamp(messageData.timestamp);
@@ -333,6 +382,12 @@
 
                 if (type === 'received' && document.hidden) {
                     playNotification();
+                }
+
+                if (type === 'received' && document.hidden) {
+                    unreadCount++;
+                    unreadDiv.textContent = `${unreadCount} nouveau(x) message(s)`;
+                    unreadDiv.style.display = 'block';
                 }
             }
 
@@ -352,6 +407,61 @@
                 });
             }
 
+            // Ajout du bouton mode sombre
+            const themeSwitch = document.createElement('button');
+            themeSwitch.className = 'theme-switch';
+            themeSwitch.innerHTML = '🌙';
+            document.body.appendChild(themeSwitch);
+
+            themeSwitch.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                themeSwitch.innerHTML = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+            });
+
+            // Support pour le partage de fichiers
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+
+            const attachButton = document.createElement('button');
+            attachButton.innerHTML = '📎';
+            attachButton.onclick = () => fileInput.click();
+            document.querySelector('.input-container').insertBefore(attachButton, messageInput);
+
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        sendMessage('', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            // Indicateur de messages non lus
+            const unreadDiv = document.createElement('div');
+            unreadDiv.className = 'unread-messages';
+            document.body.appendChild(unreadDiv);
+
+            let unreadCount = 0;
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    unreadCount = 0;
+                    unreadDiv.style.display = 'none';
+                }
+            });
+
+            // Ajout de la fonctionnalité de citation
+            messagesContainer.addEventListener('dblclick', (e) => {
+                const messageDiv = e.target.closest('.message');
+                if (messageDiv) {
+                    const text = messageDiv.querySelector('div:nth-child(2)').textContent;
+                    messageInput.value = `> ${text}\n${messageInput.value}`;
+                    messageInput.focus();
+                }
+            });
         });
     </script>
 </head>
