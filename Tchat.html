@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Privé avec Pseudo (Fixe Mobile + Input Visible)</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Empêcher le défilement du body */
+        }
+
+        .chat-container {
+            width: 100%;
+            height: 100vh;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .messages-container {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+        }
+
+        .input-container {
+            padding: 10px;
+            display: flex;
+            position: sticky; /* Fixer l'input en bas */
+            bottom: 0;
+            background-color: white; /* Assurer que l'arrière-plan couvre le contenu défilant */
+        }
+
+        #message-input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #send-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .message {
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            word-wrap: break-word;
+        }
+
+        .message.sent {
+            background-color: #e0f7fa;
+            text-align: right;
+        }
+
+        .message.received {
+            background-color: #f0f0f0;
+            text-align: left;
+        }
+
+        .username {
+            font-size: 0.8em;
+            color: #777;
+            margin-bottom: 2px;
+        }
+        .message.sent .username {
+            text-align: right;
+        }
+        .message.received .username {
+            text-align: left;
+        }
+    </style>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+        // Firebase configuration (replace with your actual config)
+        const firebaseConfig = {
+    apiKey: "AIzaSyD3iLWQtajTSTd-GhoPV5TbNHOaJtydxck",
+    authDomain: "tchat-maison.firebaseapp.com",
+    projectId: "tchat-maison",
+    storageBucket: "tchat-maison.firebasestorage.app",
+    messagingSenderId: "11581096358",
+    appId: "1:11581096358:web:248447ea3c1334fb9f4f67",
+    measurementId: "G-7N8XQG06EF"
+  };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const messagesContainer = document.getElementById('messages');
+            let currentUserId;
+            let currentUsername;
+
+            // Function to get or set username
+            function getUsername() {
+                let username = localStorage.getItem('chatUsername');
+                if (!username) {
+                    username = prompt("Choisissez un pseudo pour le chat :");
+                    if (!username || username.trim() === "") {
+                        username = "Utilisateur Anonyme";
+                    }
+                    localStorage.setItem('chatUsername', username);
+                }
+                return username;
+            }
+
+            currentUsername = getUsername();
+
+            // Anonymous authentication
+            signInAnonymously(auth)
+                .then((userCredential) => {
+                    currentUserId = userCredential.user.uid;
+                    console.log("Connecté anonymement avec l'UID:", currentUserId, "et pseudo:", currentUsername);
+                    loadMessages();
+                })
+                .catch((error) => {
+                    console.error("Erreur d'authentification anonyme:", error);
+                });
+
+
+            sendButton.addEventListener('click', () => {
+                const messageText = messageInput.value;
+                if (messageText.trim() !== '') {
+                    sendMessage(messageText);
+                    messageInput.value = '';
+                }
+            });
+
+            messageInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    sendButton.click();
+                }
+            });
+
+            function sendMessage(message) {
+                addDoc(collection(db, 'messages'), {
+                    text: message,
+                    senderId: currentUserId,
+                    username: currentUsername,
+                    timestamp: serverTimestamp()
+                })
+                .then(() => {
+                    console.log('Message envoyé à Firestore');
+                })
+                .catch((error) => {
+                    console.error('Erreur lors de l\'envoi du message à Firestore:', error);
+                });
+            }
+
+            function displayMessage(messageData, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', type);
+
+                const usernameSpan = document.createElement('div');
+                usernameSpan.classList.add('username');
+                usernameSpan.textContent = messageData.username || "Utilisateur Anonyme";
+                messageDiv.appendChild(usernameSpan);
+
+                const textDiv = document.createElement('div');
+                textDiv.textContent = messageData.text;
+                messageDiv.appendChild(textDiv);
+
+
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            function loadMessages() {
+    const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
+    onSnapshot(messagesQuery, (snapshot) => {
+        // messagesContainer.innerHTML = ''; // Retirez cette ligne pour ne pas effacer l'historique à chaque mise à jour
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+                const messageData = change.doc.data();
+                const messageType = messageData.senderId === currentUserId ? 'sent' : 'received';
+                displayMessage(messageData, messageType);
+            }
+        });
+    }, (error) => {
+        console.error("Erreur lors de la récupération des messages:", error);
+    });
+}
+
+        });
+    </script>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="messages-container" id="messages">
+            </div>
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="Votre message...">
+            <button id="send-button">Envoyer</button>
+        </div>
+    </div>
+</body>
+</html>
