@@ -17,17 +17,22 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            position: fixed;
+            position: relative;
             top: 0;
             left: 0;
         }
 
         .messages-container {
-            flex: 1 1 auto;
-            overflow-y: scroll;
+            flex: 1;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             padding: 10px;
-            margin-bottom: 60px;
+            padding-bottom: 80px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
         .input-container {
@@ -39,6 +44,9 @@
             background-color: white;
             border-top: 1px solid #eee;
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         #message-input {
@@ -91,15 +99,34 @@
         /* Styles améliorés pour mobile */
         @media (max-width: 768px) {
             .messages-container {
-                margin-bottom: 70px;
+                padding-bottom: 90px;
             }
 
             .input-container {
-                padding: 10px 5px;
+                padding: 8px;
             }
 
             #message-input {
-                margin-right: 5px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            #send-button {
+                height: 40px;
+                min-width: 60px;
+                padding: 0 12px;
+                font-size: 14px;
+            }
+
+            #emoji-button {
+                height: 40px;
+                width: 40px;
+                padding: 0;
+                font-size: 18px;
+            }
+
+            .emoji-picker {
+                bottom: 65px;
             }
         }
 
