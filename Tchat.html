@@ -3,23 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chat Privé avec Pseudo (Fixe Mobile + Input Visible)</title>
+    <title>Chat Privé avec Pseudo et Utilisateurs en Ligne</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow-y: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .online-users {
+            width: 200px;
+            background-color: #f8f8f8;
+            border-right: 1px solid #ddd;
+            padding: 1px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .online-users-header {
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .user-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .online-user {
+            padding: 18px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            background-color: #eee;
+        }
+
+        .online-user .username {
+            font-weight: bold;
+        }
+
+        .online-user .status {
+            margin-left: 5px;
+            font-size: 0.7em;
+            color: green;
         }
 
         .chat-container {
-            width: 100%;
-            height: 100vh;
+            flex: 1;
             display: flex;
             flex-direction: column;
             position: relative;
-            top: 0;
-            left: 0;
         }
 
         .messages-container {
@@ -28,17 +71,12 @@
             -webkit-overflow-scrolling: touch;
             padding: 10px;
             padding-bottom: 80px;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
         }
 
         .input-container {
             position: fixed;
             bottom: 0;
-            left: 0;
+            left: 200px;
             right: 0;
             padding: 10px;
             background-color: white;
@@ -98,11 +136,12 @@
 
         /* Styles améliorés pour mobile */
         @media (max-width: 768px) {
-            .messages-container {
-                padding-bottom: 90px;
+            .online-users {
+                width: 120px;
             }
 
             .input-container {
+                left: 120px;
                 padding: 8px;
             }
 
@@ -123,10 +162,6 @@
                 width: 40px;
                 padding: 0;
                 font-size: 18px;
-            }
-
-            .emoji-picker {
-                bottom: 65px;
             }
         }
 
@@ -185,6 +220,21 @@
             color: #fff;
         }
 
+        .dark-theme .online-users {
+            background-color: #2d2d2d;
+            border-right: 1px solid #444;
+            color: #fff;
+        }
+
+        .dark-theme .online-user {
+            background-color: #3d3d3d;
+        }
+
+        .dark-theme .input-container {
+            background-color: #1a1a1a;
+            border-top: 1px solid #444;
+        }
+
         .file-preview {
             max-width: 200px;
             max-height: 200px;
@@ -197,16 +247,40 @@
             margin-top: 2px;
         }
 
-        .unread-messages {
+        /* Toggle pour afficher/masquer les utilisateurs en ligne sur mobile */
+        .toggle-users {
+            display: none;
             position: fixed;
-            bottom: 70px;
-            right: 20px;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
             background: #007bff;
             color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            display: none;
+            border: none;
+            border-radius: 5px;
+            z-index: 1001;
+        }
+
+        @media (max-width: 576px) {
+            .online-users {
+                position: fixed;
+                left: -120px;
+                height: 100%;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+
+            .online-users.visible {
+                left: 0;
+            }
+
+            .toggle-users {
+                display: block;
+            }
+
+            .input-container {
+                left: 0;
+            }
         }
     </style>
     <script type="module">
@@ -214,18 +288,18 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, setDoc, updateDoc, where, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-        // Firebase configuration (replace with your actual config)
+        // Firebase configuration
         const firebaseConfig = {
-    apiKey: "AIzaSyD3iLWQtajTSTd-GhoPV5TbNHOaJtydxck",
-    authDomain: "tchat-maison.firebaseapp.com",
-    projectId: "tchat-maison",
-    storageBucket: "tchat-maison.firebasestorage.app",
-    messagingSenderId: "11581096358",
-    appId: "1:11581096358:web:248447ea3c1334fb9f4f67",
-    measurementId: "G-7N8XQG06EF"
-  };
+            apiKey: "AIzaSyD3iLWQtajTSTd-GhoPV5TbNHOaJtydxck",
+            authDomain: "tchat-maison.firebaseapp.com",
+            projectId: "tchat-maison",
+            storageBucket: "tchat-maison.firebasestorage.app",
+            messagingSenderId: "11581096358",
+            appId: "1:11581096358:web:248447ea3c1334fb9f4f67",
+            measurementId: "G-7N8XQG06EF"
+        };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -237,8 +311,10 @@
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-button');
             const messagesContainer = document.getElementById('messages');
+            const userList = document.getElementById('user-list');
             let currentUserId;
             let currentUsername;
+            let userPresenceRef;
 
             // Function to get or set username
             function getUsername() {
@@ -260,12 +336,113 @@
                 .then((userCredential) => {
                     currentUserId = userCredential.user.uid;
                     console.log("Connecté anonymement avec l'UID:", currentUserId, "et pseudo:", currentUsername);
+                    
+                    // Set user as online
+                    setUserOnline();
+                    
+                    // Load messages
                     loadMessages();
+                    
+                    // Monitor online users
+                    monitorOnlineUsers();
                 })
                 .catch((error) => {
                     console.error("Erreur d'authentification anonyme:", error);
                 });
 
+            // Set user as online
+            async function setUserOnline() {
+                userPresenceRef = doc(db, 'online_users', currentUserId);
+                await setDoc(userPresenceRef, {
+                    username: currentUsername,
+                    lastActive: serverTimestamp(),
+                    status: 'online'
+                });
+
+                // Update last active time every minute
+                setInterval(async () => {
+                    try {
+                        await updateDoc(userPresenceRef, {
+                            lastActive: serverTimestamp()
+                        });
+                    } catch (error) {
+                        console.error("Erreur lors de la mise à jour du statut:", error);
+                    }
+                }, 60000);
+
+                // Clean up when user leaves
+                window.addEventListener('beforeunload', async () => {
+                    try {
+                        await deleteDoc(userPresenceRef);
+                    } catch (error) {
+                        console.error("Erreur lors de la suppression du statut:", error);
+                    }
+                });
+            }
+
+            // Monitor online users
+            function monitorOnlineUsers() {
+                const onlineUsersQuery = query(
+                    collection(db, 'online_users'),
+                    orderBy('lastActive', 'desc')
+                );
+                
+                onSnapshot(onlineUsersQuery, (snapshot) => {
+                    userList.innerHTML = '';
+                    
+                    // Filter out inactive users (more than 5 minutes)
+                    const now = new Date();
+                    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+                    
+                    snapshot.forEach(async (doc) => {
+                        const userData = doc.data();
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'online-user';
+                        
+                        const usernameSpan = document.createElement('span');
+                        usernameSpan.className = 'username';
+                        usernameSpan.textContent = userData.username;
+                        
+                        const statusSpan = document.createElement('span');
+                        statusSpan.className = 'status';
+                        statusSpan.textContent = '•';
+                        
+                        userDiv.appendChild(usernameSpan);
+                        userDiv.appendChild(statusSpan);
+                        userList.appendChild(userDiv);
+                        
+                        // Clean up inactive users
+                        if (userData.lastActive) {
+                            const lastActiveTime = userData.lastActive.toDate();
+                            if (lastActiveTime < fiveMinutesAgo) {
+                                try {
+                                    await deleteDoc(doc.ref);
+                                } catch (error) {
+                                    console.error("Erreur lors de la suppression d'un utilisateur inactif:", error);
+                                }
+                            }
+                        }
+                    });
+                });
+                
+                // Clean up inactive users every 5 minutes
+                setInterval(async () => {
+                    try {
+                        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+                        const inactiveUsersQuery = query(
+                            collection(db, 'online_users'),
+                            where('lastActive', '<', fiveMinutesAgo)
+                        );
+                        const inactiveUsers = await getDocs(inactiveUsersQuery);
+                        
+                        inactiveUsers.forEach(async (userDoc) => {
+                            await deleteDoc(userDoc.ref);
+                        });
+                    } catch (error) {
+                        console.error("Erreur lors du nettoyage des utilisateurs inactifs:", error);
+                    }
+                }, 5 * 60 * 1000);
+            }
 
             sendButton.addEventListener('click', () => {
                 const messageText = messageInput.value;
@@ -291,6 +468,12 @@
                 })
                 .then(() => {
                     console.log('Message envoyé à Firestore');
+                    // Update user lastActive time
+                    if (userPresenceRef) {
+                        updateDoc(userPresenceRef, {
+                            lastActive: serverTimestamp()
+                        });
+                    }
                 })
                 .catch((error) => {
                     console.error('Erreur lors de l\'envoi du message à Firestore:', error);
@@ -304,7 +487,7 @@
             const emojiPicker = document.createElement('div');
             emojiPicker.className = 'emoji-picker';
             const emojis = ['😊', '😂', '❤️', '👍', '😎', '🎉', '🤔', '😢'];
-            
+
             emojis.forEach(emoji => {
                 const span = document.createElement('span');
                 span.textContent = emoji;
@@ -332,19 +515,12 @@
                     username: currentUsername,
                     timestamp: serverTimestamp()
                 });
-                
+
                 clearTimeout(typingTimeout);
                 typingTimeout = setTimeout(() => {
                     // Effacer l'indication de frappe après 2 secondes
                 }, 2000);
             });
-
-            // Son de notification
-            const notificationSound = new Audio('data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV6urq6urq6urq6urq6urq6urq6urq6urq6v////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAAASDs90hvAAAAAAAAAAAAAAAAAAAA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAAAAAAAAA0gAAAAARTMz//MUZAYAAAGkAAAAAAAAA0gAAAAARTMz//MUZAkAAAGkAAAAAAAAA0gAAAAARTMz');
-
-            function playNotification() {
-                notificationSound.play().catch(e => console.log("Erreur audio:", e));
-            }
 
             function formatTimestamp(timestamp) {
                 if (!timestamp) return '';
@@ -379,22 +555,11 @@
 
                 messagesContainer.appendChild(messageDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-                if (type === 'received' && document.hidden) {
-                    playNotification();
-                }
-
-                if (type === 'received' && document.hidden) {
-                    unreadCount++;
-                    unreadDiv.textContent = `${unreadCount} nouveau(x) message(s)`;
-                    unreadDiv.style.display = 'block';
-                }
             }
 
             function loadMessages() {
                 const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
                 onSnapshot(messagesQuery, (snapshot) => {
-                    // messagesContainer.innerHTML = ''; // Retirez cette ligne pour ne pas effacer l'historique à chaque mise à jour
                     snapshot.docChanges().forEach((change) => {
                         if (change.type === 'added') {
                             const messageData = change.doc.data();
@@ -440,18 +605,13 @@
                 }
             };
 
-            // Indicateur de messages non lus
-            const unreadDiv = document.createElement('div');
-            unreadDiv.className = 'unread-messages';
-            document.body.appendChild(unreadDiv);
-
-            let unreadCount = 0;
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    unreadCount = 0;
-                    unreadDiv.style.display = 'none';
-                }
-            });
+            // Toggle users list on mobile
+            const toggleButton = document.getElementById('toggle-users');
+            if (toggleButton) {
+                toggleButton.addEventListener('click', () => {
+                    document.querySelector('.online-users').classList.toggle('visible');
+                });
+            }
 
             // Ajout de la fonctionnalité de citation
             messagesContainer.addEventListener('dblclick', (e) => {
@@ -466,12 +626,24 @@
     </script>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="messages-container" id="messages">
+    <button id="toggle-users" class="toggle-users">👥</button>
+    <div class="main-container">
+        <div class="online-users">
+            <div class="online-users-header">
+                Utilisateurs en ligne
             </div>
-        <div class="input-container">
-            <input type="text" id="message-input" placeholder="Votre message...">
-            <button id="send-button">Envoyer</button>
+            <div id="user-list" class="user-list">
+                <!-- Les utilisateurs en ligne s'afficheront ici -->
+            </div>
+        </div>
+        <div class="chat-container">
+            <div class="messages-container" id="messages">
+                <!-- Les messages s'afficheront ici -->
+            </div>
+            <div class="input-container">
+                <input type="text" id="message-input" placeholder="Votre message...">
+                <button id="send-button">Envoyer</button>
+            </div>
         </div>
     </div>
 </body>
