@@ -336,13 +336,13 @@
                 .then((userCredential) => {
                     currentUserId = userCredential.user.uid;
                     console.log("Connecté anonymement avec l'UID:", currentUserId, "et pseudo:", currentUsername);
-                    
+
                     // Set user as online
                     setUserOnline();
-                    
+
                     // Load messages
                     loadMessages();
-                    
+
                     // Monitor online users
                     monitorOnlineUsers();
                 })
@@ -359,7 +359,7 @@
                     status: 'online'
                 });
 
-                // Update last active time every minute
+                // Update last active time less frequently (every 5 minutes)
                 setInterval(async () => {
                     try {
                         await updateDoc(userPresenceRef, {
@@ -368,7 +368,7 @@
                     } catch (error) {
                         console.error("Erreur lors de la mise à jour du statut:", error);
                     }
-                }, 60000);
+                }, 300000); // 300000 ms = 5 minutes
 
                 // Clean up when user leaves
                 window.addEventListener('beforeunload', async () => {
@@ -386,32 +386,29 @@
                     collection(db, 'online_users'),
                     orderBy('lastActive', 'desc')
                 );
-                
+
                 onSnapshot(onlineUsersQuery, (snapshot) => {
                     userList.innerHTML = '';
-                    
-                    // Filter out inactive users (more than 5 minutes)
                     const now = new Date();
                     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-                    
+
                     snapshot.forEach(async (doc) => {
                         const userData = doc.data();
                         const userDiv = document.createElement('div');
                         userDiv.className = 'online-user';
-                        
+
                         const usernameSpan = document.createElement('span');
                         usernameSpan.className = 'username';
                         usernameSpan.textContent = userData.username;
-                        
+
                         const statusSpan = document.createElement('span');
                         statusSpan.className = 'status';
                         statusSpan.textContent = '•';
-                        
+
                         userDiv.appendChild(usernameSpan);
                         userDiv.appendChild(statusSpan);
                         userList.appendChild(userDiv);
-                        
-                        // Clean up inactive users
+
                         if (userData.lastActive) {
                             const lastActiveTime = userData.lastActive.toDate();
                             if (lastActiveTime < fiveMinutesAgo) {
@@ -424,24 +421,24 @@
                         }
                     });
                 });
-                
-                // Clean up inactive users every 5 minutes
+
+                // Clean up inactive users less frequently if needed (e.g., every 15 minutes)
                 setInterval(async () => {
                     try {
-                        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+                        const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000); // Increased to 15 minutes
                         const inactiveUsersQuery = query(
                             collection(db, 'online_users'),
-                            where('lastActive', '<', fiveMinutesAgo)
+                            where('lastActive', '<', fifteenMinutesAgo)
                         );
                         const inactiveUsers = await getDocs(inactiveUsersQuery);
-                        
+
                         inactiveUsers.forEach(async (userDoc) => {
                             await deleteDoc(userDoc.ref);
                         });
                     } catch (error) {
                         console.error("Erreur lors du nettoyage des utilisateurs inactifs:", error);
                     }
-                }, 5 * 60 * 1000);
+                }, 900000); // 900000 ms = 15 minutes
             }
 
             sendButton.addEventListener('click', () => {
@@ -500,14 +497,15 @@
                 emojiPicker.appendChild(span);
             });
 
-            document.querySelector('.input-container').insertBefore(emojiButton, sendButton);
+
             document.querySelector('.input-container').appendChild(emojiPicker);
 
             emojiButton.onclick = () => {
                 emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
             };
 
-            // Indicateur de frappe
+            // Indicateur de frappe SUPPRIMÉ pour optimiser les écritures
+            /*
             let typingTimeout;
             messageInput.addEventListener('input', () => {
                 addDoc(collection(db, 'typing'), {
@@ -521,6 +519,7 @@
                     // Effacer l'indication de frappe après 2 secondes
                 }, 2000);
             });
+            */
 
             function formatTimestamp(timestamp) {
                 if (!timestamp) return '';
@@ -589,10 +588,10 @@
             fileInput.accept = 'image/*';
             fileInput.style.display = 'none';
 
-            const attachButton = document.createElement('button');
-            attachButton.innerHTML = '📎';
+            // Utilisez le bouton attachButton existant dans le HTML
+            const attachButton = document.getElementById('attach-button');
             attachButton.onclick = () => fileInput.click();
-            document.querySelector('.input-container').insertBefore(attachButton, messageInput);
+
 
             fileInput.onchange = async (e) => {
                 const file = e.target.files[0];
@@ -633,18 +632,20 @@
                 Utilisateurs en ligne
             </div>
             <div id="user-list" class="user-list">
-                <!-- Les utilisateurs en ligne s'afficheront ici -->
-            </div>
+                </div>
         </div>
         <div class="chat-container">
             <div class="messages-container" id="messages">
-                <!-- Les messages s'afficheront ici -->
-            </div>
+                </div>
             <div class="input-container">
+                <button id="attach-button">📎</button>
                 <input type="text" id="message-input" placeholder="Votre message...">
+                <button id="emoji-button">😊</button>
+                <div class="emoji-picker"></div>
                 <button id="send-button">Envoyer</button>
             </div>
         </div>
     </div>
+    <button id="theme-switch" class="theme-switch">🌙</button>
 </body>
 </html>
