@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculateur d'Épaisseur Minimale Autorisée</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+      color: #333;
+    }
+    #percentageSelect {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calculateur d'Épaisseur Minimale Autorisée</h2>
+    <label for="code">Code de Meulage :</label>
+    <input type="text" id="code" placeholder="ex. AE, AC, AF, AH, AO" oninput="togglePercentageSelect()">
+    <label for="thickness">Épaisseur Nominale (mm) :</label>
+    <input type="number" id="thickness" placeholder="ex. 10" step="0.1">
+    <label for="percentage">Pourcentage de la Zone Meulée :</label>
+    <select id="percentageSelect">
+      <option value="15">≤ 15 % (Tableau 3)</option>
+      <option value="2">≤ 2 % (Tableau 4)</option>
+    </select>
+    <button onclick="calculate()">Calculer</button>
+    <div id="result"></div>
+  </div>
+  <script>
+    // Liste des codes où la sous-épaisseur est interdite
+    const noUnderThicknessCodes = ['AE', 'AN', 'AI', 'AS', 'AY', 'AZ', 'AO'];
+
+    // Codes qui nécessitent un choix de pourcentage
+    const percentageCodes = ['AC', 'AF', 'AH', 'AO'];
+
+    // Données du Tableau 3 (≤ 15 %)
+    const table3 = [
+      { min: 3, max: 8, tolerance: 0.3 },
+      { min: 8, max: 15, tolerance: 0.4 },
+      { min: 15, max: 25, tolerance: 0.5 },
+      { min: 25, max: 40, tolerance: 0.6 },
+      { min: 40, max: 60, tolerance: 0.7 },
+      { min: 60, max: 80, tolerance: 0.8 },
+      { min: 80, max: 150, tolerance: 1.0 },
+      { min: 150, max: 250, tolerance: 1.2 },
+      { min: 250, max: 400, tolerance: 1.4 }
+    ];
+
+    // Données du Tableau 4 (≤ 2 %)
+    const table4 = [
+      { min: 3, max: 8, tolerance: 0.4 },
+      { min: 8, max: 15, tolerance: 0.5 },
+      { min: 15, max: 25, tolerance: 0.7 },
+      { min: 25, max: 40, tolerance: 0.9 },
+      { min: 40, max: 60, tolerance: 1.1 },
+      { min: 60, max: 80, tolerance: 1.3 },
+      { min: 80, max: 150, tolerance: 1.6 },
+      { min: 150, max: 250, tolerance: 1.9 },
+      { min: 250, max: 400, tolerance: 2.2 }
+    ];
+
+    // Fonction pour afficher/masquer le menu déroulant de pourcentage
+    function togglePercentageSelect() {
+      const code = document.getElementById('code').value.trim().toUpperCase();
+      const percentageSelect = document.getElementById('percentageSelect');
+      if (percentageCodes.includes(code)) {
+        percentageSelect.style.display = 'block';
+      } else {
+        percentageSelect.style.display = 'none';
+      }
+    }
+
+    // Fonction pour obtenir la tolérance basée sur l'épaisseur et le tableau
+    function getToleranceFromTable(thickness, table) {
+      for (let range of table) {
+        if (thickness >= range.min && thickness < range.max) {
+          return range.tolerance;
+        }
+      }
+      if (thickness >= 250 && thickness <= 400) {
+        return table[table.length - 1].tolerance;
+      }
+      return null;
+    }
+
+    // Fonction pour calculer la tolérance selon le code
+    function calculateTolerance(code, thickness, percentage) {
+      code = code.toUpperCase();
+
+      // Cas 1 : Sous-épaisseur interdite (AE, AN, AI, AS, AY, AZ, AO)
+      if (noUnderThicknessCodes.includes(code)) {
+        return 0;
+      }
+
+      // Cas 2 : Codes AC, AF, AH (utilisent les tableaux 3 ou 4)
+      if (['AC', 'AF', 'AH'].includes(code)) {
+        const table = percentage === '15' ? table3 : table4;
+        const tolerance = getToleranceFromTable(thickness, table);
+        return tolerance;
+      }
+
+      return null; // Code non pris en charge
+    }
+
+    // Fonction exécutée au clic sur le bouton
+    function calculate() {
+      const code = document.getElementById('code').value.trim().toUpperCase();
+      const thickness = parseFloat(document.getElementById('thickness').value);
+      const percentage = document.getElementById('percentageSelect').value;
+      const resultDiv = document.getElementById('result');
+
+      // Validation des entrées
+      if (!code || isNaN(thickness)) {
+        resultDiv.innerText = 'Veuillez entrer un code valide et une épaisseur.';
+        return;
+      }
+
+      if (thickness < 3 || thickness > 400) {
+        resultDiv.innerText = 'L\'épaisseur doit être comprise entre 3 et 400 mm.';
+        return;
+      }
+
+      if (percentageCodes.includes(code) && !percentage) {
+        resultDiv.innerText = 'Veuillez sélectionner un pourcentage de zone meulée.';
+        return;
+      }
+
+      const tolerance = calculateTolerance(code, thickness, percentage);
+      if (tolerance === null) {
+        resultDiv.innerText = 'Code non pris en charge. Veuillez utiliser AE, AN, AI, AS, AY, AZ, AC, AF, AH ou AO.';
+        return;
+      }
+
+      const minThickness = thickness - tolerance;
+      let message = `Épaisseur minimale autorisée : ${minThickness.toFixed(2)} mm`;
+      if (noUnderThicknessCodes.includes(code)) {
+        message += ' (sous-épaisseur interdite)';
+      } else {
+        message += ` (tolérance appliquée : ${tolerance.toFixed(2)} mm pour ${percentage}% de la zone meulée)`;
+      }
+      resultDiv.innerText = message;
+    }
+  </script>
+</body>
+</html>
