@@ -10,50 +10,93 @@
       margin: 0;
       padding: 0;
       background-color: #f4f4f4;
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
     }
     .container {
-      max-width: 400px;
-      margin: 50px auto;
-      padding: 20px;
+      max-width: 450px; 
+      width: 90%; 
+      margin: 20px; 
+      padding: 25px; 
       background-color: white;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
     }
     h2 {
       text-align: center;
       color: #333;
+      margin-bottom: 25px; 
     }
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px; 
       font-weight: bold;
+      color: #555; 
     }
-    input, select {
+    /* Style commun pour input et select */
+    input[type="number"], 
+    select {
       width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
+      padding: 10px; 
+      margin-bottom: 18px; 
       box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 4px;
+      font-size: 1em; 
+      background-color: white; /* Fond blanc pour select */
+      height: 40px; /* Hauteur cohérente */
+    }
+    /* Style spécifique si besoin pour select */
+    select {
+        cursor: pointer;
     }
     button {
       width: 100%;
-      padding: 10px;
+      padding: 12px; 
       background-color: #007BFF;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 1.1em; 
+      transition: background-color 0.3s ease; 
     }
     button:hover {
       background-color: #0056b3;
     }
     #result {
-      margin-top: 20px;
+      margin-top: 25px; 
       font-weight: bold;
       text-align: center;
-      color: #333;
+      color: #0056b3; 
+      font-size: 1.3em; 
+      padding: 15px; 
+      background-color: #e9f5ff; 
+      border: 2px solid #007BFF; 
+      border-radius: 5px; 
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.3); 
+      word-wrap: break-word; 
+      min-height: 50px; /* Hauteur minimale pour éviter sautillement */
+      display: flex; /* Pour centrer verticalement si peu de texte */
+      align-items: center;
+      justify-content: center;
+      flex-direction: column; /* Pour le <br> */
     }
+    #reminder {
+      margin-top: 20px;
+      padding: 12px; 
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.95em; 
+      color: #555;
+      line-height: 1.4; 
+      min-height: 40px; /* Hauteur minimale */
+    }
+    /* Masquer label et select de pourcentage par défaut */
+    label[for="percentage"], 
     #percentageSelect {
       display: none;
     }
@@ -62,132 +105,221 @@
 <body>
   <div class="container">
     <h2>Calculateur d'Épaisseur Minimale Autorisée</h2>
+    
     <label for="code">Code de Meulage :</label>
-    <input type="text" id="code" placeholder="ex. AE, AC, AF, AH, AO" oninput="togglePercentageSelect()">
-    <label for="thickness">Épaisseur Nominale (mm) :</label>
+    <select id="code"></select> <label for="thickness">Épaisseur Mini cmd (mm) :</label>
     <input type="number" id="thickness" placeholder="ex. 10" step="0.1">
+    
     <label for="percentage">Pourcentage de la Zone Meulée :</label>
     <select id="percentageSelect">
+      <option value="">-- Choisir (%) --</option> 
       <option value="15">≤ 15 % (Tableau 3)</option>
       <option value="2">≤ 2 % (Tableau 4)</option>
     </select>
+    
     <button onclick="calculate()">Calculer</button>
-    <div id="result"></div>
-  </div>
+    
+    <div id="result"></div> <div id="reminder">Veuillez choisir un code de meulage pour voir les rappels associés.</div> </div>
+
   <script>
-    // Liste des codes où la sous-épaisseur est interdite
-    const noUnderThicknessCodes = ['AE', 'AN', 'AI', 'AS', 'AY', 'AZ', 'AO'];
+    // Liste des codes où la sous-épaisseur est explicitement interdite selon l'image
+    const noUnderThicknessCodes = ['AE', 'AN', 'AS', 'AY', 'AZ']; 
 
-    // Codes qui nécessitent un choix de pourcentage
-    const percentageCodes = ['AC', 'AF', 'AH', 'AO'];
+    // Codes qui nécessitent un choix de pourcentage (basé sur mention Tab 3/4 dans l'image)
+    const percentageCodes = ['AC', 'AF', 'AH', 'AO']; 
 
-    // Données du Tableau 3 (≤ 15 %)
-    const table3 = [
-      { min: 3, max: 8, tolerance: 0.3 },
-      { min: 8, max: 15, tolerance: 0.4 },
-      { min: 15, max: 25, tolerance: 0.5 },
-      { min: 25, max: 40, tolerance: 0.6 },
-      { min: 40, max: 60, tolerance: 0.7 },
-      { min: 60, max: 80, tolerance: 0.8 },
-      { min: 80, max: 150, tolerance: 1.0 },
-      { min: 150, max: 250, tolerance: 1.2 },
-      { min: 250, max: 400, tolerance: 1.4 }
-    ];
+    // Rappeals textuels pour chaque code (corrigés selon l'image ET votre retour sur AC)
+    const reminders = {
+      'AE': 'Meulage de tous les défauts fissurant selon EN10163. Sous-épaisseur interdite.', 
+      'AN': 'Meulage de tous les défauts selon EN10163 + conditions particulières pour crasses. Sous-épaisseur interdite.', 
+      'AI': 'Meulage de tous les défauts selon EN10163-2 classe B. Contrôle par Magnéto après réparation.', // Note: Magnéto est indiqué ici dans l'image
+      'AS': 'Meulage de tous les défauts selon EN10163 + conditions particulières pour griffes long et crasses. Sous-épaisseur interdite.', 
+      'AY': 'Meulage de certains défauts selon commande Caterpillar 1E1821 (criques, pailles, etc., pas crasses/griffes). Sous-épaisseur interdite.', 
+      'AZ': 'Finition fine polisseuse. Meulage de tous les défauts selon Cat MET8015F 6.1 classe S. Sous-épaisseur interdite.', 
+      'AC': 'Meulage de tous les défauts selon EN10163. Sous-épaisseur autorisée (Tab 3/4).', // CORRIGÉ: Retrait mention Magnéto selon votre demande
+      'AF': 'Meulage de tous les défauts fissurant selon EN10163. Pas de garantie d’aspect face inférieure. Sous-épaisseur autorisée (Tab 3/4).', 
+      'AH': 'Meulage uniquement: paille, crique, ruchage, arrachement, bouchon. Limiter surface. Sous-épaisseur autorisée (Tab 3/4).', 
+      'AO': 'Meulage de tous les défauts selon EN10163-2 classe A. Sous-épaisseur autorisée (Tab 3/4). Contrôle par Magnéto après réparation.' // Note: Magnéto est indiqué ici dans l'image
+    };
 
-    // Données du Tableau 4 (≤ 2 %)
-    const table4 = [
-      { min: 3, max: 8, tolerance: 0.4 },
-      { min: 8, max: 15, tolerance: 0.5 },
-      { min: 15, max: 25, tolerance: 0.7 },
-      { min: 25, max: 40, tolerance: 0.9 },
-      { min: 40, max: 60, tolerance: 1.1 },
-      { min: 60, max: 80, tolerance: 1.3 },
-      { min: 80, max: 150, tolerance: 1.6 },
-      { min: 150, max: 250, tolerance: 1.9 },
-      { min: 250, max: 400, tolerance: 2.2 }
-    ];
+    // Données du Tableau 3 (≤ 15 %) - inchangé
+    const table3 = [ { min: 3, max: 8, tolerance: 0.3 }, { min: 8, max: 15, tolerance: 0.4 }, { min: 15, max: 25, tolerance: 0.5 }, { min: 25, max: 40, tolerance: 0.6 }, { min: 40, max: 60, tolerance: 0.7 }, { min: 60, max: 80, tolerance: 0.8 }, { min: 80, max: 150, tolerance: 1.0 }, { min: 150, max: 250, tolerance: 1.2 }, { min: 250, max: 400, tolerance: 1.4 } ];
+
+    // Données du Tableau 4 (≤ 2 %) - inchangé
+    const table4 = [ { min: 3, max: 8, tolerance: 0.4 }, { min: 8, max: 15, tolerance: 0.5 }, { min: 15, max: 25, tolerance: 0.7 }, { min: 25, max: 40, tolerance: 0.9 }, { min: 40, max: 60, tolerance: 1.1 }, { min: 60, max: 80, tolerance: 1.3 }, { min: 80, max: 150, tolerance: 1.6 }, { min: 150, max: 250, tolerance: 1.9 }, { min: 250, max: 400, tolerance: 2.2 } ];
 
     // Fonction pour afficher/masquer le menu déroulant de pourcentage
     function togglePercentageSelect() {
-      const code = document.getElementById('code').value.trim().toUpperCase();
+      const code = document.getElementById('code').value; // Pas besoin de trim/toUpperCase ici car vient du select
       const percentageSelect = document.getElementById('percentageSelect');
+      const percentageLabel = document.querySelector('label[for="percentage"]'); 
+
       if (percentageCodes.includes(code)) {
         percentageSelect.style.display = 'block';
+        percentageLabel.style.display = 'block'; 
       } else {
         percentageSelect.style.display = 'none';
+        percentageLabel.style.display = 'none'; 
+        percentageSelect.value = ""; // Réinitialiser la sélection si caché
       }
+    }
+
+    // Fonction pour mettre à jour le rappel textuel
+    function updateReminder() {
+      // Lire la valeur sélectionnée dans le menu déroulant #code
+      const code = document.getElementById('code').value; 
+      const reminderDiv = document.getElementById('reminder');
+      
+      if (code && reminders[code]) { // Vérifie si un code valide est sélectionné
+        reminderDiv.innerText = `Rappel pour ${code}: ${reminders[code]}`;
+      } else {
+          // Si l'option par défaut "-- Choisir..." est sélectionnée (valeur vide)
+          reminderDiv.innerText = 'Veuillez choisir un code de meulage pour voir les rappels associés.';
+      }
+      // Mettre à jour l'affichage du select de pourcentage à chaque changement de code
+      togglePercentageSelect();
     }
 
     // Fonction pour obtenir la tolérance basée sur l'épaisseur et le tableau
     function getToleranceFromTable(thickness, table) {
-      for (let range of table) {
-        if (thickness >= range.min && thickness < range.max) {
-          return range.tolerance;
+        for (let i = 0; i < table.length; i++) {
+            const range = table[i];
+            const isLastRange = (i === table.length - 1);
+            if (thickness >= range.min && (thickness < range.max || (isLastRange && thickness <= range.max))) {
+                return range.tolerance;
+            }
         }
-      }
-      if (thickness >= 250 && thickness <= 400) {
-        return table[table.length - 1].tolerance;
-      }
-      return null;
+        console.error("Épaisseur hors des plages de tolérance définies : ", thickness);
+        return null; 
     }
 
     // Fonction pour calculer la tolérance selon le code
     function calculateTolerance(code, thickness, percentage) {
-      code = code.toUpperCase();
+      // Pas besoin de code.toUpperCase() car vient du select
 
-      // Cas 1 : Sous-épaisseur interdite (AE, AN, AI, AS, AY, AZ, AO)
       if (noUnderThicknessCodes.includes(code)) {
-        return 0;
+        return 0; // Sous-épaisseur interdite
       }
 
-      // Cas 2 : Codes AC, AF, AH (utilisent les tableaux 3 ou 4)
-      if (['AC', 'AF', 'AH'].includes(code)) {
+      if (percentageCodes.includes(code)) {
+        if (!percentage || (percentage !== '15' && percentage !== '2')) {
+             console.error("Pourcentage manquant ou invalide pour le code:", code);
+             return null; 
+        }
         const table = percentage === '15' ? table3 : table4;
         const tolerance = getToleranceFromTable(thickness, table);
-        return tolerance;
+         // Vérifier si getToleranceFromTable a retourné une valeur valide
+         if (tolerance === null) {
+             console.error("Impossible de trouver la tolérance pour l'épaisseur:", thickness);
+             return null; // Propager l'erreur si épaisseur hors table
+         }
+         return tolerance;
+      }
+      
+      if (code === 'AI') {
+           console.warn("Comportement de tolérance pour AI non défini par Tab 3/4. Application d'une tolérance de 0 par défaut.");
+           return 0; 
       }
 
-      return null; // Code non pris en charge
+      console.error("Code non géré pour le calcul de tolérance:", code);
+      return null; 
     }
 
     // Fonction exécutée au clic sur le bouton
     function calculate() {
-      const code = document.getElementById('code').value.trim().toUpperCase();
-      const thickness = parseFloat(document.getElementById('thickness').value);
-      const percentage = document.getElementById('percentageSelect').value;
+      const codeSelect = document.getElementById('code');
+      const thicknessInput = document.getElementById('thickness');
+      const percentageSelect = document.getElementById('percentageSelect');
       const resultDiv = document.getElementById('result');
+      
+      const code = codeSelect.value; // Valeur du select
+      const thickness = parseFloat(thicknessInput.value);
+      const percentage = percentageSelect.value;
 
-      // Validation des entrées
-      if (!code || isNaN(thickness)) {
-        resultDiv.innerText = 'Veuillez entrer un code valide et une épaisseur.';
+      // --- Validation ---
+      resultDiv.innerHTML = ""; // Effacer le résultat précédent (utilise innerHTML)
+
+      // Vérifier si un code valide est sélectionné
+      if (!code || !reminders[code]) { 
+        resultDiv.innerHTML = '<small>Veuillez choisir un code de meulage valide.</small>';
+        codeSelect.focus(); 
         return;
       }
 
-      if (thickness < 3 || thickness > 400) {
-        resultDiv.innerText = 'L\'épaisseur doit être comprise entre 3 et 400 mm.';
+      if (isNaN(thickness) || thickness < 3 || thickness > 400) {
+        resultDiv.innerHTML = '<small>L\'épaisseur doit être un nombre entre 3 et 400 mm.</small>';
+        thicknessInput.focus();
         return;
       }
-
+      
       if (percentageCodes.includes(code) && !percentage) {
-        resultDiv.innerText = 'Veuillez sélectionner un pourcentage de zone meulée.';
+        resultDiv.innerHTML = '<small>Veuillez choisir un pourcentage de zone meulée pour ce code.</small>';
+        percentageSelect.focus();
         return;
       }
+      // --- Fin Validation ---
 
       const tolerance = calculateTolerance(code, thickness, percentage);
+
       if (tolerance === null) {
-        resultDiv.innerText = 'Code non pris en charge. Veuillez utiliser AE, AN, AI, AS, AY, AZ, AC, AF, AH ou AO.';
-        return;
+         // Afficher une erreur plus spécifique si possible
+         let errorMsg = 'Erreur : Impossible de calculer la tolérance.';
+         if (percentageCodes.includes(code) && !percentage) {
+             errorMsg = 'Erreur : Pourcentage manquant.'; // Redondant avec validation mais sécurité
+         } else if (getToleranceFromTable(thickness, percentage === '15' ? table3 : table4) === null && !isNaN(thickness)) {
+              errorMsg = "Erreur : L'épaisseur est hors des plages de tolérance définies."; // Si validation épaisseur passée mais getTolerance échoue quand même
+         }
+         resultDiv.innerHTML = `<small>${errorMsg}</small>`;
+         return;
       }
 
       const minThickness = thickness - tolerance;
-      let message = `Épaisseur minimale autorisée : ${minThickness.toFixed(2)} mm`;
+      let message = `Épaisseur minimale autorisée : <br><strong>${minThickness.toFixed(2)} mm</strong>`; 
+
       if (noUnderThicknessCodes.includes(code)) {
-        message += ' (sous-épaisseur interdite)';
-      } else {
-        message += ` (tolérance appliquée : ${tolerance.toFixed(2)} mm pour ${percentage}% de la zone meulée)`;
+        message += '<br><small>(Tolérance = 0 mm : sous-épaisseur interdite)</small>';
+      } else if (percentageCodes.includes(code)) {
+        const percentageText = percentage === '15' ? '≤ 15 %' : '≤ 2 %';
+        message += `<br><small>(Tolérance appliquée : ${tolerance.toFixed(2)} mm pour ${percentageText} de zone)</small>`;
+      } else if (code === 'AI') {
+           message += '<br><small>(Tolérance = 0 mm : règle par défaut appliquée)</small>';
       }
-      resultDiv.innerText = message;
+      
+      resultDiv.innerHTML = message; 
     }
+
+    // --- MODIFICATION ICI ---
+    // Appel initial pour configurer l'affichage au chargement
+    document.addEventListener('DOMContentLoaded', () => {
+        const codeSelect = document.getElementById('code');
+
+        // 1. Vider le select au cas où (bonne pratique)
+        codeSelect.innerHTML = ''; 
+
+        // 2. Ajouter l'option par défaut
+        const defaultOption = document.createElement('option');
+        defaultOption.value = ""; // Valeur vide pour l'option par défaut
+        defaultOption.textContent = "-- Choisir un code --";
+        //defaultOption.disabled = true; // On peut l'enlever pour pouvoir re-sélectionner "--Choisir--"
+        defaultOption.selected = true; // Sélectionnée par défaut
+        codeSelect.appendChild(defaultOption);
+
+        // 3. Peupler le menu déroulant depuis l'objet reminders
+        Object.keys(reminders).sort().forEach(codeKey => { 
+            const option = document.createElement('option');
+            option.value = codeKey;
+            option.textContent = codeKey; 
+            codeSelect.appendChild(option);
+        });
+
+        // 4. Attacher l'écouteur d'événement 'change'
+        codeSelect.addEventListener('change', updateReminder); 
+
+        // 5. Mettre à jour l'état initial (basé sur l'option par défaut)
+        updateReminder(); 
+    });
+    // --- FIN DE LA MODIFICATION ---
+
   </script>
 </body>
 </html>
