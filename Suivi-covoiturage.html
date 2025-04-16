@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi Covoiturage</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4285F4;
+            --secondary-color: #34A853;
+            --danger-color: #EA4335;
+            --warning-color: #FBBC05;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --light-text: #666;
+            --border-radius: 8px;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Reset CSS */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin: 25px 0 15px;
+            font-size: 1.8rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Styles pour la section d'authentification */
+        .auth-container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .profile-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .auth-message {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        #login-btn {
+            background-color: white;
+            color: var(--dark-text);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin: 0 auto;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        #login-btn:hover {
+            background-color: #f1f1f1;
+        }
+
+        #login-btn img {
+            width: 18px;
+            height: 18px;
+        }
+
+        #logout-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            transition: opacity 0.3s;
+        }
+
+        #logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        .content {
+            display: none;
+        }
+
+        /* Styles pour le formulaire d'ajout de trajet */
+        form {
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .form-group.small {
+            flex: 0.5;
+            min-width: 150px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .required-label::after {
+            content: "*";
+            color: var(--danger-color);
+            margin-left: 4px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        /* Styles pour la gestion des passagers */
+        .passenger-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .passenger-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .passenger-row input {
+            flex: 1;
+        }
+
+        .add-passenger-btn,
+        .remove-passenger-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s;
+        }
+
+        .add-passenger-btn:hover {
+            background-color: #2d9348;
+        }
+
+        .remove-passenger-btn {
+            background-color: var(--danger-color);
+        }
+
+        .remove-passenger-btn:hover {
+            background-color: #d33426;
+        }
+
+        /* Styles pour les boutons d'action du formulaire */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        button[type="submit"],
+        button[type="reset"],
+        #cancel-edit {
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        button[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #3367d6;
+        }
+
+        button[type="reset"] {
+            background-color: #ddd;
+            color: var(--dark-text);
+            border: none;
+        }
+
+        button[type="reset"]:hover {
+            background-color: #ccc;
+        }
+
+        #cancel-edit {
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            display: none; /* Initialement caché */
+        }
+
+        #cancel-edit:hover {
+            background-color: #f2b907;
+        }
+
+        /* Styles pour la liste des trajets (tableau) */
+        #liste-trajets {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        thead {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+
+        .date-icon {
+            color: var(--primary-color);
+        }
+
+        .driver-icon {
+            color: var(--secondary-color);
+        }
+
+        .passenger-icon {
+            color: var(--warning-color);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: var(--light-text);
+            font-style: italic;
+        }
+
+        /* Styles pour les filtres */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: var(--border-radius);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            margin-bottom: 0;
+        }
+
+        #reset-filters {
+            background-color: #ddd;
+            color: var(--dark-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        #reset-filters:hover {
+            background-color: #ccc;
+        }
+
+        /* Styles pour le spinner de chargement */
+        .loading-spinner {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Styles pour les badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+
+        .badge-driver {
+            background-color: #e7f5e7;
+            color: var(--secondary-color);
+        }
+
+        .badge-passenger {
+            background-color: #fff3e0;
+            color: var(--warning-color);
+        }
+
+        .badge-absent {
+            background-color: #ffebee;
+            color: var(--danger-color);
+        }
+
+        /* Styles pour le toggle de la vue */
+        .view-toggle {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .view-toggle button {
+            flex: 1;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle button:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .view-toggle button:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .view-toggle button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Styles pour les actions dans le tableau */
+        .action-col {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: opacity 0.3s;
+        }
+
+        .btn-edit {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-edit:hover,
+        .btn-delete:hover {
+            opacity: 0.9;
+        }
+
+        /* Styles pour la notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+            transform: translateY(-100px);
+        }
+
+        .notification.show {
+            transform: translateY(0);
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+
+        /* Styles pour la vue calendrier */
+        #calendar-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            padding: 5px 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr); /* 7 colonnes pour les jours de la semaine */
+            gap: 5px;
+        }
+
+        .calendar-day {
+            border: 1px solid #eee;
+            padding: 10px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-day:hover {
+            background-color: #f9f9f9;
+        }
+
+        .calendar-day.has-trip {
+            background-color: #e3f2fd; /* Couleur pour les jours avec un trajet */
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--primary-color);
+        }
+
+        .calendar-day .day-number {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--dark-text);
+        }
+
+        .calendar-day .trip-indicator {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            margin-bottom: 2px;
+        }
+
+        .calendar-day.empty {
+            color: #999;
+        }
+
+        .calendar-day.weekday-header {
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+        }
+
+        #trips-for-day {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+
+        #trips-for-day h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        #trips-for-day ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #trips-for-day li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        #trips-for-day li:last-child {
+            border-bottom: none;
+        }
+        
+.logo-container {
+  text-align: center;
+}
+
+.google-logo {
+  font-size: 100px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  background: conic-gradient(
+    from -20deg at 38% 59%,
+    #DB4437 0deg 90deg,
+    #4285F4 90deg 180deg,
+    #0F9D58 180deg 270deg,
+    #F4B400 270deg 360deg
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+}
+    </style>
+</head>
+<body>
+    <h1>Suivi des Trajets de Covoiturage</h1>
+
+    <div class="auth-container" id="auth-container">
+        <div class="auth-message">Veuillez vous connecter pour accéder à l'application</div>
+        <button id="login-btn">
+  <span class="google-logo">G</span>
+  Se connecter avec Google
+</button>
+    </div>
+
+    <div class="content" id="content">
+        <div class="profile-info" id="profile-info">
+            </div>
+
+        <button id="logout-btn">Se déconnecter</button>
+
+        <div class="view-toggle">
+            <button id="my-trips-btn" class="active">Mes Trajets</button>
+            <button id="all-trips-btn">Tous les Trajets</button>
+            <button id="calendar-view-btn">Vue Calendrier</button>
+        </div>
+
+        <div class="container">
+            <section id="calendar-section" style="display: none;">
+                <h2>Calendrier des Trajets</h2>
+                <div class="calendar-controls">
+                    <button id="prev-month-btn"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="current-month-year"></h3>
+                    <button id="next-month-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    </div>
+                <div id="trips-for-day">
+                    </div>
+            </section>
+
+            <section>
+                <h2>Ajouter un Trajet</h2>
+                <form id="ajout-trajet-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date" class="required-label">Date du trajet</label>
+                            <input type="date" id="date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="conducteur" class="required-label">Conducteur</label>
+                            <input type="text" id="conducteur" placeholder="Nom du conducteur" required>
+                        </div>
+                    </div>
+
+                    <label>Passagers</label>
+                    <div class="passenger-container" id="passenger-container">
+                        <div class="passenger-row">
+                            <input type="text" class="passenger-input" placeholder="Nom du passager">
+                            <button type="button" class="add-passenger-btn" id="add-passenger-btn">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="commentaire">Commentaire (optionnel)</label>
+                        <textarea id="commentaire" rows="3" placeholder="Informations complémentaires (horaire spécial, itinéraire modifié, etc.)"></textarea>
+                    </div>
+
+                    <input type="hidden" id="edit-id" value="">
+
+                    <div class="action-buttons">
+                        <button type="button" id="cancel-edit" style="display: none;">Annuler la modification</button>
+                        <button type="reset">Réinitialiser</button>
+                        <button type="submit" id="submit-btn">Enregistrer le trajet</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="table-section">
+                <h2>Historique des Trajets</h2>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filter-month">Mois:</label>
+                        <select id="filter-month">
+                            <option value="">Tous</option>
+                            <option value="01">Janvier</option>
+                            <option value="02">Février</option>
+                            <option value="03">Mars</option>
+                            <option value="04">Avril</option>
+                            <option value="05">Mai</option>
+                            <option value="06">Juin</option>
+                            <option value="07">Juillet</option>
+                            <option value="08">Août</option>
+                            <option value="09">Septembre</option>
+                            <option value="10">Octobre</option>
+                            <option value="11">Novembre</option>
+                            <option value="12">Décembre</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-year">Année:</label>
+                        <select id="filter-year">
+                            <option value="">Toutes</option>
+                            </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-person">Personne:</label>
+                        <input type="text" id="filter-person" placeholder="Rechercher une personne">
+                    </div>
+
+                    <div class="filter-group">
+                        <button id="reset-filters" class="btn-edit">
+                            <i class="fas fa-sync-alt"></i> Réinitialiser les filtres
+                        </button>
+                    </div>
+                </div>
+
+                <div id="liste-trajets" class="table-container">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // -- Configuration Firebase --
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvBspabP-KImQ-Jb7cQsqRpYB-YN5Gr8A", // Remplacer par votre véritable API key
+            authDomain: "suivi-covoiturage.firebaseapp.com",
+            projectId: "suivi-covoiturage",
+            storageBucket: "suivi-covoiturage.firebasestorage.app",
+            messagingSenderId: "975520826037",
+            appId: "1:975520826037:web:13295fd2bf3a1835e734fc",
+            measurementId: "G-NNKVVTNV4D"
+        };
+
+        // -- Initialisation des services Firebase --
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // -- Constantes pour les noms de collections --
+        const COLLECTION_TRAJETS = 'trajets';
+
+        // -- Références aux éléments DOM --
+        const dom = {
+            authContainer: document.getElementById('auth-container'),
+            contentContainer: document.getElementById('content'),
+            profileInfo: document.getElementById('profile-info'),
+            loginBtn: document.getElementById('login-btn'),
+            logoutBtn: document.getElementById('logout-btn'),
+            form: document.getElementById('ajout-trajet-form'),
+            dateInput: document.getElementById('date'),
+            conducteurInput: document.getElementById('conducteur'),
+            passengerContainer: document.getElementById('passenger-container'),
+            addPassengerBtn: document.getElementById('add-passenger-btn'),
+            commentaireInput: document.getElementById('commentaire'),
+            editIdInput: document.getElementById('edit-id'),
+            cancelEditBtn: document.getElementById('cancel-edit'),
+            submitBtn: document.getElementById('submit-btn'),
+            listeTrajetsDiv: document.getElementById('liste-trajets'),
+            filterMonth: document.getElementById('filter-month'),
+            filterYear: document.getElementById('filter-year'),
+            filterPerson: document.getElementById('filter-person'),
+            resetFiltersBtn: document.getElementById('reset-filters'),
+            myTripsBtn: document.getElementById('my-trips-btn'),
+            allTripsBtn: document.getElementById('all-trips-btn'),
+            calendarViewBtn: document.getElementById('calendar-view-btn'),
+            calendarSection: document.getElementById('calendar-section'),
+            tableSection: document.getElementById('table-section'),
+            prevMonthBtn: document.getElementById('prev-month-btn'),
+            currentMonthYear: document.getElementById('current-month-year'),
+            nextMonthBtn: document.getElementById('next-month-btn'),
+            calendarGrid: document.getElementById('calendar-grid'),
+            tripsForDayDiv: document.getElementById('trips-for-day'),
+            notificationDiv: document.getElementById('notification') // Ajout de la référence pour la notification
+        };
+
+        // -- Variables d'état --
+        let currentView = 'my-trips'; // 'my-trips' ou 'all-trips' ou 'calendar'
+        let trajetsUnsubscribe = null; // Pour stocker la fonction de désinscription de l'écoute en temps réel (pour la vue tableau)
+        let currentCalendarDate = new Date();
+        let calendarTrips = [];
+
+        // -- Fonctions utilitaires --
+
+        /**
+         * Affiche une notification à l'utilisateur.
+         * @param {string} message Le message à afficher.
+         * @param {boolean} isError Indique si la notification est une erreur.
+         */
+        function showNotification(message, isError = false) {
+            dom.notificationDiv.textContent = message;
+            dom.notificationDiv.classList.add('show');
+
+            if (isError) {
+                dom.notificationDiv.classList.add('error');
+            } else {
+                dom.notificationDiv.classList.remove('error');
+            }
+
+            setTimeout(() => {
+                dom.notificationDiv.classList.remove('show');
+            }, 3000);
+        }
+
+        /**
+         * Génère les options d'années pour le filtre.
+         */
+        function populateYearFilter() {
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear; year >= currentYear - 5; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                dom.filterYear.appendChild(option);
+            }
+        }
+
+        /**
+         * Ajoute un champ pour saisir un passager.
+         * @param {string} value Valeur initiale du champ (optionnel).
+         */
+        function addPassengerField(value = '') {
+            const passengerRow = document.createElement('div');
+            passengerRow.className = 'passenger-row';
+
+            const passengerInput = document.createElement('input');
+            passengerInput.type = 'text';
+            passengerInput.className = 'passenger-input';
+            passengerInput.placeholder = 'Nom du passager (optionnel)';
+            passengerInput.value = value;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-passenger-btn';
+            removeBtn.innerHTML = '<i class="fas fa-minus"></i>';
+            removeBtn.addEventListener('click', () => {
+                dom.passengerContainer.removeChild(passengerRow);
+            });
+
+            passengerRow.appendChild(passengerInput);
+            passengerRow.appendChild(removeBtn);
+            dom.passengerContainer.appendChild(passengerRow);
+        }
+
+        /**
+         * Réinitialise le formulaire d'ajout/modification de trajet.
+         */
+        function resetForm() {
+            dom.form.reset();
+            dom.editIdInput.value = '';
+            dom.submitBtn.textContent = 'Enregistrer le trajet';
+            dom.cancelEditBtn.style.display = 'none';
+
+            // Réinitialiser les passagers (garder une ligne vide)
+            const passengerRows = dom.passengerContainer.querySelectorAll('.passenger-row');
+            passengerRows.forEach((row, index) => {
+                if (index > 0) {
+                    dom.passengerContainer.removeChild(row);
+                } else {
+                    row.querySelector('.passenger-input').value = '';
+                }
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+            dom.dateInput.value = today;
+
+            if (auth.currentUser) {
+                dom.conducteurInput.value = auth.currentUser.displayName || '';
+            }
+        }
+
+        /**
+         * Bascule l'affichage entre les différentes vues (Tableau, Calendrier).
+         * @param {string} view 'my-trips', 'all-trips' ou 'calendar'.
+         */
+        function switchView(view) {
+            console.log("switchView called with view:", view);
+            currentView = view;
+            dom.myTripsBtn.classList.toggle('active', view === 'my-trips');
+            dom.allTripsBtn.classList.toggle('active', view === 'all-trips');
+            dom.calendarViewBtn.classList.toggle('active', view === 'calendar');
+
+            const isCalendarVisible = view === 'calendar';
+            dom.calendarSection.style.display = isCalendarVisible ? 'block' : 'none';
+            dom.tableSection.style.display = isCalendarVisible ? 'none' : 'block';
+            console.log("Calendar section display:", dom.calendarSection.style.display);
+            console.log("Table section display:", dom.tableSection.style.display);
+
+            if (view === 'my-trips' || view === 'all-trips') {
+                subscribeToTrajets();
+            } else if (view === 'calendar') {
+                fetchCalendarTrips(currentCalendarDate);
+            }
+        }
+
+        /**
+         * Récupère et affiche la liste des trajets pour la vue tableau en fonction des filtres et de la vue.
+         */
+        function subscribeToTrajets() {
+            console.log("subscribeToTrajets called");
+            if (trajetsUnsubscribe) {
+                console.log("Unsubscribing from previous listener");
+                trajetsUnsubscribe();
+                trajetsUnsubscribe = null;
+            }
+
+            dom.listeTrajetsDiv.innerHTML = `
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            `;
+
+            let query = db.collection(COLLECTION_TRAJETS);
+
+            // Filtrage par mois et année
+            const selectedMonth = dom.filterMonth.value;
+            const selectedYear = dom.filterYear.value;
+            if (selectedMonth && selectedYear) {
+                const startDate = `${selectedYear}-${selectedMonth}-01`;
+                const nextMonth = selectedMonth === '12' ? '01' : String(parseInt(selectedMonth) + 1).padStart(2, '0');
+                const nextYear = selectedMonth === '12' ? String(parseInt(selectedYear) + 1) : selectedYear;
+                const endDate = `${nextYear}-${nextMonth}-01`;
+                query = query.where('date', '>=', startDate).where('date', '<', endDate);
+            } else if (selectedYear) {
+                const startDate = `${selectedYear}-01-01`;
+                const endDate = `${parseInt(selectedYear) + 1}-01-01`;
+                query = query.where('date', '>=', startDate).where('date', '<', endDate);
+            }
+
+            query = query.orderBy('date', 'desc');
+            console.log("Table view query:", query.toString());
+
+            trajetsUnsubscribe = query.onSnapshot((snapshot) => {
+                console.log("Table view onSnapshot triggered");
+                let trajets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Fetched trajets:", trajets);
+
+                const searchTerm = dom.filterPerson.value.trim().toLowerCase();
+                if (searchTerm) {
+                    trajets = trajets.filter(trajet =>
+                        trajet.conducteur.toLowerCase().includes(searchTerm) ||
+                        (trajet.passagers && trajet.passagers.some(p => p.toLowerCase().includes(searchTerm)))
+                    );
+                    console.log("Trajets after person filter:", trajets);
+                }
+
+                if (currentView === 'my-trips' && auth.currentUser) {
+                    const userName = auth.currentUser.displayName;
+                    trajets = trajets.filter(trajet =>
+                        trajet.conducteur === userName ||
+                        (trajet.passagers && trajet.passagers.includes(userName))
+                    );
+                    console.log("Trajets after 'my-trips' filter:", trajets);
+                }
+
+                renderTrajetsTable(trajets);
+            }, (error) => {
+                console.error("Erreur lors de la récupération des trajets pour le tableau:", error);
+                dom.listeTrajetsDiv.innerHTML = `
+                    <div class="empty-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Erreur lors du chargement des trajets: ${error.message}
+                    </div>
+                `;
+            });
+        }
+
+        /**
+         * Affiche les trajets dans un tableau HTML.
+         * @param {Array<Object>} trajets La liste des trajets à afficher.
+         */
+        function renderTrajetsTable(trajets) {
+            console.log("renderTrajetsTable called with trajets:", trajets);
+            if (trajets.length === 0) {
+                dom.listeTrajetsDiv.innerHTML = `
+                    <div class="empty-message">
+                        <i class="fas fa-car-side"></i>
+                        Aucun trajet trouvé avec les filtres actuels.
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-calendar table-icon date-icon"></i>Date</th>
+                            <th><i class="fas fa-user-tie table-icon driver-icon"></i>Conducteur</th>
+                            <th><i class="fas fa-users table-icon passenger-icon"></i>Passagers</th>
+                            <th>Commentaire</th>
+                            <th>Créé par</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            trajets.forEach(trajet => {
+                const dateParts = trajet.date.split('-');
+                const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+                const isCreator = auth.currentUser && (trajet.createdBy === auth.currentUser.uid || auth.currentUser.displayName === 'flemag');
+                const actionsHTML = isCreator ? `
+                    <button class="btn-edit" data-id="${trajet.id}"><i class="fas fa-edit"></i></button>
+                    <button class="btn-delete" data-id="${trajet.id}"><i class="fas fa-trash"></i></button>
+                ` : '';
+                const passengersHTML = trajet.passagers && trajet.passagers.length > 0
+                    ? trajet.passagers.map(p => `<span class="badge badge-passenger">${p}</span>`).join(', ')
+                    : '<em>Aucun passager</em>';
+
+                tableHTML += `
+                    <tr>
+                        <td>${formattedDate}</td>
+                        <td><span class="badge badge-driver">${trajet.conducteur}</span></td>
+                        <td>${passengersHTML}</td>
+                        <td>${trajet.commentaire || '-'}</td>
+                        <td>${trajet.createdByName || 'Inconnu'}</td>
+                        <td class="action-col">${actionsHTML}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            dom.listeTrajetsDiv.innerHTML = tableHTML;
+
+            // Ajouter les gestionnaires d'événements pour les boutons d'édition et de suppression après avoir rendu le tableau
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => editTrajet(e.currentTarget.dataset.id));
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => deleteTrajet(e.currentTarget.dataset.id));
+            });
+        }
+
+        /**
+         * Affiche le calendrier.
+         */
+        function showCalendarView() {
+            switchView('calendar');
+        }
+
+        /**
+         * Génère le calendrier pour le mois et l'année donnés.
+         * @param {Date} date La date du mois à afficher.
+         */
+        function renderCalendar(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const daysInMonth = lastDayOfMonth.getDate();
+            const dayOfWeekOfFirstDay = firstDayOfMonth.getDay(); // 0 pour dimanche, 1 pour lundi, etc. (en France, lundi est 1)
+            const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+            dom.currentMonthYear.textContent = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(date);
+            dom.calendarGrid.innerHTML = '';
+            dom.tripsForDayDiv.innerHTML = ''; // Effacer les détails des jours précédents
+
+            // Ajouter les en-têtes des jours de la semaine
+            daysOfWeek.forEach(day => {
+                const header = document.createElement('div');
+                header.classList.add('calendar-day', 'weekday-header');
+                header.textContent = day;
+                dom.calendarGrid.appendChild(header);
+            });
+
+            // Ajouter des jours vides au début du mois si nécessaire
+            const startIndex = dayOfWeekOfFirstDay === 0 ? 6 : dayOfWeekOfFirstDay - 1; // Ajustement pour que lundi soit le premier jour
+            for (let i = 0; i < startIndex; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.classList.add('calendar-day', 'empty');
+                dom.calendarGrid.appendChild(emptyDay);
+            }
+
+            // Ajouter les jours du mois
+            for (let day = 1; day <= daysInMonth; day++) {
+                const calendarDay = document.createElement('div');
+                calendarDay.classList.add('calendar-day');
+                const dayNumber = document.createElement('span');
+                dayNumber.classList.add('day-number');
+                dayNumber.textContent = day;
+                calendarDay.appendChild(dayNumber);
+
+                const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const tripsOnDay = calendarTrips.filter(trip => trip.date === fullDate);
+                if (tripsOnDay.length > 0) {
+                    calendarDay.classList.add('has-trip');
+                    tripsOnDay.forEach(trip => {
+                        const tripIndicator = document.createElement('div');
+                        tripIndicator.classList.add('trip-indicator');
+                        tripIndicator.textContent = trip.conducteur; // Afficher le nom du conducteur comme indicateur
+                        calendarDay.appendChild(tripIndicator);
+                    });
+                }
+
+                const today = new Date();
+                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                    calendarDay.classList.add('today');
+                }
+
+                calendarDay.addEventListener('click', () => displayTripsForDay(fullDate));
+
+                dom.calendarGrid.appendChild(calendarDay);
+            }
+        }
+
+        /**
+         * Affiche les détails des trajets pour un jour spécifique sous le calendrier.
+         * @param {string} date Le jour pour lequel afficher les trajets (format YYYY-MM-DD).
+         */
+        function displayTripsForDay(date) {
+            const tripsOnDay = calendarTrips.filter(trip => trip.date === date);
+            dom.tripsForDayDiv.innerHTML = '';
+            if (tripsOnDay.length > 0) {
+                const title = document.createElement('h4');
+                title.textContent = `Trajets du ${new Date(date).toLocaleDateString('fr-FR')}`;
+                dom.tripsForDayDiv.appendChild(title);
+                const list = document.createElement('ul');
+                tripsOnDay.forEach(trip => {
+                    const listItem = document.createElement('li');
+                    const passengers = trip.passagers && trip.passagers.length > 0 ? trip.passagers.join(', ') : 'Aucun passager';
+                    listItem.textContent = `Conducteur: ${trip.conducteur}, Passagers: ${passengers}, Commentaire: ${trip.commentaire || '-'}`;
+                    list.appendChild(listItem);
+                });
+                dom.tripsForDayDiv.appendChild(list);
+            } else {
+                const message = document.createElement('p');
+                message.textContent = `Aucun trajet pour le ${new Date(date).toLocaleDateString('fr-FR')}.`;
+                dom.tripsForDayDiv.appendChild(message);
+            }
+        }
+
+        /**
+         * Navigue vers le mois précédent dans le calendrier.
+         */
+        function goToPreviousMonth() {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar(currentCalendarDate);
+            fetchCalendarTrips(currentCalendarDate);
+        }
+
+        /**
+         * Navigue vers le mois suivant dans le calendrier.
+         */
+        function goToNextMonth() {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar(currentCalendarDate);
+            fetchCalendarTrips(currentCalendarDate);
+        }
+
+        /**
+         * Récupère les trajets pour le mois affiché dans le calendrier.
+         * @param {Date} date La date du mois à récupérer.
+         */
+        function fetchCalendarTrips(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const firstDayOfMonth = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const lastDayOfMonthFormatted = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDayOfMonth.getDate()).padStart(2, '0')}`;
+
+            let query = db.collection(COLLECTION_TRAJETS)
+                .where('date', '>=', firstDayOfMonth)
+                .where('date', '<=', lastDayOfMonthFormatted);
+            console.log("Calendar view query (initial):", query.toString());
+
+            if (currentView === 'my-trips' && auth.currentUser) {
+                const userName = auth.currentUser.displayName;
+                const myTripsQuery1 = db.collection(COLLECTION_TRAJETS)
+                    .where('date', '>=', firstDayOfMonth)
+                    .where('date', '<=', lastDayOfMonthFormatted)
+                    .where('conducteur', '==', userName);
+                const myTripsQuery2 = db.collection(COLLECTION_TRAJETS)
+                    .where('date', '>=', firstDayOfMonth)
+                    .where('date', '<=', lastDayOfMonthFormatted)
+                    .where('passagers', 'array-contains', userName);
+                console.log("Calendar view query (my-trips - conducteur):", myTripsQuery1.toString());
+                console.log("Calendar view query (my-trips - passager):", myTripsQuery2.toString());
+
+                Promise.all([myTripsQuery1.get(), myTripsQuery2.get()])
+                    .then(results => {
+                        const trips1 = results[0].docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        const trips2 = results[1].docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        calendarTrips = [...trips1, ...trips2].filter((value, index, self) =>
+                            index === self.findIndex((t) => (t.id === value.id))
+                        );
+                        console.log("Calendar trips (my-trips):", calendarTrips);
+                        renderCalendar(currentCalendarDate);
+                    }).catch(error => {
+                        console.error("Erreur lors de la récupération des trajets pour le calendrier (mes trajets):", error);
+                        showNotification("Erreur lors du chargement des trajets du calendrier", true);
+                    });
+                return;
+            }
+
+            query.get().then(snapshot => {
+                calendarTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Calendar trips (all-trips):", calendarTrips);
+                renderCalendar(currentCalendarDate); // Re-render pour afficher les trajets
+            }).catch(error => {
+                console.error("Erreur lors de la récupération des trajets pour le calendrier (tous les trajets):", error);
+                showNotification("Erreur lors du chargement des trajets du calendrier", true);
+            });
+        }
+
+        /**
+         * Charge les détails d'un trajet dans le formulaire pour l'édition.
+         * @param {string} trajetId L'ID du trajet à éditer.
+         */
+        function editTrajet(trajetId) {
+            db.collection(COLLECTION_TRAJETS).doc(trajetId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const trajet = doc.data();
+                        dom.dateInput.value = trajet.date;
+                        dom.conducteurInput.value = trajet.conducteur;
+                        dom.commentaireInput.value = trajet.commentaire || '';
+                        dom.editIdInput.value = trajetId;
+                        dom.submitBtn.textContent = 'Mettre à jour le trajet';
+                        dom.cancelEditBtn.style.display = 'block';
+
+                        // Réinitialiser et ajouter les passagers
+                        const passengerRows = dom.passengerContainer.querySelectorAll('.passenger-row');
+                        passengerRows.forEach((row, index) => index > 0 ? dom.passengerContainer.removeChild(row) : row.querySelector('.passenger-input').value = '');
+                        if (trajet.passagers && trajet.passagers.length > 0) {
+                            dom.passengerContainer.querySelector('.passenger-input').value = trajet.passagers[0] || '';
+                            for (let i = 1; i < trajet.passagers.length; i++) {
+                                addPassengerField(trajet.passagers[i]);
+                            }
+                        }
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        showNotification("Trajet non trouvé", true);
+                    }
+                })
+                .catch(error => showNotification("Erreur lors de la récupération du trajet: " + error.message, true));
+        }
+
+        /**
+         * Supprime un trajet de la base de données.
+         * @param {string} trajetId L'ID du trajet à supprimer.
+         */
+        function deleteTrajet(trajetId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce trajet ?")) {
+                db.collection(COLLECTION_TRAJETS).doc(trajetId).delete()
+                    .then(() => showNotification("Trajet supprimé avec succès"))
+                    .catch(error => showNotification("Erreur lors de la suppression du trajet: " + error.message, true));
+            }
+        }
+
+        /**
+         * Gestionnaire pour la soumission du formulaire (ajout ou mise à jour).
+         * @param {Event} event L'objet de l'événement submit.
+         */
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const date = dom.dateInput.value;
+            const conducteur = dom.conducteurInput.value.trim();
+            const commentaire = dom.commentaireInput.value.trim();
+            const passagers = Array.from(dom.passengerContainer.querySelectorAll('.passenger-input'))
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+
+            if (!date || !conducteur) {
+                showNotification("Veuillez remplir les champs obligatoires", true);
+                return;
+            }
+
+            const trajet = {
+                date,
+                conducteur,
+                passagers,
+                commentaire,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (auth.currentUser) {
+                trajet.createdBy = auth.currentUser.uid;
+                trajet.createdByName = auth.currentUser.displayName;
+            }
+
+            const trajetId = dom.editIdInput.value;
+            const trajetsCollection = db.collection(COLLECTION_TRAJETS);
+
+            if (trajetId) {
+                trajetsCollection.doc(trajetId).update(trajet)
+                    .then(() => {
+                        showNotification("Trajet mis à jour avec succès");
+                        resetForm();
+                        switchView(currentView); // Rafraîchir la vue actuelle
+                    })
+                    .catch(error => showNotification("Erreur lors de la mise à jour du trajet: " + error.message, true));
+            } else {
+                trajet.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                trajetsCollection.add(trajet)
+                    .then(() => {
+                        showNotification("Trajet ajouté avec succès");
+                        resetForm();
+                        switchView(currentView); // Rafraîchir la vue actuelle
+                    })
+                    .catch(error => showNotification("Erreur lors de l'ajout du trajet: " + error.message, true));
+            }
+        }
+
+        /**
+         * Fonction de "debounce" pour limiter la fréquence d'appel d'une fonction.
+         * @param {Function} func La fonction à "debouncer".
+         * @param {number} wait Le délai en millisecondes.
+         * @returns {Function} La fonction "debounced".
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        // -- Gestionnaires d'événements --
+
+        // Authentification Google
+        dom.loginBtn.addEventListener('click', () => {
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+                .then(() => showNotification("Connexion réussie !"))
+                .catch(error => showNotification("Erreur lors de la connexion: " + error.message, true));
+        });
+
+        // Déconnexion
+        dom.logoutBtn.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => showNotification("Déconnexion réussie !"))
+                .catch(error => showNotification("Erreur lors de la déconnexion: " + error.message, true));
+        });
+
+        // Observer l'état d'authentification
+        auth.onAuthStateChanged(user => {
+            dom.authContainer.style.display = user ? 'none' : 'block';
+            dom.contentContainer.style.display = user ? 'block' : 'none';
+            dom.profileInfo.innerHTML = user ? `
+                <img src="${user.photoURL || 'https://via.placeholder.com/50'}" alt="Photo de profil">
+                <div><p>Connecté en tant que: <strong>${user.displayName || user.email}</strong></p></div>
+            ` : '';
+            if (user) {
+                const today = new Date().toISOString().split('T')[0];
+                dom.dateInput.value = today;
+                dom.conducteurInput.value = user.displayName || '';
+                switchView('my-trips'); // Afficher la vue "Mes Trajets" par défaut (tableau)
+                fetchCalendarTrips(currentCalendarDate); // Charger les trajets pour le mois actuel du calendrier
+            } else if (trajetsUnsubscribe) {
+                trajetsUnsubscribe();
+                trajetsUnsubscribe = null;
+            }
+        });
+
+        // Ajouter un champ passager
+        dom.addPassengerBtn.addEventListener('click', addPassengerField);
+
+        // Annuler la modification
+        dom.cancelEditBtn.addEventListener('click', resetForm);
+
+        // Soumission du formulaire
+        dom.form.addEventListener('submit', handleFormSubmit);
+
+        // Gestion des filtres pour la vue tableau
+        dom.filterMonth.addEventListener('change', subscribeToTrajets);
+        dom.filterYear.addEventListener('change', subscribeToTrajets);
+        dom.filterPerson.addEventListener('input', debounce(subscribeToTrajets, 500));
+        dom.resetFiltersBtn.addEventListener('click', () => {
+            dom.filterMonth.value = '';
+            dom.filterYear.value = '';
+            dom.filterPerson.value = '';
+            subscribeToTrajets();
+        });
+
+        // Gestion du toggle de la vue
+        dom.myTripsBtn.addEventListener('click', () => switchView('my-trips'));
+        dom.allTripsBtn.addEventListener('click', () => switchView('all-trips'));
+        dom.calendarViewBtn.addEventListener('click', showCalendarView);
+        dom.prevMonthBtn.addEventListener('click', goToPreviousMonth);
+        dom.nextMonthBtn.addEventListener('click', goToNextMonth);
+
+        // -- Initialisation --
+        populateYearFilter();
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            dom.dateInput.value = today;
+        });
+    </script>
+</body>
+</html>
