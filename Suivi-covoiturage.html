@@ -826,7 +826,6 @@
             appId: "1:975520826037:web:13295fd2bf3a1835e734fc",
             measurementId: "G-NNKVVTNV4D"
         };
-        
 
         // -- Initialisation des services Firebase --
         try {
@@ -839,7 +838,8 @@
 
         // -- Constantes --
         const COLLECTION_TRAJETS = 'trajets';
-        const ADMIN_EMAIL = 'flemag@gmail.com'; // Email admin pour droits étendus
+        const ADMIN_EMAIL = 'flemag@gmail.com'; // Email pour d'autres logiques potentielles (non utilisé pour edit/delete ici)
+        const EDITOR_EMAIL = 'steve.duquesne@gmail.com'; // Email spécifique pour les droits d'édition/suppression (Option 2)
 
         // -- Références aux éléments DOM --
         const dom = {
@@ -848,8 +848,8 @@
             profileInfo: document.getElementById('profile-info'),
             loginBtn: document.getElementById('login-btn'),
             // logoutBtn est ajouté dynamiquement
-            formSection: document.getElementById('form-section'), // Section contenant le formulaire
-            formTitle: document.getElementById('form-title'), // Titre du formulaire
+            formSection: document.getElementById('form-section'),
+            formTitle: document.getElementById('form-title'),
             form: document.getElementById('ajout-trajet-form'),
             dateInput: document.getElementById('date'),
             conducteurInput: document.getElementById('conducteur'),
@@ -864,7 +864,7 @@
             filterYear: document.getElementById('filter-year'),
             filterPerson: document.getElementById('filter-person'),
             resetFiltersBtn: document.getElementById('reset-filters'),
-            formViewBtn: document.getElementById('form-view-btn'), // Bouton onglet formulaire
+            formViewBtn: document.getElementById('form-view-btn'),
             myTripsBtn: document.getElementById('my-trips-btn'),
             allTripsBtn: document.getElementById('all-trips-btn'),
             calendarViewBtn: document.getElementById('calendar-view-btn'),
@@ -895,7 +895,7 @@
 
         function showNotification(message, isError = false) {
             dom.notificationDiv.textContent = message;
-            dom.notificationDiv.className = `notification ${isError ? 'error' : ''} show`; // Reset classes and add show
+            dom.notificationDiv.className = `notification ${isError ? 'error' : ''} show`;
             if (notificationTimeoutId) clearTimeout(notificationTimeoutId);
             notificationTimeoutId = setTimeout(() => {
                 dom.notificationDiv.classList.remove('show');
@@ -905,9 +905,12 @@
 
         function populateYearFilter() {
             const currentYear = new Date().getFullYear();
-            while (dom.filterYear.options.length > 1) dom.filterYear.remove(1);
+            // Garde l'option "Toutes" et supprime les autres
+            while (dom.filterYear.options.length > 1) {
+                dom.filterYear.remove(1);
+            }
             for (let year = currentYear; year >= currentYear - 5; year--) {
-                const option = new Option(year, year); // Use new Option constructor
+                const option = new Option(year, year);
                 dom.filterYear.add(option);
             }
         }
@@ -921,7 +924,7 @@
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button'; removeBtn.className = 'remove-passenger-btn';
             removeBtn.innerHTML = '<i class="fas fa-minus"></i>'; removeBtn.title = "Supprimer passager";
-            row.append(input, removeBtn); // Use append for multiple elements
+            row.append(input, removeBtn);
             dom.passengerContainer.appendChild(row);
             updatePassengerRemoveButtonsState();
         }
@@ -932,17 +935,28 @@
                 const btn = row.querySelector('.remove-passenger-btn');
                 if (btn) btn.style.display = (rows.length > 1) ? 'flex' : 'none';
             });
+            // S'assurer qu'il y a toujours au moins un champ (même vide)
+            if (rows.length === 0) {
+                addPassengerField();
+            }
         }
 
         function resetForm() {
             dom.form.reset();
             dom.editIdInput.value = '';
-            dom.formTitle.textContent = 'Ajouter un Trajet'; // Reset title
+            dom.formTitle.textContent = 'Ajouter un Trajet';
             dom.submitBtn.textContent = 'Enregistrer';
             dom.cancelEditBtn.style.display = 'none';
+            // Supprimer tous les champs passagers sauf le premier et le vider
             const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
-            rows.forEach((row, index) => index > 0 ? row.remove() : row.querySelector('.passenger-input').value = '');
-            updatePassengerRemoveButtonsState();
+            rows.forEach((row, index) => {
+                if (index > 0) {
+                    row.remove();
+                } else {
+                    row.querySelector('.passenger-input').value = '';
+                }
+            });
+            updatePassengerRemoveButtonsState(); // S'assure qu'il reste un champ si tous étaient supprimés
             const today = new Date().toISOString().split('T')[0];
             dom.dateInput.value = today;
             if (auth.currentUser) dom.conducteurInput.value = auth.currentUser.displayName || '';
@@ -974,14 +988,14 @@
             // Unsubscribe from table listener if not viewing table
             if (!isTableVisible && trajetsUnsubscribe) {
                  console.log("Unsubscribing from table listener");
-                 try { trajetsUnsubscribe(); } catch (e) {}
+                 try { trajetsUnsubscribe(); } catch (e) { console.warn("Error unsubscribing:", e); }
                  trajetsUnsubscribe = null;
             }
 
             // Load data for the current view
             if (isTableVisible) {
                 dom.tableTitle.textContent = view === 'my-trips' ? "Mes Trajets" : "Tous les Trajets";
-                subscribeToTrajets();
+                subscribeToTrajets(); // Re-subscribe with current filters/view
             } else if (isCalendarVisible) {
                  fetchCalendarTrips(currentCalendarDate);
             } else if (isStatsVisible) {
@@ -991,77 +1005,159 @@
                 if (!dom.editIdInput.value) {
                     resetForm();
                 }
-                 // Scroll to form when activated? Optional.
+                 // Optionnel: scroll vers le formulaire
                  // dom.formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 
         function subscribeToTrajets() {
-            if (currentView !== 'my-trips' && currentView !== 'all-trips') return;
-            console.log(`subscribeToTrajets: ${currentView}`);
-            if (trajetsUnsubscribe) { try { trajetsUnsubscribe(); } catch (e) {} trajetsUnsubscribe = null; }
+            if (currentView !== 'my-trips' && currentView !== 'all-trips') return; // Ne rien faire si on n'est pas sur une vue tableau
+            console.log(`subscribeToTrajets called for view: ${currentView}`);
+
+            // Désabonnement de l'écouteur précédent s'il existe
+            if (trajetsUnsubscribe) {
+                console.log("Unsubscribing previous listener before new subscription.");
+                try { trajetsUnsubscribe(); } catch (e) { console.warn("Error unsubscribing:", e); }
+                trajetsUnsubscribe = null;
+            }
 
             dom.listeTrajetsDiv.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i></div>`;
             let query = db.collection(COLLECTION_TRAJETS);
             const month = dom.filterMonth.value, year = dom.filterYear.value;
 
+            // Application des filtres de date
             if (month && year) {
                 const y = parseInt(year), m = parseInt(month);
-                const start = `${y}-${String(m).padStart(2,'0')}-01`;
-                const nextM = new Date(y, m, 1); // JS month 0-indexed
-                const end = `${nextM.getFullYear()}-${String(nextM.getMonth() + 1).padStart(2,'0')}-01`;
+                // Assurer que le mois est sur 2 chiffres
+                const monthPadded = String(m).padStart(2,'0');
+                // Date de début: YYYY-MM-01
+                const start = `${y}-${monthPadded}-01`;
+                // Date de fin: Premier jour du mois suivant
+                const nextMonthDate = new Date(y, m, 1); // Mois JS 0-indexé, m est 1-indexé -> m = mois suivant
+                const end = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2,'0')}-01`;
+                console.log(`Filtering by date range: >= ${start} and < ${end}`);
                 query = query.where('date', '>=', start).where('date', '<', end);
             } else if (year) {
-                query = query.where('date', '>=', `${year}-01-01`).where('date', '<', `${parseInt(year) + 1}-01-01`);
+                const y = parseInt(year);
+                // Date de début: YYYY-01-01
+                const start = `${y}-01-01`;
+                // Date de fin: Premier jour de l'année suivante
+                const end = `${y + 1}-01-01`;
+                console.log(`Filtering by year range: >= ${start} and < ${end}`);
+                query = query.where('date', '>=', start).where('date', '<', end);
             }
+
+            // Tri par date décroissante (le plus récent en premier)
             query = query.orderBy('date', 'desc');
 
+            // Écoute des changements en temps réel
             trajetsUnsubscribe = query.onSnapshot((snapshot) => {
-                console.log("Table onSnapshot:", snapshot.docs.length, "docs");
+                console.log("Table onSnapshot triggered: received", snapshot.docs.length, "docs for query.");
                 let trajets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Application du filtre par personne (après récupération des données)
                 const term = dom.filterPerson.value.trim().toLowerCase();
                 if (term) {
                     trajets = trajets.filter(t =>
                         (t.conducteur && t.conducteur.toLowerCase().includes(term)) ||
-                        (t.passagers && Array.isArray(t.passagers) && t.passagers.some(p => typeof p ==='string' && p.toLowerCase().includes(term)))
+                        (t.passagers && Array.isArray(t.passagers) && t.passagers.some(p => typeof p === 'string' && p.toLowerCase().includes(term)))
                     );
+                    console.log(`Filtered by person "${term}", remaining: ${trajets.length}`);
                 }
+
+                // Filtrage spécifique pour "Mes Trajets"
                 if (currentView === 'my-trips') {
                     const user = auth.currentUser;
                     if (user && user.displayName) {
                         const name = user.displayName;
-                        trajets = trajets.filter(t => t.conducteur === name || (t.passagers && Array.isArray(t.passagers) && t.passagers.includes(name)));
-                    } else { trajets = []; }
+                        trajets = trajets.filter(t =>
+                            t.conducteur === name ||
+                            (t.passagers && Array.isArray(t.passagers) && t.passagers.includes(name))
+                        );
+                        console.log(`Filtered for "My Trips" (user: ${name}), remaining: ${trajets.length}`);
+                    } else {
+                        console.log("Filtering for 'My Trips', but no user or displayName found. Showing empty list.");
+                        trajets = []; // Ne rien montrer si l'utilisateur n'est pas identifié correctement
+                    }
                 }
+
+                // Affichage du tableau
                 renderTrajetsTable(trajets);
-                allTripsDataCache = null; // Invalidate stats cache
+                allTripsDataCache = null; // Invalider le cache des statistiques car les données ont peut-être changé
+
             }, (error) => {
                 console.error("Firestore listener error (Table):", error);
-                dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message">Erreur: ${error.message}</div>`;
+                dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des trajets: ${error.message}</div>`;
+                trajetsUnsubscribe = null; // Reset listener on error
             });
         }
 
+        /**
+         * Met à jour le contenu HTML de la table des trajets.
+         * Applique la logique de l'Option 2: Seul EDITOR_EMAIL peut voir les boutons modifier/supprimer.
+         */
         function renderTrajetsTable(trajets) {
-            console.log("renderTrajetsTable with", trajets.length);
-            if (!Array.isArray(trajets)) { /* Error handling */ return; }
-            if (trajets.length === 0) { /* Empty message */ dom.listeTrajetsDiv.innerHTML = `<div class="empty-message">...</div>`; return; }
+            console.log("renderTrajetsTable with", trajets.length, "trajets. Current view:", currentView);
+            if (!Array.isArray(trajets)) {
+                console.error("renderTrajetsTable called with invalid data:", trajets);
+                dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur: Données de trajets invalides.</div>`;
+                return;
+             }
+            if (trajets.length === 0) {
+                let emptyMsg = "Aucun trajet ne correspond aux filtres actuels.";
+                if (currentView === 'my-trips' && !dom.filterMonth.value && !dom.filterYear.value && !dom.filterPerson.value) {
+                     emptyMsg = "Vous n'avez pas encore participé à des trajets enregistrés.";
+                } else if (currentView === 'all-trips' && !dom.filterMonth.value && !dom.filterYear.value && !dom.filterPerson.value) {
+                     emptyMsg = "Aucun trajet n'a encore été enregistré dans l'application.";
+                }
+                dom.listeTrajetsDiv.innerHTML = `<div class="empty-message"><i class="fas fa-info-circle"></i> ${emptyMsg}</div>`;
+                return;
+            }
 
             let html = `<table><thead><tr><th>Date</th><th>Conducteur</th><th>Passagers</th><th>Commentaire</th><th>Ajouté par</th><th>Actions</th></tr></thead><tbody>`;
             const user = auth.currentUser;
-            const isAdmin = user && user.email === ADMIN_EMAIL;
+
+            // --- Logique Option 2: Vérifier si l'utilisateur actuel est l'éditeur ---
+            const isEditor = user && user.email === EDITOR_EMAIL;
+            // -----------------------------------------------------------------------
 
             trajets.forEach(t => {
-                let dateStr = 'N/A'; try { if(t.date) dateStr = new Date(t.date+'T00:00:00Z').toLocaleDateString('fr-FR'); } catch(e){}
-                const creatorId = t.createdByUid || t.lastModifiedByUid;
-                const canEdit = (user && creatorId === user.uid) || isAdmin;
-                const actions = canEdit ? `<button class="btn-edit" data-id="${t.id}" title="Modifier"><i class="fas fa-edit"></i></button><button class="btn-delete" data-id="${t.id}" title="Supprimer"><i class="fas fa-trash"></i></button>` : '';
-                const passengers = (t.passagers && Array.isArray(t.passagers)) ? t.passagers.filter(p=>p).map(p=>`<span class="badge badge-passenger">${p}</span>`).join(' ') : '<em>Aucun</em>';
+                let dateStr = 'Date invalide';
+                try {
+                    // Utiliser UTC pour l'interprétation de la date stockée pour éviter les décalages
+                    if (t.date && /^\d{4}-\d{2}-\d{2}$/.test(t.date)) {
+                        dateStr = new Date(t.date + 'T00:00:00Z').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    } else if (t.date) {
+                        console.warn("Format de date non standard détecté:", t.date);
+                        // Essayer une conversion plus souple si besoin, mais YYYY-MM-DD est attendu
+                         dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                         if (dateStr === "Invalid Date") dateStr = t.date; // Afficher tel quel si invalide
+                    } else {
+                        dateStr = 'N/A';
+                    }
+                } catch (e) {
+                    console.warn("Erreur parsing date:", t.date, e);
+                    dateStr = t.date || 'N/A'; // Afficher la date brute ou N/A en cas d'erreur
+                }
+
+                // --- Logique Option 2: Générer les boutons seulement si l'utilisateur est l'éditeur ---
+                const actions = isEditor
+                    ? `<button class="btn-edit" data-id="${t.id}" title="Modifier"><i class="fas fa-edit"></i></button><button class="btn-delete" data-id="${t.id}" title="Supprimer"><i class="fas fa-trash"></i></button>`
+                    : ''; // Pas de boutons si ce n'est pas l'éditeur
+                // ---------------------------------------------------------------------------------
+
+                const passengers = (t.passagers && Array.isArray(t.passagers) && t.passagers.length > 0)
+                                    ? t.passagers.filter(p => p && String(p).trim()).map(p => `<span class="badge badge-passenger">${String(p).trim()}</span>`).join(' ')
+                                    : '<em>Aucun</em>';
+                // Utiliser ?? '' pour s'assurer que les badges sont générés même si vide après trim
+                const cleanPassengers = passengers.trim() === '' ? '<em>Aucun</em>' : passengers;
+
                 const addedBy = t.createdByName || t.lastModifiedByName || 'Inconnu';
 
                 html += `<tr>
                     <td data-label="Date">${dateStr}</td>
                     <td data-label="Conducteur"><span class="badge badge-driver">${t.conducteur || '?'}</span></td>
-                    <td data-label="Passagers">${passengers}</td>
+                    <td data-label="Passagers">${cleanPassengers}</td>
                     <td data-label="Commentaire">${t.commentaire || '-'}</td>
                     <td data-label="Ajouté par">${addedBy}</td>
                     <td data-label="Actions" class="action-col">${actions}</td>
@@ -1069,30 +1165,45 @@
             });
             html += `</tbody></table>`;
             dom.listeTrajetsDiv.innerHTML = html;
-            // Listeners are attached via delegation in render function
         }
 
-        function handleTableActions(event) { // Event delegation
-            const button = event.target.closest('button[data-id]');
-            if (!button) return;
+        /**
+         * Gère les clics sur les boutons d'action dans le tableau (Modifier/Supprimer).
+         * Fonction appelée par l'écouteur d'événements attaché à dom.listeTrajetsDiv.
+         */
+        function handleTableActions(event) {
+            const button = event.target.closest('button[data-id]'); // Trouve le bouton parent le plus proche avec data-id
+            if (!button) return; // Ignorer les clics ailleurs que sur un bouton d'action
+
             const id = button.dataset.id;
-            if (button.classList.contains('btn-edit')) editTrajet(id);
-            else if (button.classList.contains('btn-delete')) deleteTrajet(id);
+            if (!id) {
+                console.error("Action button clicked but has no data-id attribute.");
+                return;
+            }
+
+            if (button.classList.contains('btn-edit')) {
+                 console.log("Edit button clicked for ID:", id);
+                 editTrajet(id);
+            } else if (button.classList.contains('btn-delete')) {
+                 console.log("Delete button clicked for ID:", id);
+                 deleteTrajet(id);
+            }
         }
-        // Attach listener once after initial table render might be needed? No, renderTrajetsTable reattaches.
 
         function renderCalendar(date) {
             const y = date.getFullYear(), m = date.getMonth();
             const first = new Date(y, m, 1), last = new Date(y, m + 1, 0);
             const days = last.getDate();
-            const startDay = (first.getDay() === 0) ? 6 : first.getDay() - 1; // 0=Mon
+            // Jour de la semaine (0=Dim, 1=Lun...). Ajuster pour que Lundi soit 0.
+            const startDay = (first.getDay() === 0) ? 6 : first.getDay() - 1;
             const weeks = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
             dom.currentMonthYear.textContent = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
             let gridHTML = weeks.map(d => `<div class="calendar-day weekday-header">${d}</div>`).join('');
-            gridHTML += '<div class="calendar-day empty"></div>'.repeat(startDay);
+            gridHTML += '<div class="calendar-day empty"></div>'.repeat(startDay); // Jours vides avant le 1er
 
             const today = new Date();
+            // Format YYYY-MM-DD pour comparaison facile
             const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             for (let d = 1; d <= days; d++) {
@@ -1100,8 +1211,14 @@
                 const trips = calendarTrips.filter(t => t.date === dateStr);
                 let summary = '';
                 if (trips.length > 0) {
-                    const people = trips.reduce((sum, t) => sum + 1 + (t.passagers?.filter(p=>p).length || 0), 0);
-                    summary = `<div class="trip-summary" title="${trips.length} Trajet(s), ${people} pers.">${trips.length}T (${people}p)</div>`; // Shorter summary
+                    // Compte total de personnes (conducteur + passagers valides)
+                    const people = trips.reduce((sum, t) => {
+                        const validPassengers = t.passagers?.filter(p => p && String(p).trim()).length || 0;
+                        return sum + 1 + validPassengers; // +1 pour le conducteur
+                    }, 0);
+                    const tripNoun = trips.length > 1 ? 'Trajets' : 'Trajet';
+                    const peopleNoun = people > 1 ? 'pers.' : 'pers.';
+                    summary = `<div class="trip-summary" title="${trips.length} ${tripNoun}, ${people} ${peopleNoun}">${trips.length}T (${people}p)</div>`;
                 }
                 const isToday = dateStr === todayStr;
                 gridHTML += `<div class="calendar-day ${trips.length ? 'has-trip':''} ${isToday ? 'today':''}" data-date="${dateStr}">
@@ -1110,300 +1227,551 @@
                              </div>`;
             }
              const totalCells = startDay + days;
+             // Jours vides après le dernier jour du mois pour compléter la semaine
              gridHTML += '<div class="calendar-day empty"></div>'.repeat((7 - totalCells % 7) % 7);
 
             dom.calendarGrid.innerHTML = gridHTML;
-             // Re-attach listeners using delegation on the grid container
-             dom.calendarGrid.removeEventListener('click', handleCalendarClick);
+             // Ré-attacher l'écouteur de clic (ou s'assurer qu'il est déjà attaché au parent)
+             dom.calendarGrid.removeEventListener('click', handleCalendarClick); // Précaution
              dom.calendarGrid.addEventListener('click', handleCalendarClick);
         }
 
-         function handleCalendarClick(event) {
+        function handleCalendarClick(event) {
              const dayElement = event.target.closest('.calendar-day[data-date]');
-             if (dayElement) {
-                 displayTripsForDay(dayElement.dataset.date);
+             if (dayElement && !dayElement.classList.contains('empty') && !dayElement.classList.contains('weekday-header')) {
+                 const dateStr = dayElement.dataset.date;
+                 console.log("Calendar day clicked:", dateStr);
+                 displayTripsForDay(dateStr);
+
+                 // Mettre en évidence le jour cliqué
+                 dom.calendarGrid.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+                 dayElement.classList.add('selected');
              }
          }
 
         function displayTripsForDay(dateStr) {
-             dom.calendarGrid.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-             const dayEl = dom.calendarGrid.querySelector(`[data-date="${dateStr}"]`);
-             if(dayEl && !dayEl.classList.contains('empty')) dayEl.classList.add('selected');
+             const trips = calendarTrips.filter(t => t.date === dateStr);
+             let detailsHTML = '';
+             try {
+                 // Afficher la date cliquée en format lisible
+                 const dateObj = new Date(dateStr+'T00:00:00Z'); // Utiliser UTC
+                 detailsHTML = `<h4>Détails pour le ${dateObj.toLocaleDateString('fr-FR', {weekday: 'long', day:'numeric', month:'long', year: 'numeric'})}</h4>`;
+             } catch(e){
+                 console.warn("Error formatting date for details:", dateStr, e);
+                 detailsHTML = `<h4>Détails pour ${dateStr}</h4>`;
+             }
 
-            const trips = calendarTrips.filter(t => t.date === dateStr);
-            let detailsHTML = '';
-            try {
-                const dateObj = new Date(dateStr+'T00:00:00Z');
-                detailsHTML = `<h4>Détails: ${dateObj.toLocaleDateString('fr-FR', {weekday: 'long', day:'numeric', month:'long'})}</h4>`;
-            } catch(e){ detailsHTML = `<h4>Détails pour ${dateStr}</h4>`; }
-
-            if (trips.length > 0) {
-                detailsHTML += '<ul>';
-                trips.forEach(t => {
-                    const passengers = t.passagers?.filter(p=>p).join(', ') || '<em>Aucun</em>';
-                    detailsHTML += `<li>
-                                        <div><strong>Cond.:</strong> ${t.conducteur||'?'}</div>
-                                        <div><strong>Pass.:</strong> ${passengers}</div>
-                                        ${t.commentaire ? `<div><strong>Note:</strong> ${t.commentaire}</div>` : ''}
-                                    </li>`;
-                });
-                detailsHTML += '</ul>';
-            } else {
-                detailsHTML += '<p>Aucun trajet ce jour.</p>';
-            }
-            dom.tripsForDayDiv.innerHTML = detailsHTML;
-        }
+             if (trips.length > 0) {
+                 detailsHTML += '<ul>';
+                 trips.forEach(t => {
+                     const validPassengers = t.passagers?.filter(p => p && String(p).trim());
+                     const passengersStr = validPassengers?.length
+                         ? validPassengers.map(p => String(p).trim()).join(', ')
+                         : '<em>Aucun</em>';
+                     detailsHTML += `<li>
+                                         <div><strong>Cond.:</strong> ${t.conducteur||'?'}</div>
+                                         <div><strong>Pass.:</strong> ${passengersStr}</div>
+                                         ${t.commentaire ? `<div><strong>Note:</strong> ${t.commentaire}</div>` : ''}
+                                     </li>`;
+                 });
+                 detailsHTML += '</ul>';
+             } else {
+                 detailsHTML += '<p>Aucun trajet enregistré pour ce jour.</p>';
+             }
+             dom.tripsForDayDiv.innerHTML = detailsHTML;
+         }
 
         function goToPreviousMonth() { currentCalendarDate.setMonth(currentCalendarDate.getMonth()-1); fetchCalendarTrips(currentCalendarDate); }
         function goToNextMonth() { currentCalendarDate.setMonth(currentCalendarDate.getMonth()+1); fetchCalendarTrips(currentCalendarDate); }
 
         async function fetchCalendarTrips(date) {
-            console.log("Fetching calendar trips for:", date.toISOString().split('T')[0]);
+            console.log("Fetching calendar trips for month:", date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }));
             dom.calendarGrid.innerHTML = `<div class="loading-spinner" style="grid-column: 1 / -1;"><i class="fas fa-spinner"></i></div>`;
-            dom.tripsForDayDiv.innerHTML = '<p>Chargement...</p>'; // Clear details pane
+            dom.tripsForDayDiv.innerHTML = '<p>Chargement des trajets...</p>'; // Message pendant le chargement
 
             const y = date.getFullYear(), m = date.getMonth();
-            const start = `${y}-${String(m+1).padStart(2,'0')}-01`;
-            const end = `${y}-${String(m+1).padStart(2,'0')}-${new Date(y, m+1, 0).getDate()}`;
-            console.log(`Range: ${start} to ${end}`);
+            const startOfMonth = `${y}-${String(m+1).padStart(2,'0')}-01`;
+            // Pour la fin du mois, on prend le dernier jour (évite les soucis de fuseau horaire avec '<' le 1er du mois suivant)
+            const lastDayOfMonth = new Date(y, m + 1, 0).getDate();
+            const endOfMonth = `${y}-${String(m+1).padStart(2,'0')}-${String(lastDayOfMonth).padStart(2,'0')}`;
+            console.log(`Querying trips between ${startOfMonth} and ${endOfMonth}`);
 
             try {
+                // Pas besoin de tri ici, on filtre par date dans renderCalendar
                 const snapshot = await db.collection(COLLECTION_TRAJETS)
-                                        .where('date', '>=', start).where('date', '<=', end).get();
+                                         .where('date', '>=', startOfMonth)
+                                         .where('date', '<=', endOfMonth)
+                                         .get();
                 calendarTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("Fetched", calendarTrips.length, "calendar trips.");
-                renderCalendar(currentCalendarDate); // Render *after* data is fetched
-                // Optionally clear details again or show default msg
-                if(dom.tripsForDayDiv.innerHTML === '<p>Chargement...</p>') {
-                     dom.tripsForDayDiv.innerHTML = '<p>Cliquez sur un jour.</p>';
-                }
+                console.log("Fetched", calendarTrips.length, "trips for the calendar month.");
+                renderCalendar(currentCalendarDate); // Afficher le calendrier avec les données
+                // Réinitialiser le panneau de détails après le chargement réussi
+                dom.tripsForDayDiv.innerHTML = '<p>Cliquez sur un jour dans le calendrier pour voir les détails.</p>';
             } catch (error) {
                  console.error("Error fetching calendar trips:", error);
-                 showNotification("Erreur chargement calendrier", true);
-                 dom.calendarGrid.innerHTML = `<div class="empty-message error-message" style="grid-column: 1 / -1;">Erreur.</div>`;
-                 calendarTrips = [];
-                 dom.tripsForDayDiv.innerHTML = '<p>Erreur.</p>';
+                 showNotification("Erreur lors du chargement du calendrier.", true);
+                 dom.calendarGrid.innerHTML = `<div class="empty-message error-message" style="grid-column: 1 / -1;"><i class="fas fa-exclamation-triangle"></i> Erreur de chargement.</div>`;
+                 calendarTrips = []; // Vider les données en cas d'erreur
+                 dom.tripsForDayDiv.innerHTML = '<p>Erreur lors du chargement des détails.</p>';
             }
         }
 
         async function fetchAndRenderStatistics() {
-            if (isFetchingStats) return; isFetchingStats = true;
+            if (isFetchingStats) {
+                console.log("Stats fetch already in progress.");
+                return;
+            }
+            isFetchingStats = true;
             console.log("Fetching stats...");
             dom.statsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i></div>`;
 
             try {
-                let trips = allTripsDataCache;
-                if (!trips) {
-                     console.log("Stats cache miss, fetching all...");
+                let trips;
+                if (allTripsDataCache) {
+                     console.log("Using cached data for stats.");
+                     trips = allTripsDataCache;
+                } else {
+                     console.log("Stats cache miss, fetching all trips...");
                      const snapshot = await db.collection(COLLECTION_TRAJETS).get();
-                     trips = snapshot.docs.map(doc => doc.data()); // No need for ID here
-                     allTripsDataCache = trips;
-                     console.log("Fetched", trips.length, "trips for stats.");
-                } else { console.log("Using cached stats data."); }
+                     trips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Garder l'ID si besoin plus tard
+                     allTripsDataCache = trips; // Mettre en cache
+                     console.log("Fetched", trips.length, "trips and cached for stats.");
+                }
 
-                if (!Array.isArray(trips) || trips.length === 0) { /* Empty message */ dom.statsContent.innerHTML = '<p>Pas de données.</p>'; isFetchingStats = false; return; }
+                if (!Array.isArray(trips) || trips.length === 0) {
+                    dom.statsContent.innerHTML = '<p><i class="fas fa-info-circle"></i> Aucune donnée de trajet disponible pour générer des statistiques.</p>';
+                    isFetchingStats = false;
+                    return;
+                }
 
-                // --- Calculations (simplified) ---
-                const total = trips.length;
+                // --- Calculs Statistiques ---
+                const totalTrips = trips.length;
                 const now = new Date();
-                const monthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-                const yearStr = `${now.getFullYear()}`;
-                const thisMonth = trips.filter(t => t.date?.startsWith(monthStr)).length;
-                const thisYear = trips.filter(t => t.date?.startsWith(yearStr)).length;
-                const driverCounts = {}, passengerCounts = {}; let passTotal = 0, tripsWithPass = 0;
+                const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`;
+                const currentYearStr = `${now.getFullYear()}`;
+
+                const tripsThisMonth = trips.filter(t => t.date?.startsWith(currentMonthStr)).length;
+                const tripsThisYear = trips.filter(t => t.date?.startsWith(currentYearStr)).length;
+
+                const driverCounts = {};
+                const passengerCounts = {};
+                let totalPassengers = 0;
+                let tripsWithPassengers = 0;
+
                 trips.forEach(t => {
+                    // Comptage Conducteur
                     const driver = t.conducteur?.trim() || '(Non spécifié)';
                     driverCounts[driver] = (driverCounts[driver] || 0) + 1;
-                    const passengers = t.passagers?.filter(p=>p?.trim());
-                    if (passengers?.length) {
-                        tripsWithPass++; passTotal += passengers.length;
-                        passengers.forEach(p => { const pass = p.trim(); passengerCounts[pass] = (passengerCounts[pass] || 0) + 1; });
+
+                    // Comptage Passagers
+                    const validPassengers = t.passagers?.filter(p => p && String(p).trim());
+                    if (validPassengers?.length > 0) {
+                        tripsWithPassengers++;
+                        totalPassengers += validPassengers.length;
+                        validPassengers.forEach(p => {
+                            const passenger = String(p).trim();
+                            passengerCounts[passenger] = (passengerCounts[passenger] || 0) + 1;
+                        });
                     }
                 });
-                const sortedD = Object.entries(driverCounts).sort((a,b) => b[1]-a[1]);
-                const sortedP = Object.entries(passengerCounts).sort((a,b) => b[1]-a[1]);
-                const topD = sortedD.length ? `${sortedD[0][0]} (${sortedD[0][1]})` : 'N/A';
-                const topP = sortedP.length ? `${sortedP[0][0]} (${sortedP[0][1]})` : 'N/A';
-                const avgPWT = tripsWithPass ? (passTotal/tripsWithPass).toFixed(1) : '0.0';
-                const avgPAll = total ? (passTotal/total).toFixed(1) : '0.0';
 
-                // --- HTML ---
-                dom.statsContent.innerHTML = `
-                    <h3>Général</h3><p><strong>Total trajets:</strong> ${total}</p><p><strong>Ce mois:</strong> ${thisMonth}</p><p><strong>Cette année:</strong> ${thisYear}</p><hr>
-                    <h3>Participation</h3><p><strong>Top Conducteur:</strong> ${topD}</p><p><strong>Top Passager:</strong> ${topP}</p><p><strong>Moy Pass. (avec):</strong> ${avgPWT}</p><p><strong>Moy Pass. (tous):</strong> ${avgPAll}</p><hr>
-                    <h4>Top 5 Conducteurs:</h4>${sortedD.length ? `<ul>${sortedD.slice(0,5).map(d=>`<li>${d[0]}: ${d[1]}</li>`).join('')}</ul>` : '<p><em>N/A</em></p>'}
-                    <h4>Top 5 Passagers:</h4>${sortedP.length ? `<ul>${sortedP.slice(0,5).map(p=>`<li>${p[0]}: ${p[1]}</li>`).join('')}</ul>` : '<p><em>N/A</em></p>'}
-                `;
+                const sortedDrivers = Object.entries(driverCounts).sort(([, countA], [, countB]) => countB - countA);
+                const sortedPassengers = Object.entries(passengerCounts).sort(([, countA], [, countB]) => countB - countA);
+
+                const topDriver = sortedDrivers.length ? `${sortedDrivers[0][0]} (${sortedDrivers[0][1]} trajets)` : 'N/A';
+                const topPassenger = sortedPassengers.length ? `${sortedPassengers[0][0]} (${sortedPassengers[0][1]} trajets)` : 'N/A';
+
+                const avgPassengersPerTripWithPassengers = tripsWithPassengers > 0 ? (totalPassengers / tripsWithPassengers).toFixed(1) : '0.0';
+                const avgPassengersPerTripAll = totalTrips > 0 ? (totalPassengers / totalTrips).toFixed(1) : '0.0';
+
+                // --- Génération HTML pour les Statistiques ---
+                let statsHTML = `
+                    <h3>Statistiques Générales</h3>
+                    <p><strong>Nombre total de trajets enregistrés :</strong> ${totalTrips}</p>
+                    <p><strong>Trajets ce mois-ci (${now.toLocaleDateString('fr-FR', { month: 'long'})}) :</strong> ${tripsThisMonth}</p>
+                    <p><strong>Trajets cette année (${currentYearStr}) :</strong> ${tripsThisYear}</p>
+                    <hr>
+                    <h3>Participation</h3>
+                    <p><strong>Conducteur le plus fréquent :</strong> ${topDriver}</p>
+                    <p><strong>Passager le plus fréquent :</strong> ${topPassenger}</p>
+                    <p><strong>Nombre moyen de passagers (trajets avec passagers) :</strong> ${avgPassengersPerTripWithPassengers}</p>
+                    <p><strong>Nombre moyen de passagers (tous trajets confondus) :</strong> ${avgPassengersPerTripAll}</p>
+                    <hr>
+                    <h4>Top 5 Conducteurs :</h4>`;
+
+                if (sortedDrivers.length > 0) {
+                    statsHTML += `<ul>${sortedDrivers.slice(0, 5).map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`;
+                } else {
+                    statsHTML += `<p><em>Aucun conducteur enregistré.</em></p>`;
+                }
+
+                statsHTML += `<h4>Top 5 Passagers :</h4>`;
+
+                if (sortedPassengers.length > 0) {
+                    statsHTML += `<ul>${sortedPassengers.slice(0, 5).map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`;
+                } else {
+                    statsHTML += `<p><em>Aucun passager enregistré.</em></p>`;
+                }
+
+                dom.statsContent.innerHTML = statsHTML;
 
             } catch (error) {
-                console.error("Error generating stats:", error);
-                dom.statsContent.innerHTML = `<p class="empty-message error-message">Erreur stats: ${error.message}</p>`;
-                allTripsDataCache = null; // Invalidate cache on error
-            } finally { isFetchingStats = false; }
+                console.error("Error generating statistics:", error);
+                dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors de la génération des statistiques: ${error.message}</p>`;
+                allTripsDataCache = null; // Invalider le cache en cas d'erreur
+            } finally {
+                isFetchingStats = false; // Marquer la fin de la tentative de fetch
+            }
         }
 
         function editTrajet(trajetId) {
-            console.log("Editing trajet:", trajetId);
-            if (!trajetId) return;
+            console.log("Attempting to fetch trajet for edit:", trajetId);
+            if (!trajetId) {
+                console.error("editTrajet called with no ID.");
+                return;
+            }
             db.collection(COLLECTION_TRAJETS).doc(trajetId).get()
                 .then(doc => {
-                    if (!doc.exists) { showNotification("Trajet non trouvé.", true); return; }
+                    if (!doc.exists) {
+                        showNotification("Le trajet à modifier n'a pas été trouvé.", true);
+                        console.warn("Document not found for edit:", trajetId);
+                        return;
+                    }
                     const t = doc.data();
-                    // Switch to form view *before* populating
+                    console.log("Trajet data found for edit:", t);
+
+                    // Basculer vers la vue formulaire AVANT de remplir les champs
                     switchView('form');
 
-                    // Populate form
-                    dom.dateInput.value = t.date || '';
+                    // Remplir le formulaire
+                    dom.dateInput.value = t.date || ''; // Assumer format YYYY-MM-DD
                     dom.conducteurInput.value = t.conducteur || '';
                     dom.commentaireInput.value = t.commentaire || '';
-                    dom.editIdInput.value = trajetId;
-                    dom.formTitle.textContent = 'Modifier le Trajet'; // Update title
-                    dom.submitBtn.textContent = 'Mettre à jour';
-                    dom.cancelEditBtn.style.display = 'inline-block';
+                    dom.editIdInput.value = trajetId; // !! Important pour savoir qu'on est en mode édition
+                    dom.formTitle.textContent = 'Modifier le Trajet'; // Changer le titre
+                    dom.submitBtn.textContent = 'Mettre à jour'; // Changer le texte du bouton
+                    dom.cancelEditBtn.style.display = 'inline-block'; // Afficher le bouton Annuler
 
-                    // Populate passengers
-                    const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
-                    rows.forEach(r => r.remove()); // Clear existing rows
-                    if (t.passagers?.length) {
-                        t.passagers.filter(p=>p?.trim()).forEach(p => addPassengerField(p));
+                    // Vider les champs passagers existants avant d'ajouter les nouveaux
+                    const existingPassengerRows = dom.passengerContainer.querySelectorAll('.passenger-row');
+                    existingPassengerRows.forEach(row => row.remove());
+
+                    // Ajouter les champs pour les passagers du trajet
+                    if (t.passagers && Array.isArray(t.passagers) && t.passagers.length > 0) {
+                         t.passagers.filter(p => p && String(p).trim()).forEach(p => addPassengerField(String(p).trim()));
                     }
+
+                    // S'assurer qu'il y a au moins un champ passager (même vide) si aucun n'a été ajouté
                     if (dom.passengerContainer.querySelectorAll('.passenger-row').length === 0) {
-                        addPassengerField(); // Add one empty if none exist/valid
+                        addPassengerField();
                     }
-                    updatePassengerRemoveButtonsState();
+                    updatePassengerRemoveButtonsState(); // Gérer l'affichage des boutons moins
 
+                    // Optionnel: Scroll vers le formulaire pour la visibilité
                     dom.formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
                 })
-                .catch(error => { console.error("Error fetching for edit:", error); showNotification("Erreur: "+error.message, true); });
+                .catch(error => {
+                    console.error("Error fetching document for edit:", trajetId, error);
+                    showNotification("Erreur lors de la récupération du trajet: "+error.message, true);
+                });
         }
 
         function deleteTrajet(trajetId) {
-             if (!trajetId) return;
-             if (window.confirm("Supprimer ce trajet ? Action irréversible.")) {
-                 console.log("Deleting:", trajetId);
+             if (!trajetId) {
+                 console.error("deleteTrajet called with no ID.");
+                 return;
+             }
+             // Confirmation utilisateur
+             if (window.confirm("Êtes-vous sûr de vouloir supprimer ce trajet ? Cette action est irréversible.")) {
+                 console.log("User confirmed deletion for ID:", trajetId);
+                 // Désactiver temporairement les boutons ? (Optionnel)
+
                  db.collection(COLLECTION_TRAJETS).doc(trajetId).delete()
                     .then(() => {
-                        showNotification("Trajet supprimé.");
-                        allTripsDataCache = null; // Invalidate cache
-                        if (currentView === 'calendar') fetchCalendarTrips(currentCalendarDate);
-                        if (dom.editIdInput.value === trajetId) resetForm(); // Reset form if deleting the one being edited
-                        // Table view updates via snapshot
+                        console.log("Trajet successfully deleted:", trajetId);
+                        showNotification("Trajet supprimé avec succès.");
+                        allTripsDataCache = null; // Invalider le cache stats
+
+                        // Si on était en train d'éditer ce trajet, réinitialiser le formulaire
+                        if (dom.editIdInput.value === trajetId) {
+                            resetForm();
+                        }
+
+                        // Si on est sur la vue calendrier, rafraîchir les données du mois courant
+                        if (currentView === 'calendar') {
+                            fetchCalendarTrips(currentCalendarDate);
+                        }
+                        // La vue tableau se mettra à jour automatiquement grâce à onSnapshot (si active)
+
                     })
-                    .catch(error => { console.error("Delete error:", error); showNotification("Erreur: "+error.message, true); });
+                    .catch(error => {
+                        console.error("Error deleting trajet:", trajetId, error);
+                        // Vérifier si c'est une erreur de permission
+                        if (error.code === 'permission-denied') {
+                             showNotification("Erreur de suppression : Vous n'avez pas les permissions nécessaires.", true);
+                        } else {
+                             showNotification("Erreur lors de la suppression du trajet: " + error.message, true);
+                        }
+                    });
+             } else {
+                 console.log("User cancelled deletion for ID:", trajetId);
              }
         }
 
         function handleFormSubmit(event) {
-            event.preventDefault();
-            const date = dom.dateInput.value, conducteur = dom.conducteurInput.value.trim();
-            if (!date || !conducteur) { showNotification("Date et Conducteur requis.", true); return; }
+            event.preventDefault(); // Empêche le rechargement de la page
+            console.log("Form submitted.");
+
+            const date = dom.dateInput.value;
+            const conducteur = dom.conducteurInput.value.trim();
+
+            // Validation simple des champs requis
+            if (!date) { showNotification("Veuillez sélectionner une date.", true); return; }
+            if (!conducteur) { showNotification("Veuillez entrer le nom du conducteur.", true); return; }
+            // Validation format date (basique)
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { showNotification("Format de date invalide (AAAA-MM-JJ attendu).", true); return; }
 
             const commentaire = dom.commentaireInput.value.trim();
-            const passagers = Array.from(dom.passengerContainer.querySelectorAll('.passenger-input')).map(i=>i.value.trim()).filter(v=>v);
-            const trajetId = dom.editIdInput.value;
+            // Récupérer les passagers, en filtrant les champs vides et en nettoyant les espaces
+            const passagers = Array.from(dom.passengerContainer.querySelectorAll('.passenger-input'))
+                                   .map(input => input.value.trim())
+                                   .filter(value => value); // Garder uniquement les noms non vides
+
+            const trajetId = dom.editIdInput.value; // Récupérer l'ID si on est en mode édition
             const user = auth.currentUser;
 
-            const data = { date, conducteur, passagers, commentaire, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-            if (user) { data.lastModifiedByUid = user.uid; data.lastModifiedByName = user.displayName || user.email; }
+            // Préparer l'objet de données
+            const data = {
+                date: date,
+                conducteur: conducteur,
+                passagers: passagers, // Array de strings
+                commentaire: commentaire,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp() // Timestamp de la dernière modification
+            };
 
-            dom.submitBtn.disabled = true; dom.submitBtn.textContent = 'Sauvegarde...';
-            let promise, msg;
-
-            if (trajetId) { // Update
-                promise = db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
-                msg = "Trajet mis à jour !";
-            } else { // Add
-                data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                if (user) { data.createdByUid = user.uid; data.createdByName = user.displayName || user.email; }
-                promise = db.collection(COLLECTION_TRAJETS).add(data);
-                msg = "Trajet ajouté !";
+            // Ajouter les informations sur l'utilisateur qui modifie/crée
+            if (user) {
+                data.lastModifiedByUid = user.uid;
+                data.lastModifiedByName = user.displayName || user.email; // Préférer displayName
             }
 
-            promise.then(() => {
-                showNotification(msg);
-                resetForm(); // Reset form fields
-                allTripsDataCache = null; // Invalidate cache
-                switchView('my-trips'); // Go back to 'My Trips' view after save
+            // Désactiver le bouton et afficher un message de chargement
+            dom.submitBtn.disabled = true;
+            dom.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...'; // Spinner + Texte
+
+            let promise;
+            let successMsg;
+
+            if (trajetId) { // Mode Mise à jour
+                console.log("Updating trajet with ID:", trajetId, " Data:", data);
+                promise = db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
+                successMsg = "Trajet mis à jour avec succès !";
+            } else { // Mode Ajout
+                // Ajouter les infos de création uniquement lors de l'ajout
+                data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                if (user) {
+                    data.createdByUid = user.uid;
+                    data.createdByName = user.displayName || user.email;
+                }
+                console.log("Adding new trajet. Data:", data);
+                promise = db.collection(COLLECTION_TRAJETS).add(data);
+                successMsg = "Nouveau trajet ajouté avec succès !";
+            }
+
+            // Exécuter la promesse (ajout ou mise à jour)
+            promise.then((docRef) => {
+                console.log("Firestore operation successful.", trajetId ? `Updated doc ID: ${trajetId}` : `Added doc ID: ${docRef?.id}`);
+                showNotification(successMsg);
+                resetForm(); // Réinitialiser le formulaire après succès
+                allTripsDataCache = null; // Invalider le cache stats
+
+                // Optionnel: Revenir à une vue spécifique après sauvegarde
+                switchView('my-trips'); // Revenir à "Mes Trajets" par défaut
+
             }).catch(error => {
-                console.error("Save error:", error); showNotification("Erreur: "+error.message, true);
+                console.error("Error saving trajet to Firestore:", error);
+                // Gérer spécifiquement les erreurs de permission
+                if (error.code === 'permission-denied') {
+                     showNotification("Erreur : Vous n'avez pas les permissions pour effectuer cette opération.", true);
+                } else {
+                     showNotification("Erreur lors de la sauvegarde : " + error.message, true);
+                }
             }).finally(() => {
+                // Réactiver le bouton et restaurer son texte initial, quel que soit le résultat
                 dom.submitBtn.disabled = false;
-                // Reset text (resetForm might have already done it if edit was successful)
-                dom.submitBtn.textContent = dom.editIdInput.value ? 'Mettre à jour' : 'Enregistrer';
+                // Le texte est déjà géré par resetForm() en cas de succès, mais on le remet ici au cas où resetForm échoue ou n'est pas appelé
+                dom.submitBtn.innerHTML = dom.editIdInput.value ? 'Mettre à jour' : 'Enregistrer';
             });
         }
 
+        // Fonction utilitaire pour "debouncer" une fonction (ex: éviter appels multiples lors de la saisie)
         function debounce(func, wait) {
-            let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); };
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func.apply(this, args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
         }
 
-        // --- Event Listeners Setup ---
+        // --- Configuration des Écouteurs d'Événements ---
 
-        dom.loginBtn.addEventListener('click', () => { /* Google Sign In */
+        // Connexion Google
+        dom.loginBtn.addEventListener('click', () => {
+             console.log("Login button clicked");
              const provider = new firebase.auth.GoogleAuthProvider();
-             auth.signInWithPopup(provider).catch(err => showNotification(`Erreur Connexion: ${err.message}`, true));
+             // Optionnel: forcer la sélection de compte si besoin
+             // provider.setCustomParameters({ prompt: 'select_account' });
+             auth.signInWithPopup(provider)
+               .then((result) => {
+                   console.log("Sign-in successful:", result.user?.displayName);
+                   // onAuthStateChanged gérera la suite
+               })
+               .catch((error) => {
+                   console.error("Google Sign-In Error:", error);
+                   let message = `Erreur de connexion Google: ${error.message}`;
+                   if (error.code === 'auth/popup-closed-by-user') {
+                       message = "La fenêtre de connexion a été fermée.";
+                   } else if (error.code === 'auth/cancelled-popup-request') {
+                       message = "Une autre fenêtre de connexion est déjà ouverte.";
+                   }
+                   showNotification(message, true);
+               });
         });
-        // Logout listener added dynamically in onAuthStateChanged
 
+        // Gestion de l'état d'authentification (connexion/déconnexion)
         auth.onAuthStateChanged(user => {
-            const loggedIn = !!user;
+            const loggedIn = !!user; // True si user n'est pas null/undefined
+            console.log("Auth state changed. User logged in:", loggedIn);
+
             dom.authContainer.style.display = loggedIn ? 'none' : 'block';
             dom.contentContainer.style.display = loggedIn ? 'block' : 'none';
 
-            if (loggedIn) {
-                dom.profileInfo.innerHTML = `
-                    <img src="${user.photoURL || '#'}" alt="P">
-                    <div><strong>${user.displayName || 'Utilisateur'}</strong></div>
-                    <button id="logout-btn" title="Se déconnecter">Deconnexion</button>`;
-                 // Attach logout listener to the newly created button
-                 document.getElementById('logout-btn')?.addEventListener('click', () => auth.signOut());
+            // Nettoyer l'ancien listener du tableau (sécurité)
+            dom.listeTrajetsDiv.removeEventListener('click', handleTableActions);
 
-                populateYearFilter();
-                resetForm(); // Set default values
-                switchView('my-trips'); // Default view after login
-                showNotification(`Bienvenue ${user.displayName || ''} !`);
-            } else {
-                dom.profileInfo.innerHTML = '';
-                if (trajetsUnsubscribe) { try { trajetsUnsubscribe(); } catch(e){} trajetsUnsubscribe = null; }
-                // Clear all dynamic content areas
-                ['listeTrajetsDiv', 'calendarGrid', 'tripsForDayDiv', 'statsContent'].forEach(id => dom[id].innerHTML = '');
-                calendarTrips = []; allTripsDataCache = null;
+            if (loggedIn) {
+                console.log("User details:", { uid: user.uid, displayName: user.displayName, email: user.email });
+                // Afficher les infos utilisateur et le bouton déconnexion
+                dom.profileInfo.innerHTML = `
+                    <img src="${user.photoURL || 'https://via.placeholder.com/50'}" alt="Avatar" referrerpolicy="no-referrer">
+                    <div><strong>${user.displayName || user.email || 'Utilisateur'}</strong></div>
+                    <button id="logout-btn" title="Se déconnecter">Déconnexion</button>`;
+
+                 // Attacher l'écouteur au bouton déconnexion (qui vient d'être créé)
+                 const logoutBtn = document.getElementById('logout-btn');
+                 if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        console.log("Logout button clicked");
+                        auth.signOut().then(() => {
+                             console.log("User signed out.");
+                             // onAuthStateChanged gérera la suite (passage à loggedIn = false)
+                        }).catch((error) => {
+                             console.error("Sign out error:", error);
+                             showNotification("Erreur lors de la déconnexion.", true);
+                        });
+                    });
+                 } else { console.error("Logout button not found after creation."); }
+
+                // Initialiser les éléments après connexion
+                populateYearFilter(); // Remplir le filtre année
+                resetForm();          // Pré-remplir/réinitialiser le formulaire
+
+                // **Attacher l'écouteur pour les actions du tableau ici**
+                dom.listeTrajetsDiv.addEventListener('click', handleTableActions);
+                console.log("Table action listener attached.");
+
+                // Afficher la vue par défaut après connexion
+                switchView('my-trips');
+                showNotification(`Bienvenue ${user.displayName || user.email || ''} !`);
+
+            } else { // Utilisateur déconnecté
+                dom.profileInfo.innerHTML = ''; // Vider les infos profil
+
+                // Arrêter l'écoute des trajets en temps réel
+                if (trajetsUnsubscribe) {
+                    console.log("Unsubscribing table listener on logout.");
+                    try { trajetsUnsubscribe(); } catch(e){ console.warn("Error unsubscribing on logout:", e); }
+                    trajetsUnsubscribe = null;
+                }
+
+                // Vider les zones de contenu dynamique
+                dom.listeTrajetsDiv.innerHTML = '';
+                dom.calendarGrid.innerHTML = '';
+                dom.tripsForDayDiv.innerHTML = '<p>Veuillez vous connecter.</p>';
+                dom.statsContent.innerHTML = '';
+
+                // Réinitialiser les variables d'état liées aux données
+                calendarTrips = [];
+                allTripsDataCache = null;
+                currentView = 'my-trips'; // Réinitialiser la vue par défaut pour la prochaine connexion
+                console.log("Cleaned up UI and state for logged out user.");
             }
         });
 
+        // Boutons Ajouter/Retirer passager
         dom.addPassengerBtn.addEventListener('click', () => addPassengerField());
-        dom.passengerContainer.addEventListener('click', (e) => { // Delegate remove button clicks
+        dom.passengerContainer.addEventListener('click', (e) => {
+            // Utilisation de la délégation d'événements pour les boutons "moins"
             if (e.target.closest('.remove-passenger-btn')) {
                 const row = e.target.closest('.passenger-row');
-                if (dom.passengerContainer.querySelectorAll('.passenger-row').length > 1) row.remove();
-                else row.querySelector('.passenger-input').value = ''; // Clear last one
-                updatePassengerRemoveButtonsState();
+                // Ne pas supprimer s'il ne reste qu'un seul champ (on le vide plutôt)
+                if (dom.passengerContainer.querySelectorAll('.passenger-row').length > 1) {
+                    row.remove();
+                } else {
+                    row.querySelector('.passenger-input').value = ''; // Vider le dernier champ
+                }
+                updatePassengerRemoveButtonsState(); // Mettre à jour l'état (qui peut réafficher un champ si nécessaire)
             }
         });
 
-        dom.cancelEditBtn.addEventListener('click', resetForm);
+        // Boutons du formulaire
+        dom.cancelEditBtn.addEventListener('click', () => {
+             console.log("Cancel edit clicked.");
+             resetForm();
+             // Optionnel: revenir à la vue tableau si on annule une modification
+             if(currentView === 'form') switchView('my-trips');
+        });
         dom.form.addEventListener('submit', handleFormSubmit);
+        // Le bouton Reset type="reset" fonctionne nativement
 
-        const debouncedTableRefresh = debounce(subscribeToTrajets, 400);
-        dom.filterMonth.addEventListener('change', subscribeToTrajets);
+        // Filtres du tableau
+        const debouncedTableRefresh = debounce(subscribeToTrajets, 400); // Attendre 400ms après la saisie
+        dom.filterMonth.addEventListener('change', subscribeToTrajets); // Rafraîchir immédiatement au changement de mois/année
         dom.filterYear.addEventListener('change', subscribeToTrajets);
-        dom.filterPerson.addEventListener('input', debouncedTableRefresh);
+        dom.filterPerson.addEventListener('input', debouncedTableRefresh); // Rafraîchir avec délai pour la saisie
         dom.resetFiltersBtn.addEventListener('click', () => {
-            dom.filterMonth.value = ''; dom.filterYear.value = ''; dom.filterPerson.value = '';
-            if (currentView === 'my-trips' || currentView === 'all-trips') subscribeToTrajets();
+            console.log("Reset filters clicked.");
+            dom.filterMonth.value = '';
+            dom.filterYear.value = '';
+            dom.filterPerson.value = '';
+            // Rafraîchir le tableau si on est sur une vue tableau
+            if (currentView === 'my-trips' || currentView === 'all-trips') {
+                subscribeToTrajets();
+            }
         });
 
+        // Boutons de navigation entre les vues (onglets)
         dom.formViewBtn.addEventListener('click', () => switchView('form'));
         dom.myTripsBtn.addEventListener('click', () => switchView('my-trips'));
         dom.allTripsBtn.addEventListener('click', () => switchView('all-trips'));
         dom.calendarViewBtn.addEventListener('click', () => switchView('calendar'));
         dom.statsViewBtn.addEventListener('click', () => switchView('stats'));
 
+        // Boutons de navigation du calendrier
         dom.prevMonthBtn.addEventListener('click', goToPreviousMonth);
         dom.nextMonthBtn.addEventListener('click', goToNextMonth);
-         // Calendar day clicks handled by delegation added in renderCalendar
+         // Les clics sur les jours du calendrier sont gérés par handleCalendarClick via délégation
 
-        window.addEventListener('DOMContentLoaded', () => console.log("DOM Ready."));
+        // Message initial quand le DOM est prêt (pour le debug)
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM Ready. Waiting for Firebase Auth state...");
+            // On attend onAuthStateChanged pour l'initialisation principale
+        });
 
     </script>
 </body>
