@@ -6,6 +6,7 @@
     <title>Suivi Covoiturage</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
     :root {
         --primary-color: #4285F4;
@@ -17,6 +18,36 @@
         --light-text: #666;
         --border-radius: 8px;
         --shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        /* --- Couleurs pour les Conducteurs --- */
+        /* Définissez ici une paire de couleurs (fond léger, texte plus foncé) par conducteur */
+        --driver-color-1-bg: #e1f5fe; /* Light Blue 50 */
+        --driver-color-1-text: #0288d1; /* Light Blue 700 */
+
+        --driver-color-2-bg: #e8f5e9; /* Green 50 */
+        --driver-color-2-text: #388e3c; /* Green 700 */
+
+        --driver-color-3-bg: #fff3e0; /* Orange 50 */
+        --driver-color-3-text: #f57c00; /* Orange 700 */
+
+        --driver-color-4-bg: #ede7f6; /* Deep Purple 50 */
+        --driver-color-4-text: #5e35b1; /* Deep Purple 700 */
+
+        --driver-color-5-bg: #ffebee; /* Red 50 */
+        --driver-color-5-text: #d32f2f; /* Red 700 */
+
+        /* Ajoutez d'autres conducteurs selon vos besoins (copiez/collez les 2 lignes ci-dessus et ajustez X et les couleurs) */
+        /* --driver-color-6-bg: #fbe9e7; --driver-color-6-text: #e64a19;  */
+        /* --driver-color-7-bg: #fff8e1; --driver-color-7-text: #fbc02d;  */
+        /* --driver-color-8-bg: #fce4ec; --driver-color-8-text: #c2185b;  */
+        /* --driver-color-9-bg: #e0f2f7; --driver-color-9-text: #00838f;  */
+        /* --driver-color-10-bg: #e3f4fd; --driver-color-10-text: #039be5; */
+        /* ... etc ... */
+
+
+         /* Couleurs de fallback pour le résumé si pas de conducteur spécifique */
+         --default-trip-bg: rgba(52, 168, 83, 0.1); /* Original subtle green */
+         --default-trip-text: var(--secondary-color); /* Original secondary color */
     }
 
     /* Reset CSS */
@@ -51,11 +82,13 @@
         color: var(--secondary-color);
         margin: 25px 0 15px;
         font-size: 1.8rem;
-        /* Ensure title inside sections doesn't have extra top margin */
-        section > h2:first-child {
-             margin-top: 0;
-        }
     }
+     /* Ensure title inside sections doesn't have extra top margin */
+     section > h2:first-child {
+         margin-top: 0;
+    }
+
+
      h3 {
         color: var(--primary-color);
         margin: 20px 0 10px;
@@ -334,7 +367,6 @@
 
     .table-icon { font-size: 1.2rem; margin-right: 10px; vertical-align: middle; }
     .date-icon { color: var(--primary-color); }
-    .driver-icon { color: var(--secondary-color); }
     .passenger-icon { color: var(--warning-color); }
 
     .empty-message { text-align: center; padding: 30px; color: var(--light-text); font-style: italic; }
@@ -368,9 +400,9 @@
 
     /* Styles pour les badges */
     .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; margin-right: 5px; margin-bottom: 3px; line-height: 1.4; }
-    .badge-driver { background-color: #e7f5e7; color: var(--secondary-color); }
     .badge-passenger { background-color: #fff3e0; color: var(--warning-color); }
     .badge-absent { background-color: #ffebee; color: var(--danger-color); }
+
 
     /* Styles pour le toggle de la vue */
     .view-toggle { display: flex; margin-bottom: 20px; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -444,18 +476,19 @@
 
     .calendar-day {
         border: 1px solid #f0f0f0;
-        padding: 5px 5px 5px 5px; /* Padding général */
-        padding-top: 28px; /* Espace pour le numéro en haut */
+        padding: 5px; /* Padding général reduced */
+        padding-top: 28px; /* Space for number at top */
         min-height: 100px;
         display: flex;
         flex-direction: column;
-        align-items: center; /* Centrer le contenu (résumé) */
-        justify-content: flex-start; /* Aligner le contenu en haut (après padding) */
-        cursor: pointer;
+        align-items: center; /* Center content (summary) */
+        justify-content: flex-start; /* Align content top (after padding) */
+        cursor: pointer; /* Add pointer cursor for clickable days */
         transition: background-color 0.2s, border-color 0.2s;
-        position: relative; /* Pour position absolue du numéro */
-        background-color: white;
+        position: relative; /* For absolute positioning of number */
+        background-color: white; /* Default background for days without trips */
         font-size: 0.85rem;
+        overflow: hidden; /* Ensure content like summary doesn't overflow */
     }
     /* Classe ajoutée en JS quand on clique sur un jour */
     .calendar-day.selected {
@@ -463,24 +496,36 @@
         box-shadow: 0 0 0 2px var(--primary-color) inset;
     }
 
+     /* --- Color calendar day background by driver --- */
+     /* Apply the light background color to the calendar cell itself */
+     .calendar-day.driver-1 { background-color: var(--driver-color-1-bg); }
+     .calendar-day.driver-2 { background-color: var(--driver-color-2-bg); }
+     .calendar-day.driver-3 { background-color: var(--driver-color-3-bg); }
+     .calendar-day.driver-4 { background-color: var(--driver-color-4-bg); }
+     .calendar-day.driver-5 { background-color: var(--driver-color-5-bg); }
+     /* Add rules for driver-6, driver-7, etc. */
 
     .calendar-day:hover:not(.empty):not(.weekday-header) {
-        background-color: #f7f7f7;
+        /* Keep subtle hover effect, maybe adjust based on base color */
+        background-color: #f7f7f7; /* Default hover */
         border-color: #e0e0e0;
     }
+    /* Override default hover if driver class is present */
+    .calendar-day.driver-1:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
+    .calendar-day.driver-2:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
+    .calendar-day.driver-3:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
+    .calendar-day.driver-4:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-4-bg), black 5%); }
+    .calendar-day.driver-5:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-5-bg), black 5%); }
+    /* Add hover rules for driver-6, driver-7, etc. */
 
-    .calendar-day.has-trip {
-        background-color: #e9f5e9; /* Vert très pale */
-        border-color: #c8e6c9;
-    }
-    .calendar-day.has-trip:hover {
-        background-color: #d7ecd7;
-    }
+
+    /* Remove default has-trip background */
+    /* .calendar-day.has-trip { background-color: #e9f5e9; border-color: #c8e6c9; } */
 
     .calendar-day.today {
         border: 2px solid var(--primary-color);
         font-weight: bold;
-        background-color: #eef4ff;
+        /* Today's background will be overridden by driver background if applicable */
     }
     .calendar-day.today .day-number {
         color: var(--primary-color);
@@ -495,29 +540,65 @@
         top: 5px;
         right: 7px;
         padding: 2px;
+        z-index: 1; /* Assure qu'il est au-dessus du contenu */
+        background-color: rgba(255, 255, 255, 0.7); /* Fond semi-transparent pour visibilité sur fond coloré */
+        border-radius: 3px;
     }
+     .calendar-day.today .day-number { /* Ensure today number stays prominent */
+         background-color: rgba(255, 255, 255, 0.9);
+         box-shadow: 0 0 3px rgba(0,0,0,0.1);
+     }
+
 
     .calendar-day .trip-summary {
+        /* Base styles */
         font-size: 0.7rem;
         line-height: 1.3;
-        color: var(--secondary-color);
-        background-color: rgba(52, 168, 83, 0.1);
         padding: 2px 5px;
         border-radius: 4px;
-        margin-top: 5px; /* Espace après le padding-top implicite */
-        display: inline-block; /* Taille basée sur contenu */
-        max-width: 90%; /* Limite largeur */
+        margin-top: 5px;
+        display: inline-block;
+        max-width: 95%;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         font-weight: 500;
+        margin-bottom: 3px;
+
+        /* Default/Fallback colors */
+        background-color: var(--default-trip-bg);
+        color: var(--default-trip-text);
     }
+
+    /* --- Styles de couleur par conducteur dans le calendrier (Résumé) --- */
+    /* Apply the darker text color from the driver palette to the summary text */
+    .calendar-day.driver-1 .trip-summary {
+        color: var(--driver-color-1-text);
+        background-color: transparent; /* Use cell background */
+    }
+    .calendar-day.driver-2 .trip-summary {
+        color: var(--driver-color-2-text);
+        background-color: transparent;
+    }
+    .calendar-day.driver-3 .trip-summary {
+        color: var(--driver-color-3-text);
+        background-color: transparent;
+    }
+    .calendar-day.driver-4 .trip-summary {
+        color: var(--driver-color-4-text);
+        background-color: transparent;
+    }
+    .calendar-day.driver-5 .trip-summary {
+        color: var(--driver-color-5-text);
+        background-color: transparent;
+    }
+    /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
 
 
     .calendar-day.empty {
         background-color: #fafafa;
-        cursor: default;
+        cursor: default; /* Default cursor for non-clickable days */
         border-color: #f5f5f5;
     }
     .calendar-day.empty:hover { background-color: #fafafa; }
@@ -530,7 +611,7 @@
         border: none;
         border-bottom: 1px solid #ddd;
         min-height: auto;
-        cursor: default;
+        cursor: default; /* Default cursor for headers */
         color: var(--light-text);
         font-size: 0.75rem;
         position: relative; /* Reset position */
@@ -561,14 +642,43 @@
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
         line-height: 1.5;
+        /* Add space for left border */
+         padding-left: 15px; /* Initial padding-left */
+         border-left: 5px solid transparent; /* Default transparent border */
+         transition: border-left-color 0.2s ease;
     }
     #trips-for-day li div { margin-bottom: 4px; } /* Espace entre lignes de détail */
     #trips-for-day li strong {
-        color: var(--primary-color);
+        color: var(--primary-color); /* Keep label color consistent */
         display: inline-block;
-        min-width: 60px; /* Réduit un peu */
-        margin-right: 5px;
+        min-width: 80px; /* Adjusted width for labels like "Conducteur" */
+        margin-right: 10px;
+        font-weight: 500;
     }
+
+    /* --- Styles de couleur par conducteur dans le calendrier (Détails) --- */
+    /* Apply colored left border to the list item */
+     #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); }
+     #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); }
+     #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); }
+     #trips-for-day li.driver-4 { border-left-color: var(--driver-color-4-text); }
+     #trips-for-day li.driver-5 { border-left-color: var(--driver-color-5-text); }
+     /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
+
+    /* Color the driver name text in the detail list item */
+    #trips-for-day li .driver-name {
+        font-weight: 700; /* Rendre le nom du conducteur en gras */
+        /* Default color */
+        color: var(--dark-text);
+    }
+     #trips-for-day li .driver-name.driver-1 { color: var(--driver-color-1-text); }
+     #trips-for-day li .driver-name.driver-2 { color: var(--driver-color-2-text); }
+     #trips-for-day li .driver-name.driver-3 { color: var(--driver-color-3-text); }
+     #trips-for-day li .driver-name.driver-4 { color: var(--driver-color-4-text); }
+     #trips-for-day li .driver-name.driver-5 { color: var(--driver-color-5-text); }
+     /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
+
+
     #trips-for-day li:last-child { border-bottom: none; }
     #trips-for-day p { /* Message par défaut / aucun trajet */
         color: var(--light-text);
@@ -593,6 +703,24 @@
     .logo-container { text-align: center; }
     .google-logo { font-size: 40px; font-weight: bold; font-family: Arial, sans-serif; background: conic-gradient( from -20deg at 38% 59%, #DB4437 0deg 90deg, #4285F4 90deg 180deg, #0F9D58 180deg 270deg, #F4B400 270deg 360deg ); -webkit-background-clip: text; color: transparent; display: inline-block; line-height: 1; }
 
+    /* --- Styles de couleur par conducteur dans le Tableau (Vue Bureau) --- */
+    /* Apply color to the text of the driver cell */
+    td[data-label="Conducteur"] {
+        color: var(--dark-text); /* Keep default text color */
+        font-weight: normal; /* Reset default font-weight */
+    }
+    /* Text color only in desktop view */
+    @media (min-width: 768px) {
+        td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-4 { color: var(--driver-color-4-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-5 { color: var(--driver-color-5-text); font-weight: 600; }
+        /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
+    }
+
+
+
     /* --- Media Queries pour l'optimisation Mobile --- */
 
     @media (max-width: 992px) {
@@ -615,18 +743,56 @@
 
     @media (max-width: 767px) {
         body { font-size: 14px; }
-        /* Adaptation Tableau Mobile */
+        /* Adaptation Tableau Mobile (Vue Carte) */
         #table-section table { border: 0; }
         #table-section thead { display: none; }
-        #table-section tr { display: block; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: var(--border-radius); padding: 15px; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
-        #table-section tr:nth-child(even) { background-color: white; }
-        #table-section tr:hover { background-color: white; }
+        #table-section tr {
+             display: block;
+             margin-bottom: 15px;
+             border: 1px solid #e0e0e0;
+             border-radius: var(--border-radius);
+             padding: 15px;
+             background-color: white; /* Default background */
+             box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+             transition: background-color 0.2s ease;
+         }
+        #table-section tr:nth-child(even) { background-color: white; } /* Reset even row color */
+        #table-section tr:hover { background-color: #f1f1f1; } /* Default hover */
+
+         /* --- Color table row background in mobile (card view) by driver --- */
+         /* Apply the light background color to the entire row block */
+         #table-section tr.driver-1 { background-color: var(--driver-color-1-bg); }
+         #table-section tr.driver-2 { background-color: var(--driver-color-2-bg); }
+         #table-section tr.driver-3 { background-color: var(--driver-color-3-bg); }
+         #table-section tr.driver-4 { background-color: var(--driver-color-4-bg); }
+         #table-section tr.driver-5 { background-color: var(--driver-color-5-bg); }
+         /* Add rules for driver-6, driver-7, etc. */
+
+         /* Hover effect on mobile cards when driver class is applied */
+         #table-section tr.driver-1:hover { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
+         #table-section tr.driver-2:hover { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
+         #table-section tr.driver-3:hover { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
+         #table-section tr.driver-4:hover { background-color: color-mix(in srgb, var(--driver-color-4-bg), black 5%); }
+         #table-section tr.driver-5:hover { background-color: color-mix(in srgb, var(--driver-color-5-bg), black 5%); }
+         /* Add hover rules for driver-6, driver-7, etc. */
+
+
         #table-section td { display: flex; justify-content: space-between; align-items: center; text-align: right; font-size: 0.9rem; border-bottom: 1px dotted #eee; padding: 10px 5px; position: relative; min-height: auto; white-space: normal; }
         #table-section td::before { content: attr(data-label); font-weight: bold; color: var(--primary-color); margin-right: 10px; text-align: left; white-space: nowrap; }
         #table-section td:last-child { border-bottom: 0; }
         #table-section td.action-col { justify-content: center; padding-top: 15px; border-bottom: none; }
         #table-section td.action-col::before { display: none; }
         #table-section td.action-col button { padding: 8px 15px; font-size: 0.9rem; }
+
+        /* --- Styles de couleur par conducteur dans le Tableau Mobile --- */
+        /* Apply darker text color to the driver name in the cell */
+        td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-4 { color: var(--driver-color-4-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-5 { color: var(--driver-color-5-text); font-weight: 600; }
+        /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
+
 
         /* Adaptation Calendrier Mobile */
         .calendar-day {
@@ -635,17 +801,25 @@
             padding-top: 25px; /* Garder l'espace pour le numéro */
             font-size: 0.75rem;
         }
+        /* Calendar day background colors handled above (apply to all screen sizes) */
+        /* Calendar day hover styles handled above (apply to all screen sizes) */
+
+
         .calendar-day .day-number {
             font-size: 0.7rem;
-            top: 4px;
-            right: 5px;
+            top: 3px; /* Ajusté légèrement */
+            right: 4px; /* Ajusté légèrement */
         }
+         /* Today number background handled above */
+
         .calendar-day .trip-summary {
             font-size: 0.65rem;
             padding: 1px 4px;
             margin-top: 3px;
             max-width: 95%; /* Permettre un peu plus de largeur */
         }
+         /* Calendar summary text colors handled above (apply to all screen sizes) */
+
         .calendar-day.weekday-header {
             padding: 6px 2px;
             font-size: 0.7rem;
@@ -656,6 +830,11 @@
         #trips-for-day { padding: 12px; margin-top: 15px; }
          #trips-for-day li { font-size: 0.85rem; padding: 10px 5px; }
          #trips-for-day li strong { min-width: 60px; } /* Réduit */
+
+        /* Styles de couleur dans les détails en mobile */
+        /* List item left border color handled above (apply to all screen sizes) */
+        #trips-for-day li .driver-name { font-weight: 700; } /* Keep bold */
+        /* Driver name text color handled above (apply to all screen sizes) */
 
         /* Adaptation Formulaire Mobile */
         .action-buttons { flex-direction: column; gap: 10px; align-items: stretch; }
@@ -669,25 +848,38 @@
         h1 { font-size: 1.7rem; } h2 { font-size: 1.4rem; } h3 { font-size: 1.2rem; } h4 { font-size: 1.0rem; }
 
         #liste-trajets { padding: 10px; }
-        #table-section tr { padding: 10px; }
+        #table-section tr { padding: 10px; } /* Adjusted padding for smaller screens */
+        /* Table row background colors handled above */
         #table-section td { font-size: 0.85rem; }
+         /* Table cell driver text colors handled above */
+
 
         .calendar-day {
             min-height: 70px; /* Encore moins haut */
             padding-top: 22px; /* Ajuster espace numéro */
         }
+        /* Calendar day background colors handled above */
         .calendar-day .day-number {
             font-size: 0.65rem;
             top: 3px;
             right: 4px;
         }
+        /* Today number background handled above */
+
         .calendar-day .trip-summary {
             font-size: 0.6rem; /* Encore plus petit */
             padding: 1px 3px;
         }
+         /* Calendar summary text colors handled above */
+
         .calendar-day.weekday-header {
              font-size: 0.65rem;
         }
+
+        #trips-for-day li { padding-left: 10px; border-left-width: 4px; } /* Adjust padding/border width */
+         /* Driver details list item border colors handled above */
+         /* Driver name text color handled above */
+
 
         .notification { left: 10px; right: 10px; top: 10px; width: auto; min-width: 0; }
     }
@@ -818,7 +1010,9 @@
     <script>
         // -- Configuration Firebase --
         const firebaseConfig = {
-           apiKey: "AIzaSyBvBspabP-KImQ-Jb7cQsqRpYB-YN5Gr8A", // Remplacer par votre véritable API key
+            // !!! REMPLACER CETTE CLÉ PAR VOTRE CLÉ API RÉELLE !!!
+           apiKey: "AIzaSyBvBspabP-KImQ-Jb7cQsqRpYB-YN5Gr8A",
+           // ----------------------------------------------------
             authDomain: "suivi-covoiturage.firebaseapp.com",
             projectId: "suivi-covoiturage",
             storageBucket: "suivi-covoiturage.firebasestorage.app",
@@ -836,10 +1030,30 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // -- Constantes --
+        // -- Constantes & Mappings --
         const COLLECTION_TRAJETS = 'trajets';
-        const ADMIN_EMAIL = 'steve.duquesne@gmail.com'; // Email pour d'autres logiques potentielles (non utilisé pour edit/delete ici)
-        const EDITOR_EMAIL = 'steve.duquesne@gmail.com'; // Email spécifique pour les droits d'édition/suppression (Option 2)
+        const EDITOR_EMAIL = 'steve.duquesne@gmail.com'; // Email spécifique pour les droits d'édition/suppression
+
+        // MAPPING DES CONDUCTEURS VERS LES CLASSES CSS DE COULEUR
+        // !!! IMPORTANT : Mettez à jour cette liste avec les noms exacts de vos conducteurs
+        // et associez-leur les classes CSS définies dans le <style>
+        const driverColorClasses = {
+             "Steve": "driver-1",
+             "Marc": "driver-2",
+             "Julien": "driver-3",
+             "Charlie": "driver-4",
+             "Diana": "driver-5",
+             // Ajoutez d'autres conducteurs ici :
+             // "Nom Conducteur 6": "driver-6",
+             // "Nom Conducteur 7": "driver-7",
+             // ... etc ...
+        };
+        // Fonction utilitaire pour obtenir la classe conducteur
+        function getDriverClass(driverName) {
+             const cleanName = driverName?.trim();
+             return cleanName && driverColorClasses[cleanName] ? driverColorClasses[cleanName] : '';
+        }
+
 
         // -- Références aux éléments DOM --
         const dom = {
@@ -884,12 +1098,12 @@
 
         // -- Variables d'état --
         let currentView = 'my-trips'; // Vue par défaut
-        let trajetsUnsubscribe = null;
-        let currentCalendarDate = new Date();
-        let calendarTrips = [];
-        let allTripsDataCache = null;
-        let isFetchingStats = false;
-        let notificationTimeoutId = null;
+        let trajetsUnsubscribe = null; // Listener pour le tableau
+        let currentCalendarDate = new Date(); // Date affichée dans le calendrier
+        let calendarTrips = []; // Cache des trajets pour le mois du calendrier
+        let allTripsDataCache = null; // Cache pour les stats
+        let isFetchingStats = false; // Empêcher fetches multiples pour les stats
+        let notificationTimeoutId = null; // Pour cacher auto les notifications
 
         // -- Fonctions Utilitaires --
 
@@ -909,10 +1123,12 @@
             while (dom.filterYear.options.length > 1) {
                 dom.filterYear.remove(1);
             }
-            for (let year = currentYear; year >= currentYear - 5; year--) {
+            for (let year = currentYear + 1; year >= currentYear - 5; year--) { // Inclure l'année suivante
                 const option = new Option(year, year);
                 dom.filterYear.add(option);
             }
+             // Sélectionner l'année courante par défaut si possible
+             dom.filterYear.value = currentYear;
         }
 
         function addPassengerField(value = '') {
@@ -935,7 +1151,7 @@
                 const btn = row.querySelector('.remove-passenger-btn');
                 if (btn) btn.style.display = (rows.length > 1) ? 'flex' : 'none';
             });
-            // S'assurer qu'il y a toujours au moins un champ (même vide)
+            // S'assurer qu'il y a toujours au moins un champ (même vide) si tous étaient supprimés
             if (rows.length === 0) {
                 addPassengerField();
             }
@@ -1030,7 +1246,7 @@
                 const y = parseInt(year), m = parseInt(month);
                 // Assurer que le mois est sur 2 chiffres
                 const monthPadded = String(m).padStart(2,'0');
-                // Date de début: YYYY-MM-01
+                // Date de début: YYYY-MM-01T00:00:00
                 const start = `${y}-${monthPadded}-01`;
                 // Date de fin: Premier jour du mois suivant
                 const nextMonthDate = new Date(y, m, 1); // Mois JS 0-indexé, m est 1-indexé -> m = mois suivant
@@ -1039,7 +1255,7 @@
                 query = query.where('date', '>=', start).where('date', '<', end);
             } else if (year) {
                 const y = parseInt(year);
-                // Date de début: YYYY-01-01
+                // Date de début: YYYY-01-01T00:00:00
                 const start = `${y}-01-01`;
                 // Date de fin: Premier jour de l'année suivante
                 const end = `${y + 1}-01-01`;
@@ -1094,7 +1310,7 @@
 
         /**
          * Met à jour le contenu HTML de la table des trajets.
-         * Applique la logique de l'Option 2: Seul EDITOR_EMAIL peut voir les boutons modifier/supprimer.
+         * Applique la logique: Seul EDITOR_EMAIL peut voir les boutons modifier/supprimer.
          */
         function renderTrajetsTable(trajets) {
             console.log("renderTrajetsTable with", trajets.length, "trajets. Current view:", currentView);
@@ -1117,9 +1333,8 @@
             let html = `<table><thead><tr><th>Date</th><th>Conducteur</th><th>Passagers</th><th>Commentaire</th><th>Ajouté par</th><th>Actions</th></tr></thead><tbody>`;
             const user = auth.currentUser;
 
-            // --- Logique Option 2: Vérifier si l'utilisateur actuel est l'éditeur ---
+            // Vérifier si l'utilisateur actuel est l'éditeur
             const isEditor = user && user.email === EDITOR_EMAIL;
-            // -----------------------------------------------------------------------
 
             trajets.forEach(t => {
                 let dateStr = 'Date invalide';
@@ -1129,7 +1344,6 @@
                         dateStr = new Date(t.date + 'T00:00:00Z').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                     } else if (t.date) {
                         console.warn("Format de date non standard détecté:", t.date);
-                        // Essayer une conversion plus souple si besoin, mais YYYY-MM-DD est attendu
                          dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                          if (dateStr === "Invalid Date") dateStr = t.date; // Afficher tel quel si invalide
                     } else {
@@ -1140,23 +1354,23 @@
                     dateStr = t.date || 'N/A'; // Afficher la date brute ou N/A en cas d'erreur
                 }
 
-                // --- Logique Option 2: Générer les boutons seulement si l'utilisateur est l'éditeur ---
+                // Générer les boutons seulement si l'utilisateur est l'éditeur
                 const actions = isEditor
                     ? `<button class="btn-edit" data-id="${t.id}" title="Modifier"><i class="fas fa-edit"></i></button><button class="btn-delete" data-id="${t.id}" title="Supprimer"><i class="fas fa-trash"></i></button>`
                     : ''; // Pas de boutons si ce n'est pas l'éditeur
-                // ---------------------------------------------------------------------------------
 
                 const passengers = (t.passagers && Array.isArray(t.passagers) && t.passagers.length > 0)
                                     ? t.passagers.filter(p => p && String(p).trim()).map(p => `<span class="badge badge-passenger">${String(p).trim()}</span>`).join(' ')
-                                    : '<em>Aucun</em>';
-                // Utiliser ?? '' pour s'assurer que les badges sont générés même si vide après trim
-                const cleanPassengers = passengers.trim() === '' ? '<em>Aucun</em>' : passengers;
+                                    : ''; // Changed to empty string if none, will display 'Aucun' in HTML
 
+                const cleanPassengers = passengers.trim() === '' ? '<em>Aucun</em>' : passengers;
                 const addedBy = t.createdByName || t.lastModifiedByName || 'Inconnu';
+                const driverName = t.conducteur?.trim() || '?';
+                const driverClass = getDriverClass(driverName); // Obtenir la classe CSS du conducteur
 
                 html += `<tr>
                     <td data-label="Date">${dateStr}</td>
-                    <td data-label="Conducteur"><span class="badge badge-driver">${t.conducteur || '?'}</span></td>
+                    <td data-label="Conducteur" class="${driverClass}">${driverName}</td> <!-- Appliquer la classe conducteur ici -->
                     <td data-label="Passagers">${cleanPassengers}</td>
                     <td data-label="Commentaire">${t.commentaire || '-'}</td>
                     <td data-label="Ajouté par">${addedBy}</td>
@@ -1180,6 +1394,16 @@
                 console.error("Action button clicked but has no data-id attribute.");
                 return;
             }
+
+            // Vérifier si l'utilisateur a les droits d'édition (Option 2)
+            const user = auth.currentUser;
+            const canEdit = user && user.email === EDITOR_EMAIL;
+
+            if (!canEdit) {
+                 showNotification("Vous n'avez pas les permissions pour modifier ou supprimer des trajets.", true);
+                 return; // Arrêter si l'utilisateur n'est pas l'éditeur
+            }
+
 
             if (button.classList.contains('btn-edit')) {
                  console.log("Edit button clicked for ID:", id);
@@ -1208,20 +1432,29 @@
 
             for (let d = 1; d <= days; d++) {
                 const dateStr = `${y}-${String(m + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const trips = calendarTrips.filter(t => t.date === dateStr);
+                const tripsForDay = calendarTrips.filter(t => t.date === dateStr);
                 let summary = '';
-                if (trips.length > 0) {
+                let driverClassForDay = ''; // Classe conducteur pour le jour
+
+                if (tripsForDay.length > 0) {
                     // Compte total de personnes (conducteur + passagers valides)
-                    const people = trips.reduce((sum, t) => {
+                    const people = tripsForDay.reduce((sum, t) => {
                         const validPassengers = t.passagers?.filter(p => p && String(p).trim()).length || 0;
                         return sum + 1 + validPassengers; // +1 pour le conducteur
                     }, 0);
-                    const tripNoun = trips.length > 1 ? 'Trajets' : 'Trajet';
+                    const tripNoun = tripsForDay.length > 1 ? 'Trajets' : 'Trajet';
                     const peopleNoun = people > 1 ? 'pers.' : 'pers.';
-                    summary = `<div class="trip-summary" title="${trips.length} ${tripNoun}, ${people} ${peopleNoun}">${trips.length}T (${people}p)</div>`;
+                    summary = `<div class="trip-summary" title="${tripsForDay.length} ${tripNoun}, ${people} ${peopleNoun}">${tripsForDay.length}T (${people}p)</div>`;
+
+                     // Déterminer la classe conducteur pour le jour
+                     // Simple: prendre la classe du premier conducteur trouvé ce jour
+                     if (tripsForDay[0].conducteur) {
+                         driverClassForDay = getDriverClass(tripsForDay[0].conducteur);
+                     }
                 }
                 const isToday = dateStr === todayStr;
-                gridHTML += `<div class="calendar-day ${trips.length ? 'has-trip':''} ${isToday ? 'today':''}" data-date="${dateStr}">
+                // Appliquer la classe conducteur à l'élément .calendar-day
+                gridHTML += `<div class="calendar-day ${driverClassForDay} ${tripsForDay.length ? 'has-trip':''} ${isToday ? 'today':''}" data-date="${dateStr}">
                                 <span class="day-number">${d}</span>
                                 ${summary}
                              </div>`;
@@ -1232,8 +1465,11 @@
 
             dom.calendarGrid.innerHTML = gridHTML;
              // Ré-attacher l'écouteur de clic (ou s'assurer qu'il est déjà attaché au parent)
-             dom.calendarGrid.removeEventListener('click', handleCalendarClick); // Précaution
-             dom.calendarGrid.addEventListener('click', handleCalendarClick);
+             // S'assurer qu'un seul écouteur est attaché
+             if (!dom.calendarGrid.dataset.listenerAttached) {
+                dom.calendarGrid.addEventListener('click', handleCalendarClick);
+                dom.calendarGrid.dataset.listenerAttached = 'true'; // Marqueur
+             }
         }
 
         function handleCalendarClick(event) {
@@ -1254,7 +1490,9 @@
              let detailsHTML = '';
              try {
                  // Afficher la date cliquée en format lisible
-                 const dateObj = new Date(dateStr+'T00:00:00Z'); // Utiliser UTC
+                 // Utiliser la date locale du navigateur si la date stockée est YYYY-MM-DD sans T00:00:00Z
+                 const dateParts = dateStr.split('-').map(Number);
+                 const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); // Année, Mois (0-index), Jour
                  detailsHTML = `<h4>Détails pour le ${dateObj.toLocaleDateString('fr-FR', {weekday: 'long', day:'numeric', month:'long', year: 'numeric'})}</h4>`;
              } catch(e){
                  console.warn("Error formatting date for details:", dateStr, e);
@@ -1268,8 +1506,12 @@
                      const passengersStr = validPassengers?.length
                          ? validPassengers.map(p => String(p).trim()).join(', ')
                          : '<em>Aucun</em>';
+
+                     const driverName = t.conducteur?.trim() || '?';
+                     const driverClass = getDriverClass(driverName); // Classe CSS pour le conducteur
+
                      detailsHTML += `<li>
-                                         <div><strong>Conducteur : </strong> ${t.conducteur||'?'}</div>
+                                         <div><strong>Conducteur : </strong> <span class="driver-name ${driverClass}">${driverName}</span></div> <!-- Ajouter la classe ici -->
                                          <div><strong>Passagers : </strong> ${passengersStr}</div>
                                          ${t.commentaire ? `<div><strong>Note:</strong> ${t.commentaire}</div>` : ''}
                                      </li>`;
@@ -1291,17 +1533,17 @@
 
             const y = date.getFullYear(), m = date.getMonth();
             const startOfMonth = `${y}-${String(m+1).padStart(2,'0')}-01`;
-            // Pour la fin du mois, on prend le dernier jour (évite les soucis de fuseau horaire avec '<' le 1er du mois suivant)
+            // Pour la fin du mois, on inclut tout le dernier jour
             const lastDayOfMonth = new Date(y, m + 1, 0).getDate();
             const endOfMonth = `${y}-${String(m+1).padStart(2,'0')}-${String(lastDayOfMonth).padStart(2,'0')}`;
             console.log(`Querying trips between ${startOfMonth} and ${endOfMonth}`);
 
             try {
-                // Pas besoin de tri ici, on filtre par date dans renderCalendar
                 const snapshot = await db.collection(COLLECTION_TRAJETS)
                                          .where('date', '>=', startOfMonth)
                                          .where('date', '<=', endOfMonth)
-                                         .get();
+                                         .get(); // Utilise get() car pas besoin d'écouteur temps réel ici
+
                 calendarTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 console.log("Fetched", calendarTrips.length, "trips for the calendar month.");
                 renderCalendar(currentCalendarDate); // Afficher le calendrier avec les données
@@ -1397,18 +1639,18 @@
                     <p><strong>Nombre moyen de passagers (trajets avec passagers) :</strong> ${avgPassengersPerTripWithPassengers}</p>
                     <p><strong>Nombre moyen de passagers (tous trajets confondus) :</strong> ${avgPassengersPerTripAll}</p>
                     <hr>
-                    <h4>Top 5 Conducteurs :</h4>`;
+                    <h4>Classement Conducteurs :</h4>`; // Changed title to make it more general
 
                 if (sortedDrivers.length > 0) {
-                    statsHTML += `<ul>${sortedDrivers.slice(0, 5).map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`;
+                    statsHTML += `<ul>${sortedDrivers.map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`; // List all drivers
                 } else {
                     statsHTML += `<p><em>Aucun conducteur enregistré.</em></p>`;
                 }
 
-                statsHTML += `<h4>Top 5 Passagers :</h4>`;
+                statsHTML += `<h4>Classement Passagers :</h4>`; // Changed title
 
                 if (sortedPassengers.length > 0) {
-                    statsHTML += `<ul>${sortedPassengers.slice(0, 5).map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`;
+                    statsHTML += `<ul>${sortedPassengers.map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`; // List all passengers
                 } else {
                     statsHTML += `<p><em>Aucun passager enregistré.</em></p>`;
                 }
@@ -1554,7 +1796,18 @@
             if (user) {
                 data.lastModifiedByUid = user.uid;
                 data.lastModifiedByName = user.displayName || user.email; // Préférer displayName
+                // Ajouter les infos de création uniquement lors de l'ajout si elles n'existent pas
+                if (!trajetId) {
+                     data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                     data.createdByUid = user.uid;
+                     data.createdByName = user.displayName || user.email;
+                }
+            } else if (!trajetId) { // Si pas d'utilisateur et mode ajout, mettre un placeholder
+                 data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                 data.createdByUid = 'anonymous';
+                 data.createdByName = 'Anonyme';
             }
+
 
             // Désactiver le bouton et afficher un message de chargement
             dom.submitBtn.disabled = true;
@@ -1565,15 +1818,13 @@
 
             if (trajetId) { // Mode Mise à jour
                 console.log("Updating trajet with ID:", trajetId, " Data:", data);
+                 // Supprimer les champs createdBy lors de l'update pour ne pas les écraser
+                 delete data.createdByUid;
+                 delete data.createdByName;
+                 delete data.createdAt;
                 promise = db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
                 successMsg = "Trajet mis à jour avec succès !";
             } else { // Mode Ajout
-                // Ajouter les infos de création uniquement lors de l'ajout
-                data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                if (user) {
-                    data.createdByUid = user.uid;
-                    data.createdByName = user.displayName || user.email;
-                }
                 console.log("Adding new trajet. Data:", data);
                 promise = db.collection(COLLECTION_TRAJETS).add(data);
                 successMsg = "Nouveau trajet ajouté avec succès !";
@@ -1600,7 +1851,6 @@
             }).finally(() => {
                 // Réactiver le bouton et restaurer son texte initial, quel que soit le résultat
                 dom.submitBtn.disabled = false;
-                // Le texte est déjà géré par resetForm() en cas de succès, mais on le remet ici au cas où resetForm échoue ou n'est pas appelé
                 dom.submitBtn.innerHTML = dom.editIdInput.value ? 'Mettre à jour' : 'Enregistrer';
             });
         }
@@ -1638,6 +1888,10 @@
                        message = "La fenêtre de connexion a été fermée.";
                    } else if (error.code === 'auth/cancelled-popup-request') {
                        message = "Une autre fenêtre de connexion est déjà ouverte.";
+                   } else if (error.code === 'auth/account-exists-with-different-credential') {
+                        message = "Un compte avec cet email existe déjà avec un autre mode de connexion.";
+                   } else {
+                        message = "Erreur de connexion : " + error.message;
                    }
                    showNotification(message, true);
                });
@@ -1651,8 +1905,9 @@
             dom.authContainer.style.display = loggedIn ? 'none' : 'block';
             dom.contentContainer.style.display = loggedIn ? 'block' : 'none';
 
-            // Nettoyer l'ancien listener du tableau (sécurité)
+            // Nettoyer l'ancien listener du tableau (sécurité) et les écouteurs d'actions
             dom.listeTrajetsDiv.removeEventListener('click', handleTableActions);
+
 
             if (loggedIn) {
                 console.log("User details:", { uid: user.uid, displayName: user.displayName, email: user.email });
@@ -1719,12 +1974,13 @@
             // Utilisation de la délégation d'événements pour les boutons "moins"
             if (e.target.closest('.remove-passenger-btn')) {
                 const row = e.target.closest('.passenger-row');
-                // Ne pas supprimer s'il ne reste qu'un seul champ (on le vide plutôt)
-                if (dom.passengerContainer.querySelectorAll('.passenger-row').length > 1) {
+                 // S'assurer qu'on ne supprime pas le dernier champ, on le vide
+                 const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
+                 if (rows.length > 1) {
                     row.remove();
-                } else {
+                 } else {
                     row.querySelector('.passenger-input').value = ''; // Vider le dernier champ
-                }
+                 }
                 updatePassengerRemoveButtonsState(); // Mettre à jour l'état (qui peut réafficher un champ si nécessaire)
             }
         });
@@ -1750,6 +2006,9 @@
             dom.filterYear.value = '';
             dom.filterPerson.value = '';
             // Rafraîchir le tableau si on est sur une vue tableau
+            // S'assurer que le filtre année est réinitialisé à l'année courante
+             const currentYear = new Date().getFullYear();
+             dom.filterYear.value = currentYear; // Set back to current year
             if (currentView === 'my-trips' || currentView === 'all-trips') {
                 subscribeToTrajets();
             }
@@ -1767,12 +2026,14 @@
         dom.nextMonthBtn.addEventListener('click', goToNextMonth);
          // Les clics sur les jours du calendrier sont gérés par handleCalendarClick via délégation
 
-        // Message initial quand le DOM est prêt (pour le debug)
+        // Initialisation au chargement du DOM
         window.addEventListener('DOMContentLoaded', () => {
             console.log("DOM Ready. Waiting for Firebase Auth state...");
-            // On attend onAuthStateChanged pour l'initialisation principale
+            // L'initialisation principale se fait dans onAuthStateChanged
         });
 
+        // Initialisation des filtres année dès que possible
+        populateYearFilter();
     </script>
 </body>
 </html>
