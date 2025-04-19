@@ -838,7 +838,7 @@
 
         // -- Constantes --
         const COLLECTION_TRAJETS = 'trajets';
-        const ADMIN_EMAIL = 'flemag@gmail.com'; // Email pour d'autres logiques potentielles (non utilisé pour edit/delete ici)
+        const ADMIN_EMAIL = 'steve.duquesne@gmail.com'; // Email pour d'autres logiques potentielles (non utilisé pour edit/delete ici)
         const EDITOR_EMAIL = 'steve.duquesne@gmail.com'; // Email spécifique pour les droits d'édition/suppression (Option 2)
 
         // -- Références aux éléments DOM --
@@ -1269,8 +1269,8 @@
                          ? validPassengers.map(p => String(p).trim()).join(', ')
                          : '<em>Aucun</em>';
                      detailsHTML += `<li>
-                                         <div><strong>Cond.:</strong> ${t.conducteur||'?'}</div>
-                                         <div><strong>Pass.:</strong> ${passengersStr}</div>
+                                         <div><strong>Conducteur : </strong> ${t.conducteur||'?'}</div>
+                                         <div><strong>Passagers : </strong> ${passengersStr}</div>
                                          ${t.commentaire ? `<div><strong>Note:</strong> ${t.commentaire}</div>` : ''}
                                      </li>`;
                  });
