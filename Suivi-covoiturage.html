@@ -1,48 +1,69 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi Covoiturage</title>
+    <title>Co-Pilot - Covoiturage</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
     :root {
-        --primary-color: #4285F4;
-        --secondary-color: #34A853;
-        --danger-color: #EA4335;
-        --warning-color: #FBBC05;
-        --light-bg: #f8f9fa;
-        --dark-text: #333;
-        --light-text: #666;
+        /* Refined Color Palette */
+        --primary-color: #1a73e8; /* Google Blue */
+        --primary-dark: #0d47a1;
+        --secondary-color: #34a853; /* Google Green */
+        --secondary-dark: #1b5e20;
+        --accent-color: #fbbc05; /* Google Yellow/Orange for Warning/Highlight */
+        --danger-color: #ea4335; /* Google Red */
+        --success-color: var(--secondary-color); /* Alias */
+
+        /* Neutral Palette */
+        --background-color: #f8f9fa; /* Light Grey Background */
+        --surface-color: #ffffff; /* White for cards/containers */
+        --text-color-dark: #202124; /* Dark Grey */
+        --text-color-medium: #5f6368; /* Medium Grey */
+        --text-color-light: #9aa0a6; /* Light Grey */
+        --border-color: #dadce0; /* Light Border */
+        --shadow-color: rgba(0, 0, 0, 0.1);
+
         --border-radius: 8px;
-        --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        --card-shadow: 0 1px 3px var(--shadow-color);
+        --input-focus-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2); /* Primary blue focus */
 
-        /* --- Couleurs pour les Conducteurs --- */
-        /* Définissez ici une paire de couleurs (fond léger, texte plus foncé) par conducteur */
-        --driver-color-1-bg: #e1f5fe; /* Light Blue 50 */
-        --driver-color-1-text: #0288d1; /* Light Blue 700 */
 
-        --driver-color-2-bg: #e8f5e9; /* Green 50 */
-        --driver-color-2-text: #388e3c; /* Green 700 */
+        /* --- Couleurs pour les Conducteurs (Augmentées) --- */
+        /* Define a pair of colors (light background, darker text) per driver */
+        --driver-color-1-bg: #e8f0fe; /* Blue 50 */
+        --driver-color-1-text: #174ea6; /* Blue 800 */
 
-        --driver-color-3-bg: #fff3e0; /* Orange 50 */
-        --driver-color-3-text: #f57c00; /* Orange 700 */
+        --driver-color-2-bg: #e6f4ea; /* Green 50 */
+        --driver-color-2-text: #137333; /* Green 800 */
 
-        --driver-color-4-bg: #ede7f6; /* Deep Purple 50 */
-        --driver-color-4-text: #5e35b1; /* Deep Purple 700 */
+        --driver-color-3-bg: #fef7e0; /* Yellow 50 */
+        --driver-color-3-text: #7c4d00; /* Yellow 800 */
 
-        --driver-color-5-bg: #ffebee; /* Red 50 */
-        --driver-color-5-text: #d32f2f; /* Red 700 */
+        --driver-color-4-bg: #fce8e6; /* Red 50 */
+        --driver-color-4-text: #9b1a1a; /* Red 800 */
 
-        /* Ajoutez d'autres conducteurs selon vos besoins (copiez/collez les 2 lignes ci-dessus et ajustez X et les couleurs) */
-        /* --driver-color-6-bg: #fbe9e7; --driver-color-6-text: #e64a19;  */
-        /* --driver-color-7-bg: #fff8e1; --driver-color-7-text: #fbc02d;  */
-        /* --driver-color-8-bg: #fce4ec; --driver-color-8-text: #c2185b;  */
-        /* --driver-color-9-bg: #e0f2f7; --driver-color-9-text: #00838f;  */
-        /* --driver-color-10-bg: #e3f4fd; --driver-color-10-text: #039be5; */
-        /* ... etc ... */
+        --driver-color-5-bg: #eef0f4; /* Grey 50 */
+        --driver-color-5-text: #3c4043; /* Grey 800 */
+
+        --driver-color-6-bg: #f3e8fd; /* Purple 50 */
+        --driver-color-6-text: #681ca1; /* Purple 800 */
+
+        --driver-color-7-bg: #e1f7d8; /* Light Green 50 */
+        --driver-color-7-text: #34a853; /* Light Green 700 */
+
+        --driver-color-8-bg: #e0f7fa; /* Cyan 50 */
+        --driver-color-8-text: #007b83; /* Cyan 700 */
+
+        --driver-color-9-bg: #f9f0f2; /* Pink 50 */
+        --driver-color-9-text: #c51162; /* Pink 800 */
+
+        --driver-color-10-bg: #e8eaf6; /* Indigo 50 */
+        --driver-color-10-text: #3949ab; /* Indigo 700 */
 
 
          /* Couleurs de fallback pour le résumé si pas de conducteur spécifique */
@@ -62,157 +83,175 @@
     body {
         font-family: 'Roboto', sans-serif;
         line-height: 1.6;
-        color: var(--dark-text);
-        background-color: var(--light-bg);
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    h1 {
-        color: var(--primary-color);
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 2.5rem;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 10px;
-    }
-
-    h2 {
-        color: var(--secondary-color);
-        margin: 25px 0 15px;
-        font-size: 1.8rem;
-    }
-     /* Ensure title inside sections doesn't have extra top margin */
-     section > h2:first-child {
-         margin-top: 0;
-    }
-
-
-     h3 {
-        color: var(--primary-color);
-        margin: 20px 0 10px;
-        font-size: 1.5rem;
-     }
-    h4 {
-        color: var(--secondary-color);
-        margin: 15px 0 8px;
-        font-size: 1.2rem;
-    }
-
-    .container {
+        color: var(--text-color-dark);
+        background-color: var(--background-color);
+        padding: 0; /* Remove body padding */
+        min-height: 100vh; /* Ensure body fills viewport */
         display: flex;
-        flex-direction: column;
-        gap: 30px;
+        flex-direction: column; /* For footer tab bar */
     }
 
-    /* Styles pour la section d'authentification */
+    /* Header Bar */
+    header {
+        background-color: var(--surface-color);
+        box-shadow: 0 2px 4px var(--shadow-color);
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap; /* Allow wrapping */
+        position: sticky; /* Make header sticky */
+        top: 0;
+        z-index: 1000; /* Ensure it's on top */
+    }
+
+    .app-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+     .app-logo i {
+         font-size: 1.5rem;
+         color: var(--secondary-color);
+     }
+
     .auth-container {
         text-align: center;
         padding: 20px;
-        background-color: white;
+        background-color: var(--surface-color);
         border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
+        box-shadow: var(--card-shadow);
+        margin: 20px auto; /* Center container */
+        max-width: 400px;
+        width: 90%; /* Responsive width */
     }
 
     .profile-info {
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-        flex-wrap: wrap; /* Pour la responsivité */
-        justify-content: center; /* Centrer sur mobile si besoin */
-        background-color: white;
-        padding: 15px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end; /* Align to the right in the header */
     }
-
-    .profile-info img {
-        width: 50px;
-        height: 50px;
+    .profile-info > div {
+        font-weight: 500;
+        color: var(--text-color-medium);
+        flex-grow: 1; /* Allow name to take space */
+        text-align: right; /* Align name right */
+    }
+     .profile-info img {
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        object-fit: cover; /* Ensure image covers the area */
-    }
+        object-fit: cover;
+        border: 1px solid var(--border-color);
+     }
+
     #logout-btn {
         background-color: var(--danger-color);
         color: white;
         border: none;
         border-radius: 4px;
-        padding: 8px 15px;
+        padding: 6px 12px;
         cursor: pointer;
-        font-family: 'Roboto', sans-serif;
+        font-family: inherit; /* Use inherited font */
         transition: opacity 0.3s;
-        margin-left: auto; /* Pousse le bouton à droite */
-        font-size: 0.9rem; /* Match other buttons */
+        font-size: 0.9rem;
+        align-self: center; /* Vertically center */
     }
     #logout-btn:hover { opacity: 0.9; }
 
     .auth-message {
         margin-bottom: 20px;
-        font-weight: bold;
+        font-weight: 500;
+        color: var(--text-color-dark);
     }
 
     #login-btn {
-        background-color: white;
-        color: var(--dark-text);
-        border: 1px solid #ccc;
+        background-color: var(--surface-color);
+        color: var(--text-color-dark);
+        border: 1px solid var(--border-color);
         border-radius: 4px;
         padding: 10px 15px;
         display: inline-flex;
         align-items: center;
         gap: 10px;
         cursor: pointer;
-        font-family: 'Roboto', sans-serif;
+        font-family: inherit;
         font-weight: 500;
-        transition: background-color 0.3s;
+        transition: background-color 0.2s, box-shadow 0.2s;
     }
-    #login-btn:hover { background-color: #f1f1f1; }
+    #login-btn:hover {
+        background-color: #f8f8f8;
+        box-shadow: 0 1px 4px var(--shadow-color);
+    }
     #login-btn img { width: 18px; height: 18px; }
 
-    .content { display: none; } /* Caché jusqu'à connexion */
+    /* Main Content Area */
+    .main-content {
+        flex-grow: 1; /* Allow content to take remaining vertical space */
+        padding: 20px;
+        max-width: 1000px; /* Max width for content */
+        margin: 0 auto; /* Center content */
+        width: 100%;
+        padding-bottom: 80px; /* Space for fixed footer tab bar */
+    }
 
-    /* Styles pour le formulaire d'ajout de trajet */
-    #form-section { /* Appliquer styles à la section */
-        background-color: white;
+    .content > section {
+        background-color: var(--surface-color);
         padding: 25px;
         border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        margin-bottom: 30px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 20px;
+        display: none; /* Managed by JS */
+    }
+    .content > section.active { display: block; } /* Show active section */
+
+    h2 {
+        color: var(--primary-color);
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    h3 {
+        color: var(--secondary-color);
+        margin: 20px 0 10px;
+        font-size: 1.4rem;
+    }
+    h4 {
+        color: var(--text-color-dark);
+        margin: 15px 0 8px;
+        font-size: 1.1rem;
     }
 
-    #ajout-trajet-form { /* Plus besoin de background/padding sur le form lui-même */
-         margin-bottom: 0;
-         box-shadow: none;
-         padding: 0;
-    }
 
-
+    /* Form Styles */
     .form-row {
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
         margin-bottom: 20px;
     }
-
     .form-group {
-        flex: 1;
-        min-width: 250px;
+        flex: 1 1 250px; /* Grow, shrink, base 250px */
     }
-
     .form-group.small {
-        flex: 0.5;
-        min-width: 150px;
-    }
+         flex: 0 1 150px; /* Don't grow, shrink, base 150px */
+         min-width: 150px; /* Ensure minimum width */
+     }
 
     label {
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
-        color: var(--dark-text);
+        color: var(--text-color-medium);
     }
-
     .required-label::after {
         content: "*";
         color: var(--danger-color);
@@ -223,11 +262,13 @@
     textarea,
     select {
         width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
         border-radius: 4px;
-        font-family: 'Roboto', sans-serif;
+        font-family: inherit;
         font-size: 1rem;
+        color: var(--text-color-dark);
+        background-color: var(--surface-color);
     }
 
     input:focus,
@@ -235,36 +276,22 @@
     select:focus {
         outline: none;
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        box-shadow: var(--input-focus-shadow);
     }
 
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        margin-top: 15px;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-        width: auto;
-        margin-right: 10px;
-    }
-
-    /* Styles pour la gestion des passagers */
     .passenger-container {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 10px; /* Reduced gap */
         margin-bottom: 20px;
     }
-
     .passenger-row {
         display: flex;
-        gap: 15px;
+        gap: 10px; /* Reduced gap */
         align-items: center;
     }
-
     .passenger-row input {
-        flex: 1;
+        flex-grow: 1; /* Allow input to take available space */
     }
 
     .add-passenger-btn,
@@ -272,655 +299,706 @@
         background-color: var(--secondary-color);
         color: white;
         border: none;
-        width: 36px;
-        height: 36px;
+        width: 30px; /* Smaller buttons */
+        height: 30px; /* Smaller buttons */
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 1.2rem;
-        transition: background-color 0.3s;
-        flex-shrink: 0; /* Empêche le bouton de rétrécir */
+        font-size: 1rem; /* Smaller icon size */
+        transition: background-color 0.2s;
+        flex-shrink: 0;
     }
-
-    .add-passenger-btn:hover { background-color: #2d9348; }
+    .add-passenger-btn:hover { background-color: var(--secondary-dark); }
     .remove-passenger-btn { background-color: var(--danger-color); }
-    .remove-passenger-btn:hover { background-color: #d33426; }
+    .remove-passenger-btn:hover { background-color: #c53929; }
 
-    /* Styles pour les boutons d'action du formulaire */
     .action-buttons {
         display: flex;
-        gap: 15px;
+        gap: 10px; /* Reduced gap */
         justify-content: flex-end;
         margin-top: 20px;
-        flex-wrap: wrap; /* Permet le retour à la ligne sur petit écran */
+        flex-wrap: wrap;
     }
 
     button[type="submit"],
     button[type="reset"],
     #cancel-edit {
-        padding: 12px 20px;
+        padding: 10px 16px; /* Reduced padding */
         border-radius: 4px;
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 0.95rem; /* Slightly smaller text */
         font-weight: 500;
-        transition: background-color 0.3s, opacity 0.3s;
-        border: none; /* Assurer l'absence de bordure */
+        transition: background-color 0.2s, opacity 0.2s, box-shadow 0.2s;
+        border: none;
+        font-family: inherit;
+        display: inline-flex; /* Align text/icon */
+        align-items: center;
+        gap: 5px; /* Space for spinner */
     }
-    button[type="submit"]:disabled { /* Style pour bouton désactivé */
+    button[type="submit"]:disabled {
         opacity: 0.6;
         cursor: not-allowed;
     }
 
     button[type="submit"] { background-color: var(--primary-color); color: white; }
-    button[type="submit"]:hover:not(:disabled) { background-color: #3367d6; }
-    button[type="reset"] { background-color: #ddd; color: var(--dark-text); }
-    button[type="reset"]:hover { background-color: #ccc; }
-    #cancel-edit { background-color: var(--warning-color); color: white; display: none; }
-    #cancel-edit:hover { background-color: #f2b907; }
+    button[type="submit"]:hover:not(:disabled) { background-color: var(--primary-dark); }
+    button[type="reset"] { background-color: var(--border-color); color: var(--text-color-dark); }
+    button[type="reset"]:hover { background-color: #dcdfe3; }
+    #cancel-edit { background-color: var(--accent-color); color: white; display: none; }
+    #cancel-edit:hover { background-color: #f5b000; }
 
-    /* Styles pour la liste des trajets (tableau) */
-    #table-section { /* Section contenant le tableau */
-        background-color: white;
-        padding: 20px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        margin-bottom: 30px; /* Espace comme les autres sections */
-     }
 
-    #liste-trajets {
-        overflow-x: auto; /* Important pour le responsive */
-    }
-
+    /* Table Styles (Desktop) */
     .table-container {
-        overflow-x: auto; /* Assure le défilement horizontal si nécessaire */
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
+        overflow-x: auto;
         margin-top: 15px;
     }
+     #table-section table {
+         width: 100%;
+         border-collapse: collapse;
+         /* Remove margin-top as it's in .table-container */
+     }
 
     thead {
         background-color: var(--primary-color);
         color: white;
     }
 
-    th,
-    td {
+    th, td {
         padding: 12px 15px;
         text-align: left;
-        border-bottom: 1px solid #ddd;
-        white-space: nowrap; /* Empêche le retour à la ligne par défaut */
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
     }
 
     td[data-label="Passagers"],
     td[data-label="Commentaire"],
     td[data-label="Ajouté par"] {
-        white-space: normal; /* Permettre retour à la ligne pour ces cellules */
+        white-space: normal;
     }
 
-    tr:nth-child(even) { background-color: #f9f9f9; }
-    tr:hover { background-color: #f1f1f1; }
+    tbody tr:nth-child(even) { background-color: #fcfcfc; } /* Slightly different stripe */
+    tbody tr:hover { background-color: #f5f5f5; }
 
-    .table-icon { font-size: 1.2rem; margin-right: 10px; vertical-align: middle; }
+    .table-icon { font-size: 1rem; margin-right: 5px; vertical-align: middle; }
     .date-icon { color: var(--primary-color); }
-    .passenger-icon { color: var(--warning-color); }
+    .passenger-icon { color: var(--accent-color); }
 
-    .empty-message { text-align: center; padding: 30px; color: var(--light-text); font-style: italic; }
+    .empty-message { text-align: center; padding: 30px; color: var(--text-color-medium); font-style: italic; }
     .empty-message i { margin-right: 8px; }
     .error-message { color: var(--danger-color); font-weight: bold; }
 
-    /* Styles pour les filtres */
+    /* Filters Styles */
     .filters {
         display: flex;
         flex-wrap: wrap;
         gap: 15px;
         margin-bottom: 20px;
         padding: 15px;
-        background-color: #f1f1f1;
+        background-color: #e8e8e8; /* Slightly darker filter area */
         border-radius: var(--border-radius);
     }
+     .filter-group { display: flex; align-items: center; gap: 10px; flex: 1 1 20px; }
+     .filter-group label { margin-bottom: 0; white-space: nowrap; font-weight: 100; color: var(--text-color-dark); }
+     .filter-group select, .filter-group input { margin-bottom: 0; padding: 8px; flex-grow: 1; min-width: 100px; border-color: #ccc; }
+     .filter-group select:focus, .filter-group input:focus { border-color: var(--primary-color); box-shadow: var(--input-focus-shadow); }
 
-    .filter-group { display: flex; align-items: center; gap: 10px; flex: 1 1 200px; }
-    .filter-group label { margin-bottom: 0; white-space: nowrap; font-weight: 500; }
-    .filter-group select, .filter-group input { margin-bottom: 0; padding: 8px; flex-grow: 1; min-width: 100px; /* Empêche d'être trop petit */}
-
-    #reset-filters { background-color: #ddd; color: var(--dark-text); border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.3s; white-space: nowrap; }
+    #reset-filters { background-color: #ddd; color: var(--text-color-dark); border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.2s; white-space: nowrap; }
     #reset-filters:hover { background-color: #ccc; }
     #reset-filters i { margin-right: 5px; }
 
 
-    /* Styles pour le spinner de chargement */
+    /* Loading Spinner */
     .loading-spinner { text-align: center; padding: 30px; }
     .loading-spinner i { font-size: 2rem; color: var(--primary-color); animation: spin 1s infinite linear; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Styles pour les badges */
+    /* Badges */
     .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; margin-right: 5px; margin-bottom: 3px; line-height: 1.4; }
-    .badge-passenger { background-color: #fff3e0; color: var(--warning-color); }
+    .badge-passenger { background-color: #fff3e0; color: #e67c00; } /* Google Orange */
     .badge-absent { background-color: #ffebee; color: var(--danger-color); }
 
-
-    /* Styles pour le toggle de la vue */
-    .view-toggle { display: flex; margin-bottom: 20px; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .view-toggle button { flex: 1; padding: 10px; background-color: #f1f1f1; border: none; border-right: 1px solid #ddd; cursor: pointer; font-weight: 500; transition: all 0.3s ease; color: var(--dark-text); white-space: nowrap; font-size: 0.9rem; }
-    .view-toggle button:last-child { border-right: none; }
-    .view-toggle button.active { background-color: var(--primary-color); color: white; }
-    .view-toggle button:hover:not(.active) { background-color: #e0e0e0; }
-
-
-    /* Styles pour les actions dans le tableau */
-    .action-col { display: flex; gap: 8px; justify-content: center; white-space: nowrap; }
-    .btn-edit, .btn-delete { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: opacity 0.3s; color: white; line-height: 1; }
+    /* Table Actions */
+    .action-col { display: flex; gap: 6px; justify-content: center; white-space: nowrap; }
+    .btn-edit, .btn-delete { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: opacity 0.2s; color: white; line-height: 1; }
     .btn-edit i, .btn-delete i { vertical-align: middle; }
-    .btn-edit { background-color: var(--warning-color); }
+    .btn-edit { background-color: var(--accent-color); }
     .btn-delete { background-color: var(--danger-color); }
-    .btn-edit:hover, .btn-delete:hover { opacity: 0.85; }
+    .btn-edit:hover { opacity: 0.9; background-color: #fbbc05; } /* Darker hover */
+    .btn-delete:hover { opacity: 0.9; background-color: #d33426; }
 
-    /* Styles pour la notification */
-    .notification { position: fixed; top: 20px; right: 20px; background-color: var(--secondary-color); color: white; padding: 15px 20px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 1050; transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out; transform: translateY(-150%); opacity: 0; min-width: 280px; text-align: center; font-weight: 500; }
+
+    /* Notification */
+    .notification { position: fixed; top: 20px; right: 20px; background-color: var(--success-color); color: white; padding: 12px 18px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 1050; transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out; transform: translateY(-150%); opacity: 0; min-width: 250px; text-align: center; font-weight: 500; font-size: 0.95rem; }
     .notification.show { transform: translateY(0); opacity: 1; }
     .notification.error { background-color: var(--danger-color); }
 
+
     /*------------------------------------*/
-    /* Styles pour la vue calendrier     */
+    /* Styles for Tabs (View Toggle)     */
     /*------------------------------------*/
-    #calendar-section {
-        background-color: white;
-        padding: 20px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        margin-bottom: 30px;
+    .tab-bar {
+        display: flex;
+        background-color: var(--surface-color);
+        border-top: 1px solid var(--border-color);
+        width: 100%;
+        z-index: 999; /* Below sticky header, above content */
+        box-shadow: 0 -2px 4px var(--shadow-color);
+        position: fixed; /* Fixed bottom for mobile */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0; /* Remove default padding */
+        overflow-x: auto; /* Allow horizontal scroll on small screens */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+         scrollbar-width: none; /* Hide scrollbar */
+         -ms-overflow-style: none;  /* Hide scrollbar */
+    }
+    .tab-bar::-webkit-scrollbar { display: none; /* Hide scrollbar */ }
+
+
+    .tab-button {
+        flex: 1 1 auto; /* Allow growing/shrinking, auto base width */
+        display: flex;
+        flex-direction: column; /* Icon above text */
+        align-items: center;
+        justify-content: center;
+        padding: 10px 5px; /* Adjust padding */
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.7rem; /* Smaller text for tabs */
+        color: var(--text-color-medium);
+        transition: color 0.2s;
+        min-width: 70px; /* Minimum width for each tab */
+        text-align: center;
+        gap: 4px; /* Space between icon and text */
+        position: relative; /* For active indicator */
+    }
+     .tab-button i { font-size: 1.2rem; /* Icon size */ }
+
+    .tab-button:hover:not(.active) {
+        color: var(--text-color-dark);
     }
 
+    .tab-button.active {
+        color: var(--primary-color); /* Primary color for active tab */
+        font-weight: 500;
+    }
+    .tab-button.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px; /* Active indicator thickness */
+        background-color: var(--primary-color);
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+    }
+
+    /*------------------------------------*/
+    /* Calendar Styles                   */
+    /*------------------------------------*/
     .calendar-controls {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
     }
-
     .calendar-controls button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.4rem;
-        color: var(--primary-color);
-        padding: 5px 10px;
-        transition: color 0.2s;
+        background: none; border: none; cursor: pointer;
+        font-size: 1.2rem; color: var(--primary-color);
+        padding: 5px 10px; transition: color 0.2s;
     }
-    .calendar-controls button:hover {
-        color: var(--secondary-color);
-    }
-    .calendar-controls h3 {
-        margin: 0;
-        font-size: 1.4rem;
-        color: var(--dark-text);
-        text-align: center; /* Centrer titre mois */
-        flex-grow: 1; /* Prendre l'espace */
-    }
+    .calendar-controls button:hover { color: var(--primary-dark); }
+    .calendar-controls h3 { margin: 0; font-size: 1.3rem; color: var(--text-color-dark); text-align: center; flex-grow: 1; }
 
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 5px;
-        border: 1px solid #eee;
-        padding: 5px;
-        background-color: #fdfdfd;
+        gap: 4px; /* Smaller gap */
+        border: 1px solid var(--border-color);
+        padding: 4px; /* Smaller padding */
+        background-color: var(--background-color); /* Use background color */
+        border-radius: var(--border-radius);
     }
 
     .calendar-day {
-        border: 1px solid #f0f0f0;
-        padding: 5px; /* Padding général reduced */
-        padding-top: 28px; /* Space for number at top */
-        min-height: 100px;
+        border: 1px solid #eee;
+        padding: 5px;
+        padding-top: 25px; /* Space for number */
+        min-height: 90px; /* Adjusted min-height */
         display: flex;
         flex-direction: column;
-        align-items: center; /* Center content (summary) */
-        justify-content: flex-start; /* Align content top (after padding) */
-        cursor: pointer; /* Add pointer cursor for clickable days */
+        align-items: center;
+        justify-content: flex-start;
+        cursor: pointer;
         transition: background-color 0.2s, border-color 0.2s;
-        position: relative; /* For absolute positioning of number */
-        background-color: white; /* Default background for days without trips */
-        font-size: 0.85rem;
-        overflow: hidden; /* Ensure content like summary doesn't overflow */
+        position: relative;
+        background-color: var(--surface-color); /* Default white */
+        font-size: 0.8rem;
+        overflow: hidden;
+        border-radius: 4px; /* Rounded corners for days */
     }
-    /* Classe ajoutée en JS quand on clique sur un jour */
-    .calendar-day.selected {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px var(--primary-color) inset;
-    }
+    .calendar-day.selected { border-color: var(--primary-color); box-shadow: 0 0 0 2px var(--primary-color) inset; }
 
      /* --- Color calendar day background by driver --- */
-     /* Apply the light background color to the calendar cell itself */
      .calendar-day.driver-1 { background-color: var(--driver-color-1-bg); }
      .calendar-day.driver-2 { background-color: var(--driver-color-2-bg); }
      .calendar-day.driver-3 { background-color: var(--driver-color-3-bg); }
      .calendar-day.driver-4 { background-color: var(--driver-color-4-bg); }
      .calendar-day.driver-5 { background-color: var(--driver-color-5-bg); }
-     /* Add rules for driver-6, driver-7, etc. */
+     .calendar-day.driver-6 { background-color: var(--driver-color-6-bg); }
+     .calendar-day.driver-7 { background-color: var(--driver-color-7-bg); }
+     .calendar-day.driver-8 { background-color: var(--driver-color-8-bg); }
+     .calendar-day.driver-9 { background-color: var(--driver-color-9-bg); }
+     .calendar-day.driver-10 { background-color: var(--driver-color-10-bg); }
 
     .calendar-day:hover:not(.empty):not(.weekday-header) {
-        /* Keep subtle hover effect, maybe adjust based on base color */
-        background-color: #f7f7f7; /* Default hover */
-        border-color: #e0e0e0;
+        background-color: #f0f0f0; /* Default hover */
     }
-    /* Override default hover if driver class is present */
+    /* Override hover if driver class is present */
     .calendar-day.driver-1:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
     .calendar-day.driver-2:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
     .calendar-day.driver-3:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
     .calendar-day.driver-4:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-4-bg), black 5%); }
     .calendar-day.driver-5:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-5-bg), black 5%); }
-    /* Add hover rules for driver-6, driver-7, etc. */
+    .calendar-day.driver-6:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-6-bg), black 5%); }
+    .calendar-day.driver-7:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-7-bg), black 5%); }
+    .calendar-day.driver-8:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-8-bg), black 5%); }
+    .calendar-day.driver-9:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-9-bg), black 5%); }
+    .calendar-day.driver-10:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-10-bg), black 5%); }
 
 
-    /* Remove default has-trip background */
-    /* .calendar-day.has-trip { background-color: #e9f5e9; border-color: #c8e6c9; } */
-
-    .calendar-day.today {
-        border: 2px solid var(--primary-color);
-        font-weight: bold;
-        /* Today's background will be overridden by driver background if applicable */
-    }
-    .calendar-day.today .day-number {
-        color: var(--primary-color);
-        font-weight: 700;
-    }
+    .calendar-day.today { border: 2px solid var(--primary-color); font-weight: bold; }
+    .calendar-day.today .day-number { color: var(--primary-color); font-weight: 700; }
 
     .calendar-day .day-number {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: 500;
-        color: var(--light-text);
-        position: absolute; /* Position absolue par rapport à .calendar-day */
+        color: var(--text-color-medium);
+        position: absolute;
         top: 5px;
         right: 7px;
-        padding: 2px;
-        z-index: 1; /* Assure qu'il est au-dessus du contenu */
-        background-color: rgba(255, 255, 255, 0.7); /* Fond semi-transparent pour visibilité sur fond coloré */
+        padding: 2px 4px;
+        z-index: 1;
+        background-color: rgba(255, 255, 255, 0.8); /* More opaque */
         border-radius: 3px;
     }
-     .calendar-day.today .day-number { /* Ensure today number stays prominent */
-         background-color: rgba(255, 255, 255, 0.9);
-         box-shadow: 0 0 3px rgba(0,0,0,0.1);
-     }
+     .calendar-day.today .day-number { background-color: rgba(255, 255, 255, 0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
 
     .calendar-day .trip-summary {
-        /* Base styles */
-        font-size: 0.7rem;
+        font-size: 0.65rem; /* Slightly smaller summary text */
         line-height: 1.3;
-        padding: 2px 5px;
+        padding: 1px 4px;
         border-radius: 4px;
-        margin-top: 5px;
+        margin-top: 4px;
         display: inline-block;
-        max-width: 95%;
+        max-width: 98%; /* More width */
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         font-weight: 500;
-        margin-bottom: 3px;
+        /* Use transparent background, rely on cell color */
+        background-color: transparent;
+         /* Default/Fallback color */
+        color: var(--text-color-medium);
+    }
 
-        /* Default/Fallback colors */
-        background-color: var(--default-trip-bg);
-        color: var(--default-trip-text);
-    }
-
-    /* --- Styles de couleur par conducteur dans le calendrier (Résumé) --- */
-    /* Apply the darker text color from the driver palette to the summary text */
-    .calendar-day.driver-1 .trip-summary {
-        color: var(--driver-color-1-text);
-        background-color: transparent; /* Use cell background */
-    }
-    .calendar-day.driver-2 .trip-summary {
-        color: var(--driver-color-2-text);
-        background-color: transparent;
-    }
-    .calendar-day.driver-3 .trip-summary {
-        color: var(--driver-color-3-text);
-        background-color: transparent;
-    }
-    .calendar-day.driver-4 .trip-summary {
-        color: var(--driver-color-4-text);
-        background-color: transparent;
-    }
-    .calendar-day.driver-5 .trip-summary {
-        color: var(--driver-color-5-text);
-        background-color: transparent;
-    }
-    /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
+    /* --- Styles de couleur par conducteur dans le calendrier (Résumé Text) --- */
+    .calendar-day.driver-1 .trip-summary { color: var(--driver-color-1-text); }
+    .calendar-day.driver-2 .trip-summary { color: var(--driver-color-2-text); }
+    .calendar-day.driver-3 .trip-summary { color: var(--driver-color-3-text); }
+    .calendar-day.driver-4 .trip-summary { color: var(--driver-color-4-text); }
+    .calendar-day.driver-5 .trip-summary { color: var(--driver-color-5-text); }
+    .calendar-day.driver-6 .trip-summary { color: var(--driver-color-6-text); }
+    .calendar-day.driver-7 .trip-summary { color: var(--driver-color-7-text); }
+    .calendar-day.driver-8 .trip-summary { color: var(--driver-color-8-text); }
+    .calendar-day.driver-9 .trip-summary { color: var(--driver-color-9-text); }
+    .calendar-day.driver-10 .trip-summary { color: var(--driver-color-10-text); }
 
 
-    .calendar-day.empty {
-        background-color: #fafafa;
-        cursor: default; /* Default cursor for non-clickable days */
-        border-color: #f5f5f5;
-    }
-    .calendar-day.empty:hover { background-color: #fafafa; }
+    .calendar-day.empty { background-color: #fcfcfc; cursor: default; border-color: #f5f5f5; }
+    .calendar-day.empty:hover { background-color: #fcfcfc; }
 
     .calendar-day.weekday-header {
-        font-weight: bold;
-        text-align: center;
+        font-weight: bold; text-align: center;
         padding: 8px 5px;
-        background-color: #f1f1f1;
-        border: none;
-        border-bottom: 1px solid #ddd;
-        min-height: auto;
-        cursor: default; /* Default cursor for headers */
-        color: var(--light-text);
-        font-size: 0.75rem;
-        position: relative; /* Reset position */
-        padding-top: 8px; /* Reset padding */
+        background-color: #e8e8e8; /* Match filter background */
+        border: none; border-bottom: 1px solid var(--border-color);
+        min-height: auto; cursor: default;
+        color: var(--text-color-dark); /* Darker header text */
+        font-size: 0.7rem; /* Slightly smaller header */
+        position: relative; padding-top: 8px;
+        border-radius: 0; /* Remove roundness from headers */
     }
-    .calendar-day.weekday-header:hover { background-color: #f1f1f1; }
+    .calendar-day.weekday-header:hover { background-color: #e8e8e8; }
 
     #trips-for-day {
-        background-color: #f9f9f9;
+        background-color: #f1f3f4; /* Google Light Grey */
         padding: 15px;
         border-radius: var(--border-radius);
         box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         margin-top: 20px;
-        border: 1px solid #eee;
-        min-height: 100px; /* Hauteur minimale pour voir le message par défaut */
+        border: 1px solid var(--border-color);
+        min-height: 100px;
     }
-    #trips-for-day h4 {
-        color: var(--secondary-color);
-        margin-bottom: 15px;
-        margin-top: 0;
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 8px;
-        font-size: 1.1rem;
-    }
+    #trips-for-day h4 { color: var(--primary-color); margin-bottom: 12px; margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 1.1rem; }
     #trips-for-day ul { list-style: none; padding: 0; }
     #trips-for-day li {
-        padding: 12px 5px;
-        border-bottom: 1px solid #eee;
+        padding: 10px 5px; /* Reduced padding */
+        border-bottom: 1px solid #e0e0e0; /* Lighter separator */
         font-size: 0.9rem;
         line-height: 1.5;
-        /* Add space for left border */
-         padding-left: 15px; /* Initial padding-left */
-         border-left: 5px solid transparent; /* Default transparent border */
-         transition: border-left-color 0.2s ease;
+        padding-left: 15px;
+        border-left: 5px solid transparent;
+        transition: border-left-color 0.2s ease;
     }
-    #trips-for-day li div { margin-bottom: 4px; } /* Espace entre lignes de détail */
+    #trips-for-day li div { margin-bottom: 3px; } /* Reduced space */
     #trips-for-day li strong {
-        color: var(--primary-color); /* Keep label color consistent */
+        color: var(--text-color-dark); /* Keep label color consistent */
         display: inline-block;
-        min-width: 80px; /* Adjusted width for labels like "Conducteur" */
+        min-width: 80px;
         margin-right: 10px;
         font-weight: 500;
     }
 
-    /* --- Styles de couleur par conducteur dans le calendrier (Détails) --- */
-    /* Apply colored left border to the list item */
+    /* --- Styles de couleur par conducteur dans le calendrier (Détails Border & Text) --- */
      #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); }
      #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); }
      #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); }
      #trips-for-day li.driver-4 { border-left-color: var(--driver-color-4-text); }
      #trips-for-day li.driver-5 { border-left-color: var(--driver-color-5-text); }
-     /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
+     #trips-for-day li.driver-6 { border-left-color: var(--driver-color-6-text); }
+     #trips-for-day li.driver-7 { border-left-color: var(--driver-color-7-text); }
+     #trips-for-day li.driver-8 { border-left-color: var(--driver-color-8-text); }
+     #trips-for-day li.driver-9 { border-left-color: var(--driver-color-9-text); }
+     #trips-for-day li.driver-10 { border-left-color: var(--driver-color-10-text); }
 
-    /* Color the driver name text in the detail list item */
-    #trips-for-day li .driver-name {
-        font-weight: 700; /* Rendre le nom du conducteur en gras */
-        /* Default color */
-        color: var(--dark-text);
-    }
+    #trips-for-day li .driver-name { font-weight: 700; }
      #trips-for-day li .driver-name.driver-1 { color: var(--driver-color-1-text); }
      #trips-for-day li .driver-name.driver-2 { color: var(--driver-color-2-text); }
      #trips-for-day li .driver-name.driver-3 { color: var(--driver-color-3-text); }
      #trips-for-day li .driver-name.driver-4 { color: var(--driver-color-4-text); }
      #trips-for-day li .driver-name.driver-5 { color: var(--driver-color-5-text); }
-     /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
-
+     #trips-for-day li .driver-name.driver-6 { color: var(--driver-color-6-text); }
+     #trips-for-day li .driver-name.driver-7 { color: var(--driver-color-7-text); }
+     #trips-for-day li .driver-name.driver-8 { color: var(--driver-color-8-text); }
+     #trips-for-day li .driver-name.driver-9 { color: var(--driver-color-9-text); }
+     #trips-for-day li .driver-name.driver-10 { color: var(--driver-color-10-text); }
 
     #trips-for-day li:last-child { border-bottom: none; }
-    #trips-for-day p { /* Message par défaut / aucun trajet */
-        color: var(--light-text);
-        font-style: italic;
-        text-align: center;
-        padding: 20px 0; /* Plus de padding */
-    }
+    #trips-for-day p { color: var(--text-color-medium); font-style: italic; text-align: center; padding: 20px 0; }
+
 
     /*------------------------------------*/
-    /* Styles pour la section statistiques */
+    /* Statistics Styles                 */
     /*------------------------------------*/
-    #stats-section { background-color: white; padding: 25px; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 30px; }
-    #stats-content p { margin-bottom: 12px; line-height: 1.6; font-size: 0.95rem; }
+    #stats-content { color: var(--text-color-dark); }
+    #stats-content p { margin-bottom: 10px; line-height: 1.5; font-size: 0.9rem; }
     #stats-content strong { color: var(--primary-color); font-weight: 500; }
-    #stats-content hr { border: 0; height: 1px; background-color: #eee; margin: 25px 0; }
+    #stats-content hr { border: 0; height: 1px; background-color: var(--border-color); margin: 20px 0; }
     #stats-content ul { list-style: none; padding-left: 0; margin-bottom: 15px; }
-    #stats-content li { margin-bottom: 8px; color: var(--dark-text); padding-left: 20px; position: relative; font-size: 0.9rem; }
-    #stats-content li::before { content: "\f005"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 0; top: 1px; color: var(--warning-color); font-size: 0.8rem; }
-    #stats-content h4 + p, #stats-content h4 + ul { font-style: italic; color: var(--light-text); padding-left: 5px; }
+    #stats-content li { margin-bottom: 6px; color: var(--text-color-dark); padding-left: 20px; position: relative; font-size: 0.9rem; }
+    #stats-content li::before { content: "\f005"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 0; top: 2px; color: var(--accent-color); font-size: 0.8rem; }
+    #stats-content h4 { color: var(--secondary-color); margin-top: 20px; }
+    #stats-content h4 + p, #stats-content h4 + ul { font-style: italic; color: var(--text-color-medium); padding-left: 5px; }
 
 
-    .logo-container { text-align: center; }
-    .google-logo { font-size: 40px; font-weight: bold; font-family: Arial, sans-serif; background: conic-gradient( from -20deg at 38% 59%, #DB4437 0deg 90deg, #4285F4 90deg 180deg, #0F9D58 180deg 270deg, #F4B400 270deg 360deg ); -webkit-background-clip: text; color: transparent; display: inline-block; line-height: 1; }
-
-    /* --- Styles de couleur par conducteur dans le Tableau (Vue Bureau) --- */
-    /* Apply color to the text of the driver cell */
-    td[data-label="Conducteur"] {
-        color: var(--dark-text); /* Keep default text color */
-        font-weight: normal; /* Reset default font-weight */
-    }
-    /* Text color only in desktop view */
-    @media (min-width: 768px) {
-        td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 600; }
-        td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 600; }
-        td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 600; }
-        td[data-label="Conducteur"].driver-4 { color: var(--driver-color-4-text); font-weight: 600; }
-        td[data-label="Conducteur"].driver-5 { color: var(--driver-color-5-text); font-weight: 600; }
-        /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
-    }
-
-
-
-    /* --- Media Queries pour l'optimisation Mobile --- */
-
-    @media (max-width: 992px) {
-        body { padding: 15px; font-size: 15px; }
-        h1 { font-size: 2rem; } h2 { font-size: 1.6rem; } h3 { font-size: 1.3rem; } h4 { font-size: 1.1rem; }
-
-        .form-row { flex-direction: column; gap: 15px; }
-        .filters { flex-direction: column; align-items: stretch; }
-        .filter-group { width: 100%; flex-direction: column; align-items: flex-start; gap: 5px; flex-basis: auto; }
-        .filter-group select, .filter-group input { width: 100%; }
-        #reset-filters { width: auto; align-self: flex-start; margin-top: 10px; }
-
-        .profile-info { flex-direction: column; align-items: center; text-align: center; }
-        #logout-btn { margin-top: 10px; margin-left: 0; display: block; margin: 10px auto 0; width: fit-content; }
-
-        .view-toggle { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px; justify-content: flex-start; border-radius: 4px; }
-        .view-toggle button { flex: 0 0 auto; white-space: nowrap; font-size: 0.85rem; padding: 10px 15px; }
-        .container { gap: 20px; }
-    }
-
+    /*------------------------------------*/
+    /* Mobile-specific adjustments      */
+    /*------------------------------------*/
     @media (max-width: 767px) {
-        body { font-size: 14px; }
-        /* Adaptation Tableau Mobile (Vue Carte) */
+        body { padding-bottom: 60px; } /* Space for fixed tab bar */
+        header { padding: 10px 15px; }
+        .app-title { font-size: 1.5rem; }
+        .profile-info > div { text-align: center; } /* Center name on mobile */
+        #logout-btn { margin-top: 10px; } /* Space below name */
+         .profile-info { flex-direction: column; align-items: center; }
+
+        .main-content { padding: 15px; padding-bottom: 70px; } /* Adjust padding */
+        .content > section { padding: 20px; }
+        h2 { font-size: 1.6rem; margin-bottom: 15px; }
+
+        /* Table Card View */
         #table-section table { border: 0; }
         #table-section thead { display: none; }
         #table-section tr {
              display: block;
              margin-bottom: 15px;
-             border: 1px solid #e0e0e0;
+             border: 1px solid var(--border-color);
              border-radius: var(--border-radius);
              padding: 15px;
-             background-color: white; /* Default background */
-             box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+             background-color: var(--surface-color);
+             box-shadow: var(--card-shadow);
              transition: background-color 0.2s ease;
          }
-        #table-section tr:nth-child(even) { background-color: white; } /* Reset even row color */
-        #table-section tr:hover { background-color: #f1f1f1; } /* Default hover */
+        #table-section tr:nth-child(even) { background-color: var(--surface-color); } /* Reset stripe */
+        #table-section tr:hover { background-color: #f5f5f5; } /* Default hover */
 
          /* --- Color table row background in mobile (card view) by driver --- */
-         /* Apply the light background color to the entire row block */
-         #table-section tr.driver-1 { background-color: var(--driver-color-1-bg); }
-         #table-section tr.driver-2 { background-color: var(--driver-color-2-bg); }
-         #table-section tr.driver-3 { background-color: var(--driver-color-3-bg); }
-         #table-section tr.driver-4 { background-color: var(--driver-color-4-bg); }
-         #table-section tr.driver-5 { background-color: var(--driver-color-5-bg); }
-         /* Add rules for driver-6, driver-7, etc. */
+         .table-container tr.driver-1 { background-color: var(--driver-color-1-bg); }
+         .table-container tr.driver-2 { background-color: var(--driver-color-2-bg); }
+         .table-container tr.driver-3 { background-color: var(--driver-color-3-bg); }
+         .table-container tr.driver-4 { background-color: var(--driver-color-4-bg); }
+         .table-container tr.driver-5 { background-color: var(--driver-color-5-bg); }
+         .table-container tr.driver-6 { background-color: var(--driver-color-6-bg); }
+         .table-container tr.driver-7 { background-color: var(--driver-color-7-bg); }
+         .table-container tr.driver-8 { background-color: var(--driver-color-8-bg); }
+         .table-container tr.driver-9 { background-color: var(--driver-color-9-bg); }
+         .table-container tr.driver-10 { background-color: var(--driver-color-10-bg); }
 
          /* Hover effect on mobile cards when driver class is applied */
-         #table-section tr.driver-1:hover { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
-         #table-section tr.driver-2:hover { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
-         #table-section tr.driver-3:hover { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
-         #table-section tr.driver-4:hover { background-color: color-mix(in srgb, var(--driver-color-4-bg), black 5%); }
-         #table-section tr.driver-5:hover { background-color: color-mix(in srgb, var(--driver-color-5-bg), black 5%); }
-         /* Add hover rules for driver-6, driver-7, etc. */
+         .table-container tr.driver-1:hover { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
+         .table-container tr.driver-2:hover { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
+         .table-container tr.driver-3:hover { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
+         .table-container tr.driver-4:hover { background-color: color-mix(in srgb, var(--driver-color-4-bg), black 5%); }
+         .table-container tr.driver-5:hover { background-color: color-mix(in srgb, var(--driver-color-5-bg), black 5%); }
+         .table-container tr.driver-6:hover { background-color: color-mix(in srgb, var(--driver-color-6-bg), black 5%); }
+         .table-container tr.driver-7:hover { background-color: color-mix(in srgb, var(--driver-color-7-bg), black 5%); }
+         .table-container tr.driver-8:hover { background-color: color-mix(in srgb, var(--driver-color-8-bg), black 5%); }
+         .table-container tr.driver-9:hover { background-color: color-mix(in srgb, var(--driver-color-9-bg), black 5%); }
+         .table-container tr.driver-10:hover { background-color: color-mix(in srgb, var(--driver-color-10-bg), black 5%); }
 
 
-        #table-section td { display: flex; justify-content: space-between; align-items: center; text-align: right; font-size: 0.9rem; border-bottom: 1px dotted #eee; padding: 10px 5px; position: relative; min-height: auto; white-space: normal; }
-        #table-section td::before { content: attr(data-label); font-weight: bold; color: var(--primary-color); margin-right: 10px; text-align: left; white-space: nowrap; }
+        #table-section td { display: flex; justify-content: space-between; align-items: center; text-align: right; font-size: 0.9rem; border-bottom: 1px dotted #e0e0e0; padding: 8px 5px; position: relative; white-space: normal; }
+        #table-section td::before { content: attr(data-label); font-weight: bold; color: var(--primary-color); margin-right: 10px; text-align: left; white-space: nowrap; flex-shrink: 0; /* Prevent label shrinking */ }
         #table-section td:last-child { border-bottom: 0; }
-        #table-section td.action-col { justify-content: center; padding-top: 15px; border-bottom: none; }
+        #table-section td.action-col { justify-content: center; padding-top: 12px; border-bottom: none; }
         #table-section td.action-col::before { display: none; }
-        #table-section td.action-col button { padding: 8px 15px; font-size: 0.9rem; }
+        #table-section td.action-col button { padding: 6px 12px; font-size: 0.85rem; }
 
         /* --- Styles de couleur par conducteur dans le Tableau Mobile --- */
         /* Apply darker text color to the driver name in the cell */
+        td[data-label="Conducteur"] { font-weight: normal; } /* Reset desktop bold */
         td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 600; }
         td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 600; }
         td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 600; }
         td[data-label="Conducteur"].driver-4 { color: var(--driver-color-4-text); font-weight: 600; }
         td[data-label="Conducteur"].driver-5 { color: var(--driver-color-5-text); font-weight: 600; }
-        /* Ajoutez des règles similaires pour driver-6, driver-7, etc. */
+        td[data-label="Conducteur"].driver-6 { color: var(--driver-color-6-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-7 { color: var(--driver-color-7-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-8 { color: var(--driver-color-8-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-9 { color: var(--driver-color-9-text); font-weight: 600; }
+        td[data-label="Conducteur"].driver-10 { color: var(--driver-color-10-text); font-weight: 600; }
 
 
-        /* Adaptation Calendrier Mobile */
-        .calendar-day {
-            min-height: 80px; /* Un peu moins haut */
-            padding: 4px; /* Moins de padding général */
-            padding-top: 25px; /* Garder l'espace pour le numéro */
-            font-size: 0.75rem;
-        }
-        /* Calendar day background colors handled above (apply to all screen sizes) */
-        /* Calendar day hover styles handled above (apply to all screen sizes) */
-
-
-        .calendar-day .day-number {
-            font-size: 0.7rem;
-            top: 3px; /* Ajusté légèrement */
-            right: 4px; /* Ajusté légèrement */
-        }
-         /* Today number background handled above */
-
-        .calendar-day .trip-summary {
-            font-size: 0.65rem;
-            padding: 1px 4px;
-            margin-top: 3px;
-            max-width: 95%; /* Permettre un peu plus de largeur */
-        }
-         /* Calendar summary text colors handled above (apply to all screen sizes) */
-
-        .calendar-day.weekday-header {
-            padding: 6px 2px;
-            font-size: 0.7rem;
-            padding-top: 6px; /* Reset padding */
-        }
-         .calendar-controls h3 { font-size: 1.1rem; }
-         .calendar-controls button { font-size: 1.2rem; }
+        /* Calendar adjustments */
+        .calendar-day { min-height: 80px; padding-top: 22px; font-size: 0.75rem; }
+        .calendar-day .day-number { font-size: 0.65rem; top: 3px; right: 4px; }
+        .calendar-day .trip-summary { font-size: 0.6rem; padding: 1px 3px; margin-top: 3px; }
+        .calendar-day.weekday-header { font-size: 0.6rem; padding: 6px 2px; }
+        .calendar-controls h3 { font-size: 1.1rem; }
+        .calendar-controls button { font-size: 1.1rem; padding: 5px 8px; }
         #trips-for-day { padding: 12px; margin-top: 15px; }
-         #trips-for-day li { font-size: 0.85rem; padding: 10px 5px; }
-         #trips-for-day li strong { min-width: 60px; } /* Réduit */
+        #trips-for-day li { font-size: 0.85rem; padding: 8px 5px; padding-left: 12px; border-left-width: 4px; }
+        #trips-for-day li strong { min-width: 60px; }
 
-        /* Styles de couleur dans les détails en mobile */
-        /* List item left border color handled above (apply to all screen sizes) */
-        #trips-for-day li .driver-name { font-weight: 700; } /* Keep bold */
-        /* Driver name text color handled above (apply to all screen sizes) */
+        /* Form adjustments */
+         .form-row { gap: 15px; }
+         .form-group { flex: 1 1 100%; min-width: auto; } /* Stack fields */
+         .form-group.small { flex: 1 1 100%; min-width: auto; } /* Stack small fields */
+         .action-buttons { justify-content: center; gap: 10px; }
+         .action-buttons button { width: 100%; max-width: 300px; } /* Max width for buttons */
 
-        /* Adaptation Formulaire Mobile */
-        .action-buttons { flex-direction: column; gap: 10px; align-items: stretch; }
-        .action-buttons button { width: 100%; padding: 12px 15px; font-size: 1rem; }
-        #form-section { padding: 20px; }
-        .passenger-row input { font-size: 0.9rem; }
+        /* Filter adjustments */
+        .filters { flex-direction: column; gap: 10px; padding: 12px; }
+        .filter-group { flex-direction: column; align-items: flex-start; gap: 5px; }
+        .filter-group select, .filter-group input { width: 100%; }
+        #reset-filters { align-self: stretch; }
+
+        /* Notification adjustments */
+         .notification { top: auto; bottom: 70px; left: 10px; right: 10px; width: auto; min-width: auto; }
+
     }
 
+    /* Adjustments for smaller mobile screens */
     @media (max-width: 480px) {
-        body { padding: 10px; font-size: 13px; }
-        h1 { font-size: 1.7rem; } h2 { font-size: 1.4rem; } h3 { font-size: 1.2rem; } h4 { font-size: 1.0rem; }
+         header { padding: 8px 10px; }
+         .app-title { font-size: 1.3rem; }
+         .app-logo i { font-size: 1.3rem; }
+         .profile-info { gap: 8px; }
+         .profile-info img { width: 35px; height: 35px; }
+         .profile-info > div { font-size: 0.9rem; }
+         #logout-btn { padding: 5px 10px; font-size: 0.85rem; }
 
-        #liste-trajets { padding: 10px; }
-        #table-section tr { padding: 10px; } /* Adjusted padding for smaller screens */
-        /* Table row background colors handled above */
-        #table-section td { font-size: 0.85rem; }
-         /* Table cell driver text colors handled above */
+         .main-content { padding: 10px; padding-bottom: 65px; } /* Adjust padding */
+         .content > section { padding: 15px; margin-bottom: 15px;}
+         h2 { font-size: 1.4rem; margin-bottom: 12px; }
+
+         .auth-container { padding: 15px; }
+         #login-btn { padding: 8px 12px; font-size: 0.9rem; }
+
+         /* Table Card View */
+         #table-section tr { padding: 10px; margin-bottom: 10px; }
+         #table-section td { padding: 6px 5px; font-size: 0.8rem; }
+         #table-section td::before { margin-right: 8px; font-size: 0.8rem; }
+         #table-section td.action-col { padding-top: 10px; }
+         #table-section td.action-col button { padding: 5px 10px; font-size: 0.8rem; }
 
 
-        .calendar-day {
-            min-height: 70px; /* Encore moins haut */
-            padding-top: 22px; /* Ajuster espace numéro */
+         /* Calendar adjustments */
+        .calendar-day { min-height: 60px; padding-top: 18px; font-size: 0.7rem; }
+        .calendar-day .day-number { font-size: 0.6rem; top: 2px; right: 3px; padding: 1px 3px; }
+        .calendar-day .trip-summary { font-size: 0.55rem; margin-top: 2px; padding: 0 2px; }
+        .calendar-day.weekday-header { font-size: 0.55rem; padding: 5px 1px; }
+        .calendar-controls h3 { font-size: 1rem; }
+        .calendar-controls button { font-size: 1rem; padding: 4px 6px; }
+
+        #trips-for-day { padding: 10px; margin-top: 10px; }
+        #trips-for-day h4 { font-size: 1rem; padding-bottom: 4px; margin-bottom: 8px;}
+        #trips-for-day li { font-size: 0.8rem; padding: 6px 4px; padding-left: 10px; border-left-width: 3px;}
+        #trips-for-day li strong { min-width: 50px; margin-right: 8px; }
+        #trips-for-day p { padding: 15px 0;}
+
+
+         /* Form adjustments */
+         .passenger-row input { font-size: 0.9rem; }
+         .add-passenger-btn, .remove-passenger-btn { width: 28px; height: 28px; font-size: 0.9rem; }
+         .action-buttons button { padding: 10px 12px; font-size: 0.9rem; }
+
+         /* Tab bar adjustments */
+         .tab-button { font-size: 0.65rem; min-width: 60px; padding: 8px 3px;}
+         .tab-button i { font-size: 1.1rem;}
+          .notification { bottom: 65px; }
+    }
+
+    /* Desktop specific adjustments (larger screens) */
+    @media (min-width: 768px) {
+        body { padding: 0; } /* Remove body padding */
+        header { padding: 15px 40px; } /* More padding */
+         .main-content { padding: 30px; } /* More padding */
+
+        .auth-container { margin: 50px auto; } /* Larger margin when not in header */
+
+        .app-title { font-size: 2rem; }
+         .app-logo i { font-size: 1.8rem; }
+        .profile-info { flex-direction: row; align-items: center; justify-content: flex-end; gap: 15px; } /* Align in a row */
+        .profile-info > div { text-align: right; flex-grow: 0; } /* Align text right, don't grow */
+         #logout-btn { margin: 0; align-self: center; } /* Reset mobile margins */
+
+        /* Tab bar becomes top navigation */
+        .tab-bar {
+            position: static; /* Not fixed */
+            border-top: none;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: none;
+            margin-bottom: 20px; /* Space below tabs */
+            border-radius: var(--border-radius); /* Add border radius to the bar itself */
+            overflow-x: visible; /* No scrolling needed */
+             flex-wrap: wrap; /* Allow wrap if too many tabs */
+             justify-content: flex-start; /* Align tabs left */
         }
-        /* Calendar day background colors handled above */
-        .calendar-day .day-number {
-            font-size: 0.65rem;
-            top: 3px;
-            right: 4px;
+         .tab-button {
+            flex-direction: row; /* Icon beside text */
+            min-width: auto; /* No min width */
+            padding: 12px 20px; /* More padding */
+            gap: 8px; /* Space between icon and text */
+            font-size: 1rem; /* Standard text size */
+            border-radius: 4px 4px 0 0; /* Rounded top corners */
+             justify-content: center; /* Center content in button */
+         }
+        .tab-button i { font-size: 1rem; } /* Standard icon size */
+
+        .tab-button.active::after {
+            height: 3px; /* Indicator thickness */
+            bottom: -1px; /* Overlap border */
         }
-        /* Today number background handled above */
+         .tab-button:first-child { border-left: none; } /* Remove left border for first tab */
 
-        .calendar-day .trip-summary {
-            font-size: 0.6rem; /* Encore plus petit */
-            padding: 1px 3px;
-        }
-         /* Calendar summary text colors handled above */
+        /* Table Styles (Desktop specific - override mobile card) */
+         #table-section table { display: table; margin-top: 0; } /* Show as table */
+         #table-section thead { display: table-header-group; background-color: var(--primary-color); color: white;}
+         #table-section tbody tr { display: table-row; background-color: inherit; border: none; box-shadow: none; padding: 0; margin-bottom: 0;}
+         #table-section tbody tr:nth-child(even) { background-color: #fcfcfc; } /* Re-apply stripe */
+         #table-section tbody tr:hover { background-color: #f5f5f5; } /* Re-apply hover */
+         #table-section td { display: table-cell; text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border-color); white-space: nowrap;}
+         #table-section td::before { display: none; } /* Hide mobile label */
+         #table-section td.action-col { justify-content: flex-start; padding-top: 12px; border-bottom: 1px solid var(--border-color);} /* Align actions left */
+         #table-section td.action-col button { padding: 6px 12px; font-size: 0.9rem; }
 
-        .calendar-day.weekday-header {
-             font-size: 0.65rem;
-        }
+         /* --- Color driver text in desktop table --- */
+         td[data-label="Conducteur"] { font-weight: normal; } /* Reset base */
+         td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-4 { color: var(--driver-color-4-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-5 { color: var(--driver-color-5-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-6 { color: var(--driver-color-6-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-7 { color: var(--driver-color-7-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-8 { color: var(--driver-color-8-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-9 { color: var(--driver-color-9-text); font-weight: 600; }
+         td[data-label="Conducteur"].driver-10 { color: var(--driver-color-10-text); font-weight: 600; }
 
-        #trips-for-day li { padding-left: 10px; border-left-width: 4px; } /* Adjust padding/border width */
-         /* Driver details list item border colors handled above */
-         /* Driver name text color handled above */
+
+        /* Form Styles (Desktop Layout) */
+        .form-row { flex-direction: row; } /* Back to row layout */
+        .form-group { flex: 1; min-width: 250px; } /* Default flex */
+        .form-group.small { flex: 0.5; min-width: 150px; } /* Half width */
+        .action-buttons { justify-content: flex-end; } /* Align buttons right */
+        .action-buttons button { width: auto; max-width: none; } /* Reset width */
 
 
-        .notification { left: 10px; right: 10px; top: 10px; width: auto; min-width: 0; }
+        /* Calendar Styles (Desktop Layout) */
+         #calendar-section .calendar-container { /* Wrapper for grid + details */
+             display: grid;
+             grid-template-columns: 2fr 1fr; /* Calendar takes 2/3, details 1/3 */
+             gap: 20px; /* Space between calendar and details */
+         }
+         #calendar-section .calendar-grid { margin-top: 0; } /* Reset margin */
+         #trips-for-day { margin-top: 0; } /* Reset margin */
+
+
+        /* Stats Styles (Desktop Layout) */
+         #stats-content {
+             display: grid;
+             grid-template-columns: 1fr 1fr; /* Two columns */
+             gap: 30px; /* Space between columns */
+         }
+         #stats-content > h3 { grid-column: 1 / -1; } /* Make main headers span both columns */
+         #stats-content hr { grid-column: 1 / -1; } /* Make horizontal rules span both columns */
     }
 </style>
 </head>
 <body>
-    <h1>Suivi des Trajets de Covoiturage</h1>
+    <header>
+        <div class="app-title">
+            <span class="app-logo"><i class="fas fa-car"></i></span>
+            Co-Pilot
+        </div>
+        <div class="profile-info" id="profile-info">
+            <!-- User info and logout button filled by JS -->
+        </div>
+    </header>
 
     <div class="auth-container" id="auth-container">
         <div class="auth-message">Veuillez vous connecter pour accéder à l'application</div>
         <button id="login-btn">
-          <span class="google-logo">G</span>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
           Se connecter avec Google
         </button>
     </div>
 
-    <div class="content" id="content">
-        <div class="profile-info" id="profile-info">
-            <!-- User info and logout button filled by JS -->
-        </div>
+    <div class="main-content">
+        <div class="content" id="content" style="display: none;"> <!-- Initially hidden -->
 
-        <div class="view-toggle">
-            <button id="form-view-btn">Ajouter/Modifier</button> <!-- NOUVEAU BOUTON -->
-            <button id="my-trips-btn" class="active">Mes Trajets</button> <!-- Défaut -->
-            <button id="all-trips-btn">Tous les Trajets</button>
-            <button id="calendar-view-btn">Calendrier</button>
-            <button id="stats-view-btn">Statistiques</button>
-        </div>
-
-        <div class="container">
-            <!-- Formulaire (initialement caché) -->
-            <section id="form-section" style="display: none;"> <!-- CACHÉ PAR DÉFAUT -->
-                <h2 id="form-title">Ajouter un Trajet</h2> <!-- Titre dynamique -->
+            <!-- Section Form (Ajouter/Modifier) -->
+            <section id="form-section">
+                <h2 id="form-title">Ajouter un Trajet</h2>
                 <form id="ajout-trajet-form">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="date" class="required-label">Date du trajet</label>
                             <input type="date" id="date" required>
                         </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="conducteur" class="required-label">Conducteur</label>
                             <input type="text" id="conducteur" placeholder="Nom du conducteur" required>
@@ -941,15 +1019,15 @@
                     </div>
                     <input type="hidden" id="edit-id" value="">
                     <div class="action-buttons">
-                        <button type="button" id="cancel-edit" style="display: none;">Annuler Modification</button>
+                        <button type="button" id="cancel-edit">Annuler Modification</button>
                         <button type="reset">Réinitialiser Formulaire</button>
                         <button type="submit" id="submit-btn">Enregistrer</button>
                     </div>
                 </form>
             </section>
 
-            <!-- Section Tableau (initialement affichée via JS) -->
-            <section id="table-section" style="display: none;">
+            <!-- Section Tableau (Mes Trajets / Tous les Trajets) -->
+            <section id="table-section">
                 <h2 id="table-title">Mes Trajets</h2>
                 <div class="filters">
                     <div class="filter-group">
@@ -979,27 +1057,59 @@
                 </div>
             </section>
 
-             <!-- Section Calendrier (initialement cachée) -->
-            <section id="calendar-section" style="display: none;">
+             <!-- Section Calendrier -->
+            <section id="calendar-section">
                 <h2>Calendrier des Trajets</h2>
-                <div class="calendar-controls">
-                    <button id="prev-month-btn" title="Mois précédent"><i class="fas fa-chevron-left"></i></button>
-                    <h3 id="current-month-year"></h3>
-                    <button id="next-month-btn" title="Mois suivant"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="calendar-grid" id="calendar-grid"></div>
-                <div id="trips-for-day"><p>Cliquez sur un jour.</p></div>
+                <div class="calendar-container"> <!-- Added wrapper for desktop layout -->
+                    <div> <!-- Wrapper for calendar controls and grid -->
+                        <div class="calendar-controls">
+                            <button id="prev-month-btn" title="Mois précédent"><i class="fas fa-chevron-left"></i></button>
+                            <h3 id="current-month-year"></h3>
+                            <button id="next-month-btn" title="Mois suivant"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid" id="calendar-grid"></div>
+                    </div>
+                    <div id="trips-for-day"> <!-- Details panel -->
+                        <p>Cliquez sur un jour pour voir les détails.</p>
+                    </div>
+                 </div>
             </section>
 
-             <!-- Section Statistiques (initialement cachée) -->
-            <section id="stats-section" style="display: none;">
+             <!-- Section Statistiques -->
+            <section id="stats-section">
                 <h2>Statistiques des Trajets</h2>
                 <div id="stats-content">
                     <div class="loading-spinner"><i class="fas fa-spinner"></i></div>
                 </div>
             </section>
-        </div> <!-- Fin .container -->
-    </div> <!-- Fin #content -->
+
+        </div> <!-- End .content -->
+    </div> <!-- End .main-content -->
+
+    <!-- Fixed Bottom Tab Bar for Mobile / Top Bar for Desktop -->
+    <div class="tab-bar" id="tab-bar">
+        <button class="tab-button" data-view="form" id="tab-form">
+            <i class="fas fa-plus-circle"></i>
+            <span>Ajouter</span>
+        </button>
+        <button class="tab-button active" data-view="my-trips" id="tab-my-trips">
+            <i class="fas fa-user"></i>
+            <span>Mes Trajets</span>
+        </button>
+        <button class="tab-button" data-view="all-trips" id="tab-all-trips">
+            <i class="fas fa-car-side"></i>
+            <span>Tous Trajets</span>
+        </button>
+        <button class="tab-button" data-view="calendar" id="tab-calendar">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Calendrier</span>
+        </button>
+         <button class="tab-button" data-view="stats" id="tab-stats">
+            <i class="fas fa-chart-bar"></i>
+            <span>Stats</span>
+        </button>
+    </div>
+
 
     <div id="notification" class="notification"></div>
 
@@ -1043,12 +1153,14 @@
              "Julien": "driver-3",
              "Charlie": "driver-4",
              "Diana": "driver-5",
-             // Ajoutez d'autres conducteurs ici :
-             // "Nom Conducteur 6": "driver-6",
-             // "Nom Conducteur 7": "driver-7",
-             // ... etc ...
+             // Add more drivers here, ensure you have corresponding CSS rules
+             "Eve": "driver-6",
+             "Frank": "driver-7",
+             "Grace": "driver-8",
+             "Henry": "driver-9",
+             "Ivy": "driver-10",
         };
-        // Fonction utilitaire pour obtenir la classe conducteur
+        // Function to get the driver class
         function getDriverClass(driverName) {
              const cleanName = driverName?.trim();
              return cleanName && driverColorClasses[cleanName] ? driverColorClasses[cleanName] : '';
@@ -1058,10 +1170,10 @@
         // -- Références aux éléments DOM --
         const dom = {
             authContainer: document.getElementById('auth-container'),
-            contentContainer: document.getElementById('content'),
+            contentContainer: document.getElementById('content'), // This wraps all sections
             profileInfo: document.getElementById('profile-info'),
             loginBtn: document.getElementById('login-btn'),
-            // logoutBtn est ajouté dynamiquement
+            // logoutBtn is added dynamically
             formSection: document.getElementById('form-section'),
             formTitle: document.getElementById('form-title'),
             form: document.getElementById('ajout-trajet-form'),
@@ -1078,11 +1190,8 @@
             filterYear: document.getElementById('filter-year'),
             filterPerson: document.getElementById('filter-person'),
             resetFiltersBtn: document.getElementById('reset-filters'),
-            formViewBtn: document.getElementById('form-view-btn'),
-            myTripsBtn: document.getElementById('my-trips-btn'),
-            allTripsBtn: document.getElementById('all-trips-btn'),
-            calendarViewBtn: document.getElementById('calendar-view-btn'),
-            statsViewBtn: document.getElementById('stats-view-btn'),
+            tabBar: document.getElementById('tab-bar'), // The new tab bar element
+            tabButtons: document.querySelectorAll('.tab-button'), // All tab buttons
             calendarSection: document.getElementById('calendar-section'),
             tableSection: document.getElementById('table-section'),
             statsSection: document.getElementById('stats-section'),
@@ -1097,15 +1206,17 @@
         };
 
         // -- Variables d'état --
-        let currentView = 'my-trips'; // Vue par défaut
-        let trajetsUnsubscribe = null; // Listener pour le tableau
-        let currentCalendarDate = new Date(); // Date affichée dans le calendrier
-        let calendarTrips = []; // Cache des trajets pour le mois du calendrier
-        let allTripsDataCache = null; // Cache pour les stats
-        let isFetchingStats = false; // Empêcher fetches multiples pour les stats
-        let notificationTimeoutId = null; // Pour cacher auto les notifications
+        // Let's default to showing the first tab content (form) but set the active *button* to my-trips initially
+        // The switchView call in onAuthStateChanged will handle initial display correctly.
+        let currentView = 'my-trips';
+        let trajetsUnsubscribe = null;
+        let currentCalendarDate = new Date();
+        let calendarTrips = [];
+        let allTripsDataCache = null;
+        let isFetchingStats = false;
+        let notificationTimeoutId = null;
 
-        // -- Fonctions Utilitaires --
+        // -- Utility Functions (Mostly same as before) --
 
         function showNotification(message, isError = false) {
             dom.notificationDiv.textContent = message;
@@ -1119,17 +1230,24 @@
 
         function populateYearFilter() {
             const currentYear = new Date().getFullYear();
-            // Garde l'option "Toutes" et supprime les autres
             while (dom.filterYear.options.length > 1) {
                 dom.filterYear.remove(1);
             }
-            for (let year = currentYear + 1; year >= currentYear - 5; year--) { // Inclure l'année suivante
+             // Add current year and next year first
+             dom.filterYear.add(new Option(currentYear + 1, currentYear + 1), 1); // Add next year at index 1
+             dom.filterYear.add(new Option(currentYear, currentYear), 1); // Add current year at index 1 (pushes next year)
+            for (let year = currentYear - 1; year >= currentYear - 5; year--) { // Add past 5 years
                 const option = new Option(year, year);
                 dom.filterYear.add(option);
             }
-             // Sélectionner l'année courante par défaut si possible
+             // Set default to current year if possible
              dom.filterYear.value = currentYear;
+             // If current year is not in the list (unlikely with the loop above), select 'Toutes'
+             if (!dom.filterYear.value) {
+                 dom.filterYear.value = '';
+             }
         }
+
 
         function addPassengerField(value = '') {
             const row = document.createElement('div');
@@ -1151,9 +1269,9 @@
                 const btn = row.querySelector('.remove-passenger-btn');
                 if (btn) btn.style.display = (rows.length > 1) ? 'flex' : 'none';
             });
-            // S'assurer qu'il y a toujours au moins un champ (même vide) si tous étaient supprimés
+             // Ensure there's always at least one empty field if all were removed
             if (rows.length === 0) {
-                addPassengerField();
+                addPassengerField(); // Add one back
             }
         }
 
@@ -1161,9 +1279,9 @@
             dom.form.reset();
             dom.editIdInput.value = '';
             dom.formTitle.textContent = 'Ajouter un Trajet';
-            dom.submitBtn.textContent = 'Enregistrer';
+            dom.submitBtn.innerHTML = 'Enregistrer'; // Reset button text
             dom.cancelEditBtn.style.display = 'none';
-            // Supprimer tous les champs passagers sauf le premier et le vider
+            // Remove all passenger fields except the first and clear it
             const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
             rows.forEach((row, index) => {
                 if (index > 0) {
@@ -1172,96 +1290,130 @@
                     row.querySelector('.passenger-input').value = '';
                 }
             });
-            updatePassengerRemoveButtonsState(); // S'assure qu'il reste un champ si tous étaient supprimés
+            updatePassengerRemoveButtonsState(); // Ensures at least one field exists
             const today = new Date().toISOString().split('T')[0];
             dom.dateInput.value = today;
-            if (auth.currentUser) dom.conducteurInput.value = auth.currentUser.displayName || '';
+            if (auth.currentUser) dom.conducteurInput.value = auth.currentUser.displayName || ''; // Pre-fill with user's name
         }
 
+        /**
+         * Switches the currently displayed view/section.
+         * @param {string} view - The view to switch to ('form', 'my-trips', 'all-trips', 'calendar', 'stats').
+         */
         function switchView(view) {
             console.log("Switching view to:", view);
-            if (!['form', 'my-trips', 'all-trips', 'calendar', 'stats'].includes(view)) return;
+            if (!['form', 'my-trips', 'all-trips', 'calendar', 'stats'].includes(view)) {
+                console.warn("Attempted to switch to invalid view:", view);
+                return;
+            }
             currentView = view;
 
-            // Update button active states
-            dom.formViewBtn.classList.toggle('active', view === 'form');
-            dom.myTripsBtn.classList.toggle('active', view === 'my-trips');
-            dom.allTripsBtn.classList.toggle('active', view === 'all-trips');
-            dom.calendarViewBtn.classList.toggle('active', view === 'calendar');
-            dom.statsViewBtn.classList.toggle('active', view === 'stats');
+            // Update tab button active states
+            dom.tabButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.view === view);
+            });
 
-            // Update section visibility
-            const isFormVisible = view === 'form';
-            const isTableVisible = view === 'my-trips' || view === 'all-trips';
-            const isCalendarVisible = view === 'calendar';
-            const isStatsVisible = view === 'stats';
+            // Hide all content sections first
+            dom.contentContainer.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none'; // Ensure it's hidden
+            });
 
-            dom.formSection.style.display = isFormVisible ? 'block' : 'none';
-            dom.tableSection.style.display = isTableVisible ? 'block' : 'none';
-            dom.calendarSection.style.display = isCalendarVisible ? 'block' : 'none';
-            dom.statsSection.style.display = isStatsVisible ? 'block' : 'none';
+            // Show the selected section
+            let activeSection;
+            switch (view) {
+                case 'form': activeSection = dom.formSection; break;
+                case 'my-trips':
+                case 'all-trips': activeSection = dom.tableSection; break;
+                case 'calendar': activeSection = dom.calendarSection; break;
+                case 'stats': activeSection = dom.statsSection; break;
+            }
 
-            // Unsubscribe from table listener if not viewing table
-            if (!isTableVisible && trajetsUnsubscribe) {
-                 console.log("Unsubscribing from table listener");
+            if (activeSection) {
+                activeSection.classList.add('active');
+                activeSection.style.display = 'block'; // Show it
+                console.log(`Section for view "${view}" shown.`);
+            } else {
+                 console.error(`No section found for view: ${view}`);
+            }
+
+
+            // Manage Firebase listeners and data loading based on view
+            const isTableOrCalendarView = view === 'my-trips' || view === 'all-trips' || view === 'calendar';
+             // Always unsubscribe table listener unless explicitly subscribing below
+            if (trajetsUnsubscribe) {
+                 console.log("Unsubscribing previous table listener.");
                  try { trajetsUnsubscribe(); } catch (e) { console.warn("Error unsubscribing:", e); }
                  trajetsUnsubscribe = null;
             }
 
-            // Load data for the current view
-            if (isTableVisible) {
+
+            if (view === 'my-trips' || view === 'all-trips') {
                 dom.tableTitle.textContent = view === 'my-trips' ? "Mes Trajets" : "Tous les Trajets";
-                subscribeToTrajets(); // Re-subscribe with current filters/view
-            } else if (isCalendarVisible) {
-                 fetchCalendarTrips(currentCalendarDate);
-            } else if (isStatsVisible) {
-                fetchAndRenderStatistics();
-            } else if (isFormVisible) {
-                // Reset form only if not editing (editTrajet handles reset/populate)
-                if (!dom.editIdInput.value) {
-                    resetForm();
-                }
-                 // Optionnel: scroll vers le formulaire
-                 // dom.formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                subscribeToTrajets(); // Start/re-start table listener with current filters/view
+            } else if (view === 'calendar') {
+                 // Unsubscribe table listener first as it's a different query type
+                 if (trajetsUnsubscribe) {
+                     console.log("Unsubscribing table listener before calendar fetch.");
+                     trajetsUnsubscribe(); // Explicitly unsubscribe if table listener was active
+                     trajetsUnsubscribe = null; // Clear the reference
+                 }
+                 fetchCalendarTrips(currentCalendarDate); // Load calendar data
+            } else if (view === 'stats') {
+                fetchAndRenderStatistics(); // Load and display stats
+            } else if (view === 'form') {
+                 // Ensure form is reset if we are not currently editing
+                 if (!dom.editIdInput.value) {
+                     resetForm();
+                 }
+                 // If we *are* editing, the form is already populated, just show it.
             }
+
+             // Optional: Scroll to top of the main content area or section
+             // window.scrollTo({ top: 0, behavior: 'smooth' });
+             // Or scroll to the section itself:
+             // activeSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
         }
 
-                function subscribeToTrajets() {
-            if (currentView !== 'my-trips' && currentView !== 'all-trips') return; // Ne rien faire si on n'est pas sur une vue tableau
+        function subscribeToTrajets() {
+             // This function is now ONLY called when switching to or filtering on table views
+            if (currentView !== 'my-trips' && currentView !== 'all-trips') {
+                console.log(`subscribeToTrajets called but not on table view (${currentView}), exiting.`);
+                return;
+            }
             console.log(`subscribeToTrajets called for view: ${currentView}`);
 
-            // Désabonnement de l'écouteur précédent s'il existe
+            // Ensure previous listener is stopped before creating a new one
             if (trajetsUnsubscribe) {
-                console.log("Unsubscribing previous listener before new subscription.");
+                console.log("Unsubscribing existing table listener.");
                 try { trajetsUnsubscribe(); } catch (e) { console.warn("Error unsubscribing:", e); }
-                trajetsUnsubscribe = null;
+                trajetsUnsubscribe = null; // Clear the reference
             }
 
-            dom.listeTrajetsDiv.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i></div>`;
+
+            dom.listeTrajetsDiv.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
             let query = db.collection(COLLECTION_TRAJETS);
             const month = dom.filterMonth.value, year = dom.filterYear.value;
 
-            // Application des filtres de date
-            // ... (Votre code pour les filtres de date reste inchangé) ...
-             if (month && year) {
+            // Application des filtres de date (Firestore query)
+            if (month && year) {
                  const y = parseInt(year), m = parseInt(month);
                  const monthPadded = String(m).padStart(2,'0');
                  const start = `${y}-${monthPadded}-01`;
-                 const nextMonthDate = new Date(y, m, 1);
+                 // Date de fin: Premier jour du mois suivant
+                 const nextMonthDate = new Date(y, m, 1); // Month is 0-indexed in JS, so m is correct for the *next* month's constructor
                  const end = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2,'0')}-01`;
-                 console.log(`Filtering Firestore by date range: >= ${start} and < ${end}`);
-                 // Appliquer les filtres Firestore *avant* orderBy pour de meilleures performances si possible
-                 // Note: Firestore ne permet qu'un seul champ dans les requêtes d'intervalle et le orderBy
-                 // Si vous filtrez par date range, vous DEVEZ order by date
+                 console.log(`Firestore query date range: >= ${start} and < ${end}`);
                  query = query.where('date', '>=', start).where('date', '<', end);
-             } else if (year) {
+            } else if (year) {
                  const y = parseInt(year);
                  const start = `${y}-01-01`;
                  const end = `${y + 1}-01-01`;
-                 console.log(`Filtering Firestore by year range: >= ${start} and < ${end}`);
+                 console.log(`Firestore query year range: >= ${start} and < ${end}`);
                  query = query.where('date', '>=', start).where('date', '<', end);
-             }
-             // IMPORTANT: Le orderBy('date', 'desc') doit venir après les filtres de date si présents
+            }
+             // IMPORTANT: OrderBy must come after range filters on the same field
              query = query.orderBy('date', 'desc');
 
 
@@ -1270,55 +1422,61 @@
                 console.log("Table onSnapshot triggered: received", snapshot.docs.length, "docs for query.");
                 let trajets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Application du filtre par personne (après récupération des données car la recherche est sur plusieurs champs)
+                // Application du filtre par personne (post-Firestore)
                 const term = dom.filterPerson.value.trim().toLowerCase();
                 if (term) {
                     trajets = trajets.filter(t =>
                         (t.conducteur && t.conducteur.toLowerCase().includes(term)) ||
-                        (t.passagers && Array.isArray(t.passagers) && t.passagers.some(p => typeof p === 'string' && String(p).toLowerCase().includes(term))) ||
-                        (t.createdByName && t.createdByName.toLowerCase().includes(term)) // Optionnel: permettre de filtrer par la personne qui a ajouté le trajet
+                        (t.passagers && Array.isArray(t.passagers) && t.passagers.some(p => typeof p === 'string' && String(p).toLowerCase().includes(term)))
+                         // Removed createdBy filter here to simplify, but could be added back if needed
                     );
-                    console.log(`Filtered by person "${term}", remaining: ${trajets.length}`);
+                    console.log(`Post-Firestore filtered by person "${term}", remaining: ${trajets.length}`);
                 }
 
-                // Filtrage spécifique pour "Mes Trajets" - MODIFICATION ICI
+                // Filtrage spécifique pour "Mes Trajets" (post-Firestore)
                 if (currentView === 'my-trips') {
                     const user = auth.currentUser;
-                    if (user && user.uid) { // Assurez-vous que l'utilisateur est connecté et a un UID
-                        const userName = user.displayName; // Nom affiché de l'utilisateur
-                        const userId = user.uid; // UID de l'utilisateur
+                    if (user && user.uid) {
+                        const userName = user.displayName?.trim(); // Use trim() for displayName too
+                        const userId = user.uid;
 
                         trajets = trajets.filter(t =>
-                            t.createdByUid === userId || // Le trajet a été créé par cet utilisateur
-                            (t.passagers && Array.isArray(t.passagers) && userName && t.passagers.includes(userName)) // L'utilisateur est listé comme passager (match exact du displayName)
-                            // Optionnel: si vous voulez aussi inclure les trajets où l'utilisateur est *listé* comme conducteur,
-                            // mais attention aux variations de nom :
-                            // || (t.conducteur && t.conducteur.trim() === userName)
+                            t.createdByUid === userId || // Trip was created by this user
+                            (t.passagers && Array.isArray(t.passagers) && userName && t.passagers.some(p => p?.trim() === userName)) // User's display name is in passengers
+                            // Optionnel: Include if user is listed as driver (exact match)
+                             || (t.conducteur && userName && t.conducteur.trim() === userName)
                         );
-                        console.log(`Filtered for "My Trips" (user UID: ${userId}, name: ${userName}), remaining: ${trajets.length}`);
+                        console.log(`Post-Firestore filtered for "My Trips" (UID: ${userId}, name: "${userName}"), remaining: ${trajets.length}`);
                     } else {
                         console.log("Filtering for 'My Trips', but no user or UID found. Showing empty list.");
-                        trajets = []; // Ne rien montrer si l'utilisateur n'est pas identifié correctement
+                        trajets = [];
                     }
                 }
 
                 // Affichage du tableau
                 renderTrajetsTable(trajets);
-                allTripsDataCache = null; // Invalider le cache des statistiques car les données ont peut-être changé
+                allTripsDataCache = null; // Invalider le cache stats
 
             }, (error) => {
                 console.error("Firestore listener error (Table):", error);
-                dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des trajets: ${error.message}</div>`;
+                // Check if it's a permission error
+                 if (error.code === 'permission-denied') {
+                     dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-lock"></i> Vous n'avez pas les permissions pour voir les trajets.</div>`;
+                     showNotification("Vous n'avez pas les permissions pour voir les trajets.", true);
+                 } else {
+                    dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors du chargement des trajets: ${error.message}</div>`;
+                 }
                 trajetsUnsubscribe = null; // Reset listener on error
             });
         }
 
+
         /**
-         * Met à jour le contenu HTML de la table des trajets.
-         * Applique la logique: Seul EDITOR_EMAIL peut voir les boutons modifier/supprimer.
+         * Renders the HTML table for trips. Adds driver color classes.
+         * Handles mobile card view via CSS media queries.
          */
         function renderTrajetsTable(trajets) {
-            console.log("renderTrajetsTable with", trajets.length, "trajets. Current view:", currentView);
+            console.log("renderTrajetsTable with", trajets.length, "trajets.");
             if (!Array.isArray(trajets)) {
                 console.error("renderTrajetsTable called with invalid data:", trajets);
                 dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur: Données de trajets invalides.</div>`;
@@ -1338,44 +1496,47 @@
             let html = `<table><thead><tr><th>Date</th><th>Conducteur</th><th>Passagers</th><th>Commentaire</th><th>Ajouté par</th><th>Actions</th></tr></thead><tbody>`;
             const user = auth.currentUser;
 
-            // Vérifier si l'utilisateur actuel est l'éditeur
+            // Check if the current user is the editor (for edit/delete buttons)
             const isEditor = user && user.email === EDITOR_EMAIL;
 
             trajets.forEach(t => {
                 let dateStr = 'Date invalide';
                 try {
-                    // Utiliser UTC pour l'interprétation de la date stockée pour éviter les décalages
+                    // Use UTC for standard YYYY-MM-DD dates to avoid timezone issues
                     if (t.date && /^\d{4}-\d{2}-\d{2}$/.test(t.date)) {
                         dateStr = new Date(t.date + 'T00:00:00Z').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                     } else if (t.date) {
-                        console.warn("Format de date non standard détecté:", t.date);
+                        // Try parsing other formats but warn
+                        console.warn("Non-standard date format detected:", t.date);
                          dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                         if (dateStr === "Invalid Date") dateStr = t.date; // Afficher tel quel si invalide
+                         if (dateStr === "Invalid Date") dateStr = t.date; // Fallback to raw string
                     } else {
                         dateStr = 'N/A';
                     }
                 } catch (e) {
-                    console.warn("Erreur parsing date:", t.date, e);
-                    dateStr = t.date || 'N/A'; // Afficher la date brute ou N/A en cas d'erreur
+                    console.warn("Error parsing date:", t.date, e);
+                    dateStr = t.date || 'N/A';
                 }
 
-                // Générer les boutons seulement si l'utilisateur est l'éditeur
+                // Generate action buttons only if the user is the editor
                 const actions = isEditor
                     ? `<button class="btn-edit" data-id="${t.id}" title="Modifier"><i class="fas fa-edit"></i></button><button class="btn-delete" data-id="${t.id}" title="Supprimer"><i class="fas fa-trash"></i></button>`
-                    : ''; // Pas de boutons si ce n'est pas l'éditeur
+                    : '';
 
                 const passengers = (t.passagers && Array.isArray(t.passagers) && t.passagers.length > 0)
                                     ? t.passagers.filter(p => p && String(p).trim()).map(p => `<span class="badge badge-passenger">${String(p).trim()}</span>`).join(' ')
-                                    : ''; // Changed to empty string if none, will display 'Aucun' in HTML
+                                    : '';
 
                 const cleanPassengers = passengers.trim() === '' ? '<em>Aucun</em>' : passengers;
                 const addedBy = t.createdByName || t.lastModifiedByName || 'Inconnu';
                 const driverName = t.conducteur?.trim() || '?';
-                const driverClass = getDriverClass(driverName); // Obtenir la classe CSS du conducteur
+                const driverClass = getDriverClass(driverName); // Get the driver CSS class
 
-                html += `<tr>
+                // Apply the driver class to the row for mobile card view
+                // Apply the driver class to the Conducteur cell for desktop table view (handled by CSS media query)
+                html += `<tr class="${driverClass}">
                     <td data-label="Date">${dateStr}</td>
-                    <td data-label="Conducteur" class="${driverClass}">${driverName}</td> <!-- Appliquer la classe conducteur ici -->
+                    <td data-label="Conducteur" class="${driverClass}">${driverName}</td>
                     <td data-label="Passagers">${cleanPassengers}</td>
                     <td data-label="Commentaire">${t.commentaire || '-'}</td>
                     <td data-label="Ajouté par">${addedBy}</td>
@@ -1387,12 +1548,11 @@
         }
 
         /**
-         * Gère les clics sur les boutons d'action dans le tableau (Modifier/Supprimer).
-         * Fonction appelée par l'écouteur d'événements attaché à dom.listeTrajetsDiv.
+         * Handles clicks on table action buttons (Edit/Delete).
          */
         function handleTableActions(event) {
-            const button = event.target.closest('button[data-id]'); // Trouve le bouton parent le plus proche avec data-id
-            if (!button) return; // Ignorer les clics ailleurs que sur un bouton d'action
+            const button = event.target.closest('button[data-id]');
+            if (!button) return;
 
             const id = button.dataset.id;
             if (!id) {
@@ -1400,15 +1560,14 @@
                 return;
             }
 
-            // Vérifier si l'utilisateur a les droits d'édition (Option 2)
+            // Check if the user has editing rights
             const user = auth.currentUser;
             const canEdit = user && user.email === EDITOR_EMAIL;
 
             if (!canEdit) {
                  showNotification("Vous n'avez pas les permissions pour modifier ou supprimer des trajets.", true);
-                 return; // Arrêter si l'utilisateur n'est pas l'éditeur
+                 return; // Stop if the user is not the editor
             }
-
 
             if (button.classList.contains('btn-edit')) {
                  console.log("Edit button clicked for ID:", id);
@@ -1419,61 +1578,71 @@
             }
         }
 
+
         function renderCalendar(date) {
             const y = date.getFullYear(), m = date.getMonth();
             const first = new Date(y, m, 1), last = new Date(y, m + 1, 0);
             const days = last.getDate();
-            // Jour de la semaine (0=Dim, 1=Lun...). Ajuster pour que Lundi soit 0.
-            const startDay = (first.getDay() === 0) ? 6 : first.getDay() - 1;
+            // Day of the week (0=Sun, 1=Mon...). Adjust for Monday=0.
+            const startDay = (first.getDay() === 0) ? 6 : first.getDay() - 1; // 0=Lun, 1=Mar, ..., 6=Dim
             const weeks = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
             dom.currentMonthYear.textContent = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
             let gridHTML = weeks.map(d => `<div class="calendar-day weekday-header">${d}</div>`).join('');
-            gridHTML += '<div class="calendar-day empty"></div>'.repeat(startDay); // Jours vides avant le 1er
+            gridHTML += '<div class="calendar-day empty"></div>'.repeat(startDay); // Empty days before the 1st
 
             const today = new Date();
-            // Format YYYY-MM-DD pour comparaison facile
+            // Format YYYY-MM-DD for easy comparison
             const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             for (let d = 1; d <= days; d++) {
                 const dateStr = `${y}-${String(m + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const tripsForDay = calendarTrips.filter(t => t.date === dateStr);
                 let summary = '';
-                let driverClassForDay = ''; // Classe conducteur pour le jour
+                let driverClassForDay = ''; // Driver class for the day cell background
 
                 if (tripsForDay.length > 0) {
-                    // Compte total de personnes (conducteur + passagers valides)
-                    const people = tripsForDay.reduce((sum, t) => {
-                        const validPassengers = t.passagers?.filter(p => p && String(p).trim()).length || 0;
-                        return sum + 1 + validPassengers; // +1 pour le conducteur
-                    }, 0);
-                    const tripNoun = tripsForDay.length > 1 ? 'Trajets' : 'Trajet';
-                    const peopleNoun = people > 1 ? 'pers.' : 'pers.';
-                    summary = `<div class="trip-summary" title="${tripsForDay.length} ${tripNoun}, ${people} ${peopleNoun}">${tripsForDay.length}T (${people}p)</div>`;
+                    // Display summary for the first trip's driver
+                    const firstTrip = tripsForDay[0];
+                    const driverName = firstTrip.conducteur?.trim() || '?';
+                    driverClassForDay = getDriverClass(driverName); // Get class based on first driver
 
-                     // Déterminer la classe conducteur pour le jour
-                     // Simple: prendre la classe du premier conducteur trouvé ce jour
-                     if (tripsForDay[0].conducteur) {
-                         driverClassForDay = getDriverClass(tripsForDay[0].conducteur);
-                     }
+                    // Compte total de personnes (conducteur + passagers valides) FOR THIS DAY (summing up *all* trips on that day)
+                    const totalPeopleForDay = tripsForDay.reduce((sum, t) => {
+                        const validPassengers = t.passagers?.filter(p => p && String(p).trim()).length || 0;
+                        return sum + 1 + validPassengers; // +1 for the conductor of each trip
+                    }, 0);
+
+                    const tripNoun = tripsForDay.length > 1 ? 'Trajets' : 'Trajet';
+                    const peopleNoun = totalPeopleForDay > 1 ? 'pers.' : 'pers.';
+
+                    // Summary text: "X T (Y p)" or "DriverName (Y p)"
+                    // Let's use "X T (Y p)" in the main summary badge for brevity
+                    // But the tooltip can show more detail if needed
+                     summary = `<div class="trip-summary" title="${tripsForDay.length} ${tripNoun}, ${totalPeopleForDay} ${peopleNoun} - Conducteur(s): ${tripsForDay.map(t => t.conducteur?.trim() || '?').join(', ')}">${tripsForDay.length}T (${totalPeopleForDay}p)</div>`;
+                     // If you prefer displaying the first driver's name:
+                     // summary = `<div class="trip-summary" title="${tripsForDay.length} ${tripNoun}, ${totalPeopleForDay} ${peopleNoun}">${driverName} (${totalPeopleForDay}p)</div>`;
                 }
                 const isToday = dateStr === todayStr;
-                // Appliquer la classe conducteur à l'élément .calendar-day
+
+                // Apply the driver class to the .calendar-day element
                 gridHTML += `<div class="calendar-day ${driverClassForDay} ${tripsForDay.length ? 'has-trip':''} ${isToday ? 'today':''}" data-date="${dateStr}">
                                 <span class="day-number">${d}</span>
                                 ${summary}
                              </div>`;
             }
              const totalCells = startDay + days;
-             // Jours vides après le dernier jour du mois pour compléter la semaine
-             gridHTML += '<div class="calendar-day empty"></div>'.repeat((7 - totalCells % 7) % 7);
+             // Empty days after the last day of the month to complete the grid
+             // Calculate remaining cells needed to fill the last row (up to 7)
+             const remainingCells = (7 - totalCells % 7) % 7;
+             gridHTML += '<div class="calendar-day empty"></div>'.repeat(remainingCells);
+
 
             dom.calendarGrid.innerHTML = gridHTML;
-             // Ré-attacher l'écouteur de clic (ou s'assurer qu'il est déjà attaché au parent)
-             // S'assurer qu'un seul écouteur est attaché
+             // Ensure click listener is attached only once via delegation
              if (!dom.calendarGrid.dataset.listenerAttached) {
                 dom.calendarGrid.addEventListener('click', handleCalendarClick);
-                dom.calendarGrid.dataset.listenerAttached = 'true'; // Marqueur
+                dom.calendarGrid.dataset.listenerAttached = 'true'; // Mark as attached
              }
         }
 
@@ -1484,7 +1653,7 @@
                  console.log("Calendar day clicked:", dateStr);
                  displayTripsForDay(dateStr);
 
-                 // Mettre en évidence le jour cliqué
+                 // Highlight the clicked day
                  dom.calendarGrid.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
                  dayElement.classList.add('selected');
              }
@@ -1494,11 +1663,11 @@
              const trips = calendarTrips.filter(t => t.date === dateStr);
              let detailsHTML = '';
              try {
-                 // Afficher la date cliquée en format lisible
-                 // Utiliser la date locale du navigateur si la date stockée est YYYY-MM-DD sans T00:00:00Z
+                 // Display the clicked date in a readable format
                  const dateParts = dateStr.split('-').map(Number);
-                 const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); // Année, Mois (0-index), Jour
-                 detailsHTML = `<h4>Détails pour le ${dateObj.toLocaleDateString('fr-FR', {weekday: 'long', day:'numeric', month:'long', year: 'numeric'})}</h4>`;
+                 // Using UTC to construct the date object helps prevent timezone issues if the date string is YYYY-MM-DD
+                 const dateObj = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2])); // Year, Month (0-indexed), Day
+                 detailsHTML = `<h4>Détails pour le ${dateObj.toLocaleDateString('fr-FR', {weekday: 'long', day:'numeric', month:'long', year: 'numeric', timeZone: 'UTC'})}</h4>`; // Specify UTC timezone for display too
              } catch(e){
                  console.warn("Error formatting date for details:", dateStr, e);
                  detailsHTML = `<h4>Détails pour ${dateStr}</h4>`;
@@ -1513,10 +1682,12 @@
                          : '<em>Aucun</em>';
 
                      const driverName = t.conducteur?.trim() || '?';
-                     const driverClass = getDriverClass(driverName); // Classe CSS pour le conducteur
+                     const driverClass = getDriverClass(driverName); // CSS class for the driver
 
-                     detailsHTML += `<li>
-                                         <div><strong>Conducteur : </strong> <span class="driver-name ${driverClass}">${driverName}</span></div> <!-- Ajouter la classe ici -->
+                     // Apply the driver class to the list item for the border color
+                     // Apply it to the driver name span for text color
+                     detailsHTML += `<li class="${driverClass}">
+                                         <div><strong>Conducteur : </strong> <span class="driver-name ${driverClass}">${driverName}</span></div>
                                          <div><strong>Passagers : </strong> ${passengersStr}</div>
                                          ${t.commentaire ? `<div><strong>Note:</strong> ${t.commentaire}</div>` : ''}
                                      </li>`;
@@ -1533,44 +1704,56 @@
 
         async function fetchCalendarTrips(date) {
             console.log("Fetching calendar trips for month:", date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }));
-            dom.calendarGrid.innerHTML = `<div class="loading-spinner" style="grid-column: 1 / -1;"><i class="fas fa-spinner"></i></div>`;
-            dom.tripsForDayDiv.innerHTML = '<p>Chargement des trajets...</p>'; // Message pendant le chargement
+            // Show loading state across the grid columns
+            dom.calendarGrid.innerHTML = `<div class="loading-spinner" style="grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
+            dom.tripsForDayDiv.innerHTML = '<p>Chargement des trajets...</p>';
 
             const y = date.getFullYear(), m = date.getMonth();
             const startOfMonth = `${y}-${String(m+1).padStart(2,'0')}-01`;
-            // Pour la fin du mois, on inclut tout le dernier jour
             const lastDayOfMonth = new Date(y, m + 1, 0).getDate();
             const endOfMonth = `${y}-${String(m+1).padStart(2,'0')}-${String(lastDayOfMonth).padStart(2,'0')}`;
-            console.log(`Querying trips between ${startOfMonth} and ${endOfMonth}`);
+            console.log(`Querying trips between ${startOfMonth} and ${endOfMonth} for calendar.`);
 
             try {
                 const snapshot = await db.collection(COLLECTION_TRAJETS)
                                          .where('date', '>=', startOfMonth)
                                          .where('date', '<=', endOfMonth)
-                                         .get(); // Utilise get() car pas besoin d'écouteur temps réel ici
+                                         .orderBy('date', 'asc') // Order by date for calendar display
+                                         .get();
 
                 calendarTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 console.log("Fetched", calendarTrips.length, "trips for the calendar month.");
-                renderCalendar(currentCalendarDate); // Afficher le calendrier avec les données
-                // Réinitialiser le panneau de détails après le chargement réussi
+                renderCalendar(currentCalendarDate);
+                // Reset the details panel after successful load
                 dom.tripsForDayDiv.innerHTML = '<p>Cliquez sur un jour dans le calendrier pour voir les détails.</p>';
             } catch (error) {
                  console.error("Error fetching calendar trips:", error);
                  showNotification("Erreur lors du chargement du calendrier.", true);
                  dom.calendarGrid.innerHTML = `<div class="empty-message error-message" style="grid-column: 1 / -1;"><i class="fas fa-exclamation-triangle"></i> Erreur de chargement.</div>`;
-                 calendarTrips = []; // Vider les données en cas d'erreur
+                 calendarTrips = []; // Clear data on error
                  dom.tripsForDayDiv.innerHTML = '<p>Erreur lors du chargement des détails.</p>';
             }
         }
+
 
         async function fetchAndRenderStatistics() {
             if (isFetchingStats) {
                 console.log("Stats fetch already in progress.");
                 return;
             }
+             // Check if user has permission before fetching
+             const user = auth.currentUser;
+             const canViewStats = user && user.email === EDITOR_EMAIL; // Only editor can see stats? Or everyone?
+             // Let's assume everyone can see stats for now, remove this check if needed
+             // if (!canViewStats) {
+             //     dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-lock"></i> Vous n'avez pas les permissions pour voir les statistiques.</p>`;
+             //     showNotification("Vous n'avez pas les permissions pour voir les statistiques.", true);
+             //     return;
+             // }
+
             isFetchingStats = true;
             console.log("Fetching stats...");
-            dom.statsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i></div>`;
+            dom.statsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
 
             try {
                 let trips;
@@ -1580,8 +1763,8 @@
                 } else {
                      console.log("Stats cache miss, fetching all trips...");
                      const snapshot = await db.collection(COLLECTION_TRAJETS).get();
-                     trips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Garder l'ID si besoin plus tard
-                     allTripsDataCache = trips; // Mettre en cache
+                     trips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                     allTripsDataCache = trips;
                      console.log("Fetched", trips.length, "trips and cached for stats.");
                 }
 
@@ -1591,14 +1774,16 @@
                     return;
                 }
 
-                // --- Calculs Statistiques ---
+                // --- Statistical Calculations ---
                 const totalTrips = trips.length;
                 const now = new Date();
                 const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`;
                 const currentYearStr = `${now.getFullYear()}`;
 
+                 // Filter by date strings for month/year based on YYYY-MM-DD format
                 const tripsThisMonth = trips.filter(t => t.date?.startsWith(currentMonthStr)).length;
                 const tripsThisYear = trips.filter(t => t.date?.startsWith(currentYearStr)).length;
+
 
                 const driverCounts = {};
                 const passengerCounts = {};
@@ -1606,11 +1791,11 @@
                 let tripsWithPassengers = 0;
 
                 trips.forEach(t => {
-                    // Comptage Conducteur
+                    // Driver Count
                     const driver = t.conducteur?.trim() || '(Non spécifié)';
                     driverCounts[driver] = (driverCounts[driver] || 0) + 1;
 
-                    // Comptage Passagers
+                    // Passenger Count
                     const validPassengers = t.passagers?.filter(p => p && String(p).trim());
                     if (validPassengers?.length > 0) {
                         tripsWithPassengers++;
@@ -1631,31 +1816,31 @@
                 const avgPassengersPerTripWithPassengers = tripsWithPassengers > 0 ? (totalPassengers / tripsWithPassengers).toFixed(1) : '0.0';
                 const avgPassengersPerTripAll = totalTrips > 0 ? (totalPassengers / totalTrips).toFixed(1) : '0.0';
 
-                // --- Génération HTML pour les Statistiques ---
+                // --- HTML Generation for Statistics ---
                 let statsHTML = `
                     <h3>Statistiques Générales</h3>
                     <p><strong>Nombre total de trajets enregistrés :</strong> ${totalTrips}</p>
                     <p><strong>Trajets ce mois-ci (${now.toLocaleDateString('fr-FR', { month: 'long'})}) :</strong> ${tripsThisMonth}</p>
                     <p><strong>Trajets cette année (${currentYearStr}) :</strong> ${tripsThisYear}</p>
                     <hr>
-                    <h3>Participation</h3>
+                    <h4>Participation</h4>
                     <p><strong>Conducteur le plus fréquent :</strong> ${topDriver}</p>
                     <p><strong>Passager le plus fréquent :</strong> ${topPassenger}</p>
                     <p><strong>Nombre moyen de passagers (trajets avec passagers) :</strong> ${avgPassengersPerTripWithPassengers}</p>
                     <p><strong>Nombre moyen de passagers (tous trajets confondus) :</strong> ${avgPassengersPerTripAll}</p>
                     <hr>
-                    <h4>Classement Conducteurs :</h4>`; // Changed title to make it more general
+                    <h4>Classement Conducteurs :</h4>`;
 
                 if (sortedDrivers.length > 0) {
-                    statsHTML += `<ul>${sortedDrivers.map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`; // List all drivers
+                    statsHTML += `<ul>${sortedDrivers.map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`;
                 } else {
                     statsHTML += `<p><em>Aucun conducteur enregistré.</em></p>`;
                 }
 
-                statsHTML += `<h4>Classement Passagers :</h4>`; // Changed title
+                statsHTML += `<h4>Classement Passagers :</h4>`;
 
                 if (sortedPassengers.length > 0) {
-                    statsHTML += `<ul>${sortedPassengers.map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`; // List all passengers
+                    statsHTML += `<ul>${sortedPassengers.map(([name, count]) => `<li>${name} : ${count} trajet${count > 1 ? 's' : ''}</li>`).join('')}</ul>`;
                 } else {
                     statsHTML += `<p><em>Aucun passager enregistré.</em></p>`;
                 }
@@ -1664,10 +1849,16 @@
 
             } catch (error) {
                 console.error("Error generating statistics:", error);
-                dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors de la génération des statistiques: ${error.message}</p>`;
-                allTripsDataCache = null; // Invalider le cache en cas d'erreur
+                // Check if it's a permission error
+                if (error.code === 'permission-denied') {
+                     dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-lock"></i> Vous n'avez pas les permissions pour voir les statistiques.</p>`;
+                     showNotification("Vous n'avez pas les permissions pour voir les statistiques.", true);
+                } else {
+                     dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors de la génération des statistiques: ${error.message}</p>`;
+                }
+                allTripsDataCache = null;
             } finally {
-                isFetchingStats = false; // Marquer la fin de la tentative de fetch
+                isFetchingStats = false;
             }
         }
 
@@ -1675,86 +1866,94 @@
             console.log("Attempting to fetch trajet for edit:", trajetId);
             if (!trajetId) {
                 console.error("editTrajet called with no ID.");
+                showNotification("ID de trajet manquant pour la modification.", true);
                 return;
             }
+             // Switch to form view BEFORE fetching and populating
+            switchView('form');
+
             db.collection(COLLECTION_TRAJETS).doc(trajetId).get()
                 .then(doc => {
                     if (!doc.exists) {
                         showNotification("Le trajet à modifier n'a pas été trouvé.", true);
                         console.warn("Document not found for edit:", trajetId);
+                        resetForm(); // Clear form if doc not found
                         return;
                     }
                     const t = doc.data();
                     console.log("Trajet data found for edit:", t);
 
-                    // Basculer vers la vue formulaire AVANT de remplir les champs
-                    switchView('form');
-
-                    // Remplir le formulaire
-                    dom.dateInput.value = t.date || ''; // Assumer format YYYY-MM-DD
+                    // Populate the form
+                    dom.dateInput.value = t.date || '';
                     dom.conducteurInput.value = t.conducteur || '';
                     dom.commentaireInput.value = t.commentaire || '';
-                    dom.editIdInput.value = trajetId; // !! Important pour savoir qu'on est en mode édition
-                    dom.formTitle.textContent = 'Modifier le Trajet'; // Changer le titre
-                    dom.submitBtn.textContent = 'Mettre à jour'; // Changer le texte du bouton
-                    dom.cancelEditBtn.style.display = 'inline-block'; // Afficher le bouton Annuler
+                    dom.editIdInput.value = trajetId;
+                    dom.formTitle.textContent = 'Modifier le Trajet';
+                    dom.submitBtn.innerHTML = '<i class="fas fa-save"></i> Mettre à jour'; // Add icon
+                    dom.cancelEditBtn.style.display = 'inline-flex'; // Show cancel button
 
-                    // Vider les champs passagers existants avant d'ajouter les nouveaux
-                    const existingPassengerRows = dom.passengerContainer.querySelectorAll('.passenger-row');
-                    existingPassengerRows.forEach(row => row.remove());
+                    // Clear existing passenger fields before adding
+                    dom.passengerContainer.querySelectorAll('.passenger-row').forEach(row => row.remove());
 
-                    // Ajouter les champs pour les passagers du trajet
+                    // Add fields for passengers
                     if (t.passagers && Array.isArray(t.passagers) && t.passagers.length > 0) {
                          t.passagers.filter(p => p && String(p).trim()).forEach(p => addPassengerField(String(p).trim()));
                     }
 
-                    // S'assurer qu'il y a au moins un champ passager (même vide) si aucun n'a été ajouté
+                    // Ensure at least one empty passenger field is present if none were added
                     if (dom.passengerContainer.querySelectorAll('.passenger-row').length === 0) {
                         addPassengerField();
                     }
-                    updatePassengerRemoveButtonsState(); // Gérer l'affichage des boutons moins
+                    updatePassengerRemoveButtonsState();
 
-                    // Optionnel: Scroll vers le formulaire pour la visibilité
-                    dom.formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Optional: Scroll to form section
+                    // dom.formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
                 })
                 .catch(error => {
                     console.error("Error fetching document for edit:", trajetId, error);
-                    showNotification("Erreur lors de la récupération du trajet: "+error.message, true);
+                    // Check if it's a permission error
+                    if (error.code === 'permission-denied') {
+                         showNotification("Erreur de récupération : Vous n'avez pas les permissions pour modifier ce trajet.", true);
+                    } else {
+                         showNotification("Erreur lors de la récupération du trajet: "+error.message, true);
+                    }
+                     resetForm(); // Clear form on error
                 });
         }
+
 
         function deleteTrajet(trajetId) {
              if (!trajetId) {
                  console.error("deleteTrajet called with no ID.");
+                 showNotification("ID de trajet manquant pour la suppression.", true);
                  return;
              }
-             // Confirmation utilisateur
+             // User confirmation
              if (window.confirm("Êtes-vous sûr de vouloir supprimer ce trajet ? Cette action est irréversible.")) {
                  console.log("User confirmed deletion for ID:", trajetId);
-                 // Désactiver temporairement les boutons ? (Optionnel)
+                 // Optionally disable action buttons here
 
                  db.collection(COLLECTION_TRAJETS).doc(trajetId).delete()
                     .then(() => {
                         console.log("Trajet successfully deleted:", trajetId);
                         showNotification("Trajet supprimé avec succès.");
-                        allTripsDataCache = null; // Invalider le cache stats
+                        allTripsDataCache = null; // Invalidate stats cache
 
-                        // Si on était en train d'éditer ce trajet, réinitialiser le formulaire
+                        // If the deleted trip was currently being edited, reset the form
                         if (dom.editIdInput.value === trajetId) {
                             resetForm();
                         }
 
-                        // Si on est sur la vue calendrier, rafraîchir les données du mois courant
+                        // If on calendar view, refresh calendar data
                         if (currentView === 'calendar') {
                             fetchCalendarTrips(currentCalendarDate);
                         }
-                        // La vue tableau se mettra à jour automatiquement grâce à onSnapshot (si active)
+                        // Table view will auto-update via the onSnapshot listener (if active)
 
                     })
                     .catch(error => {
                         console.error("Error deleting trajet:", trajetId, error);
-                        // Vérifier si c'est une erreur de permission
                         if (error.code === 'permission-denied') {
                              showNotification("Erreur de suppression : Vous n'avez pas les permissions nécessaires.", true);
                         } else {
@@ -1767,100 +1966,100 @@
         }
 
         function handleFormSubmit(event) {
-            event.preventDefault(); // Empêche le rechargement de la page
+            event.preventDefault();
             console.log("Form submitted.");
 
             const date = dom.dateInput.value;
             const conducteur = dom.conducteurInput.value.trim();
 
-            // Validation simple des champs requis
-            if (!date) { showNotification("Veuillez sélectionner une date.", true); return; }
-            if (!conducteur) { showNotification("Veuillez entrer le nom du conducteur.", true); return; }
-            // Validation format date (basique)
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { showNotification("Format de date invalide (AAAA-MM-JJ attendu).", true); return; }
+            if (!date) { showNotification("Veuillez sélectionner une date.", true); dom.dateInput.focus(); return; }
+            if (!conducteur) { showNotification("Veuillez entrer le nom du conducteur.", true); dom.conducteurInput.focus(); return; }
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { showNotification("Format de date invalide (AAAA-MM-JJ attendu).", true); dom.dateInput.focus(); return; }
+
 
             const commentaire = dom.commentaireInput.value.trim();
-            // Récupérer les passagers, en filtrant les champs vides et en nettoyant les espaces
+            // Get passengers, filter empty strings and trim
             const passagers = Array.from(dom.passengerContainer.querySelectorAll('.passenger-input'))
                                    .map(input => input.value.trim())
-                                   .filter(value => value); // Garder uniquement les noms non vides
+                                   .filter(value => value);
 
-            const trajetId = dom.editIdInput.value; // Récupérer l'ID si on est en mode édition
+            const trajetId = dom.editIdInput.value;
             const user = auth.currentUser;
 
-            // Préparer l'objet de données
+            // Prepare data object
             const data = {
                 date: date,
                 conducteur: conducteur,
-                passagers: passagers, // Array de strings
+                passagers: passagers,
                 commentaire: commentaire,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp() // Timestamp de la dernière modification
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            // Ajouter les informations sur l'utilisateur qui modifie/crée
+            // Add user info (createdBy on create, lastModifiedBy on update)
             if (user) {
+                 // Always update last modified info
                 data.lastModifiedByUid = user.uid;
-                data.lastModifiedByName = user.displayName || user.email; // Préférer displayName
-                // Ajouter les infos de création uniquement lors de l'ajout si elles n'existent pas
+                data.lastModifiedByName = user.displayName || user.email;
+                // Add created info only on create
                 if (!trajetId) {
                      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                      data.createdByUid = user.uid;
                      data.createdByName = user.displayName || user.email;
                 }
-            } else if (!trajetId) { // Si pas d'utilisateur et mode ajout, mettre un placeholder
+            } else if (!trajetId) { // Anonymous create
                  data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                  data.createdByUid = 'anonymous';
                  data.createdByName = 'Anonyme';
             }
 
 
-            // Désactiver le bouton et afficher un message de chargement
+            // Disable button and show loading
             dom.submitBtn.disabled = true;
-            dom.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...'; // Spinner + Texte
+            dom.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
 
             let promise;
             let successMsg;
 
-            if (trajetId) { // Mode Mise à jour
-                console.log("Updating trajet with ID:", trajetId, " Data:", data);
-                 // Supprimer les champs createdBy lors de l'update pour ne pas les écraser
+            if (trajetId) { // Update mode
+                console.log("Updating trajet ID:", trajetId, " Data:", data);
+                 // Do not overwrite createdBy fields during update
                  delete data.createdByUid;
                  delete data.createdByName;
-                 delete data.createdAt;
+                 delete data.createdAt; // Ensure this is not updated
                 promise = db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
                 successMsg = "Trajet mis à jour avec succès !";
-            } else { // Mode Ajout
+            } else { // Add mode
                 console.log("Adding new trajet. Data:", data);
                 promise = db.collection(COLLECTION_TRAJETS).add(data);
                 successMsg = "Nouveau trajet ajouté avec succès !";
             }
 
-            // Exécuter la promesse (ajout ou mise à jour)
+            // Execute the promise
             promise.then((docRef) => {
                 console.log("Firestore operation successful.", trajetId ? `Updated doc ID: ${trajetId}` : `Added doc ID: ${docRef?.id}`);
                 showNotification(successMsg);
-                resetForm(); // Réinitialiser le formulaire après succès
-                allTripsDataCache = null; // Invalider le cache stats
+                resetForm(); // Reset form after success
+                allTripsDataCache = null; // Invalidate stats cache
 
-                // Optionnel: Revenir à une vue spécifique après sauvegarde
-                switchView('my-trips'); // Revenir à "Mes Trajets" par défaut
+                // Optional: Switch view after save
+                // Switch back to "My Trips" table after adding/updating
+                switchView('my-trips');
 
             }).catch(error => {
                 console.error("Error saving trajet to Firestore:", error);
-                // Gérer spécifiquement les erreurs de permission
                 if (error.code === 'permission-denied') {
                      showNotification("Erreur : Vous n'avez pas les permissions pour effectuer cette opération.", true);
                 } else {
                      showNotification("Erreur lors de la sauvegarde : " + error.message, true);
                 }
             }).finally(() => {
-                // Réactiver le bouton et restaurer son texte initial, quel que soit le résultat
+                // Re-enable button and restore text
                 dom.submitBtn.disabled = false;
-                dom.submitBtn.innerHTML = dom.editIdInput.value ? 'Mettre à jour' : 'Enregistrer';
+                dom.submitBtn.innerHTML = dom.editIdInput.value ? '<i class="fas fa-save"></i> Mettre à jour' : 'Enregistrer';
             });
         }
 
-        // Fonction utilitaire pour "debouncer" une fonction (ex: éviter appels multiples lors de la saisie)
+        // Debounce function for filtering
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -1873,172 +2072,207 @@
             };
         }
 
-        // --- Configuration des Écouteurs d'Événements ---
+        // --- Event Listeners Setup ---
 
-        // Connexion Google
+        // Google Sign-in
         dom.loginBtn.addEventListener('click', () => {
              console.log("Login button clicked");
              const provider = new firebase.auth.GoogleAuthProvider();
-             // Optionnel: forcer la sélection de compte si besoin
-             // provider.setCustomParameters({ prompt: 'select_account' });
              auth.signInWithPopup(provider)
                .then((result) => {
                    console.log("Sign-in successful:", result.user?.displayName);
-                   // onAuthStateChanged gérera la suite
+                   // onAuthStateChanged handles the rest
                })
                .catch((error) => {
                    console.error("Google Sign-In Error:", error);
                    let message = `Erreur de connexion Google: ${error.message}`;
-                   if (error.code === 'auth/popup-closed-by-user') {
+                    if (error.code === 'auth/popup-closed-by-user') {
                        message = "La fenêtre de connexion a été fermée.";
-                   } else if (error.code === 'auth/cancelled-popup-request') {
+                    } else if (error.code === 'auth/cancelled-popup-request') {
                        message = "Une autre fenêtre de connexion est déjà ouverte.";
-                   } else if (error.code === 'auth/account-exists-with-different-credential') {
+                    } else if (error.code === 'auth/account-exists-with-different-credential') {
                         message = "Un compte avec cet email existe déjà avec un autre mode de connexion.";
-                   } else {
+                    } else if (error.code === 'auth/auth-domain-config-error') {
+                         message = "Configuration Firebase Auth invalide. Vérifiez l'origine autorisée dans la console Firebase.";
+                    } else {
                         message = "Erreur de connexion : " + error.message;
-                   }
+                    }
                    showNotification(message, true);
                });
         });
 
-        // Gestion de l'état d'authentification (connexion/déconnexion)
+        // Authentication state listener
         auth.onAuthStateChanged(user => {
-            const loggedIn = !!user; // True si user n'est pas null/undefined
+            const loggedIn = !!user;
             console.log("Auth state changed. User logged in:", loggedIn);
 
             dom.authContainer.style.display = loggedIn ? 'none' : 'block';
             dom.contentContainer.style.display = loggedIn ? 'block' : 'none';
+             dom.tabBar.style.display = loggedIn ? 'flex' : 'none'; // Show/hide tab bar
 
-            // Nettoyer l'ancien listener du tableau (sécurité) et les écouteurs d'actions
+            // Remove old table action listener (safety)
             dom.listeTrajetsDiv.removeEventListener('click', handleTableActions);
 
-
             if (loggedIn) {
-                console.log("User details:", { uid: user.uid, displayName: user.displayName, email: user.email });
-                // Afficher les infos utilisateur et le bouton déconnexion
+                console.log("User details:", { uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL });
                 dom.profileInfo.innerHTML = `
-                    <img src="${user.photoURL || 'https://via.placeholder.com/50'}" alt="Avatar" referrerpolicy="no-referrer">
-                    <div><strong>${user.displayName || user.email || 'Utilisateur'}</strong></div>
+                    <div>${user.displayName || user.email || 'Utilisateur'}</div>
+                    <img src="${user.photoURL || 'https://via.placeholder.com/40'}" alt="Avatar" referrerpolicy="no-referrer">
                     <button id="logout-btn" title="Se déconnecter">Déconnexion</button>`;
 
-                 // Attacher l'écouteur au bouton déconnexion (qui vient d'être créé)
+                 // Attach logout listener to the newly created button
                  const logoutBtn = document.getElementById('logout-btn');
                  if (logoutBtn) {
                     logoutBtn.addEventListener('click', () => {
                         console.log("Logout button clicked");
                         auth.signOut().then(() => {
                              console.log("User signed out.");
-                             // onAuthStateChanged gérera la suite (passage à loggedIn = false)
+                             // onAuthStateChanged will handle UI update
                         }).catch((error) => {
                              console.error("Sign out error:", error);
                              showNotification("Erreur lors de la déconnexion.", true);
                         });
                     });
-                 } else { console.error("Logout button not found after creation."); }
+                 }
 
-                // Initialiser les éléments après connexion
-                populateYearFilter(); // Remplir le filtre année
-                resetForm();          // Pré-remplir/réinitialiser le formulaire
+                // Init components after login
+                populateYearFilter();
+                resetForm(); // Initialize form (pre-fill date/driver if needed)
 
-                // **Attacher l'écouteur pour les actions du tableau ici**
+                // **Attach table action listener**
                 dom.listeTrajetsDiv.addEventListener('click', handleTableActions);
                 console.log("Table action listener attached.");
 
-                // Afficher la vue par défaut après connexion
-                switchView('my-trips');
-                showNotification(`Bienvenue ${user.displayName || user.email || ''} !`);
 
-            } else { // Utilisateur déconnecté
-                dom.profileInfo.innerHTML = ''; // Vider les infos profil
+                // Switch to the default view after login (e.g., 'my-trips')
+                 switchView('my-trips'); // Default view after login
+                 showNotification(`Bienvenue ${user.displayName || user.email || ''} !`);
 
-                // Arrêter l'écoute des trajets en temps réel
+
+            } else { // User logged out
+                dom.profileInfo.innerHTML = ''; // Clear profile info
+
+                // Stop real-time listeners
                 if (trajetsUnsubscribe) {
                     console.log("Unsubscribing table listener on logout.");
                     try { trajetsUnsubscribe(); } catch(e){ console.warn("Error unsubscribing on logout:", e); }
                     trajetsUnsubscribe = null;
                 }
 
-                // Vider les zones de contenu dynamique
+                // Clear dynamic content areas
                 dom.listeTrajetsDiv.innerHTML = '';
                 dom.calendarGrid.innerHTML = '';
                 dom.tripsForDayDiv.innerHTML = '<p>Veuillez vous connecter.</p>';
                 dom.statsContent.innerHTML = '';
+                 // Reset calendar date to today for next login
+                 currentCalendarDate = new Date();
 
-                // Réinitialiser les variables d'état liées aux données
-                calendarTrips = [];
+
+                // Hide all sections and reset view state
+                dom.contentContainer.querySelectorAll('section').forEach(section => {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
+                });
+                // Reset tab active state (optional, onAuthStateChanged will set it on login)
+                 dom.tabButtons.forEach(button => button.classList.remove('active'));
+                 // Maybe set 'my-trips' tab active visually even when logged out?
+                 // dom.tabButtons.forEach(button => {
+                 //     if (button.dataset.view === 'my-trips') button.classList.add('active');
+                 //     else button.classList.remove('active');
+                 // });
+
+
                 allTripsDataCache = null;
-                currentView = 'my-trips'; // Réinitialiser la vue par défaut pour la prochaine connexion
+                isFetchingStats = false;
+                currentView = 'my-trips'; // Reset default view for next login
                 console.log("Cleaned up UI and state for logged out user.");
             }
         });
 
-        // Boutons Ajouter/Retirer passager
+        // Add/Remove passenger buttons
         dom.addPassengerBtn.addEventListener('click', () => addPassengerField());
         dom.passengerContainer.addEventListener('click', (e) => {
-            // Utilisation de la délégation d'événements pour les boutons "moins"
             if (e.target.closest('.remove-passenger-btn')) {
                 const row = e.target.closest('.passenger-row');
-                 // S'assurer qu'on ne supprime pas le dernier champ, on le vide
-                 const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
+                const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
                  if (rows.length > 1) {
                     row.remove();
                  } else {
-                    row.querySelector('.passenger-input').value = ''; // Vider le dernier champ
+                    row.querySelector('.passenger-input').value = ''; // Clear the last field
                  }
-                updatePassengerRemoveButtonsState(); // Mettre à jour l'état (qui peut réafficher un champ si nécessaire)
+                updatePassengerRemoveButtonsState();
             }
         });
 
-        // Boutons du formulaire
+        // Form buttons
         dom.cancelEditBtn.addEventListener('click', () => {
              console.log("Cancel edit clicked.");
              resetForm();
-             // Optionnel: revenir à la vue tableau si on annule une modification
-             if(currentView === 'form') switchView('my-trips');
+             // Optional: switch back to the table view after cancelling edit
+             // if(currentView === 'form') switchView('my-trips'); // This would auto-switch back
         });
         dom.form.addEventListener('submit', handleFormSubmit);
-        // Le bouton Reset type="reset" fonctionne nativement
 
-        // Filtres du tableau
-        const debouncedTableRefresh = debounce(subscribeToTrajets, 400); // Attendre 400ms après la saisie
-        dom.filterMonth.addEventListener('change', subscribeToTrajets); // Rafraîchir immédiatement au changement de mois/année
+        // Table Filters
+        const debouncedTableRefresh = debounce(subscribeToTrajets, 400);
+        dom.filterMonth.addEventListener('change', subscribeToTrajets);
         dom.filterYear.addEventListener('change', subscribeToTrajets);
-        dom.filterPerson.addEventListener('input', debouncedTableRefresh); // Rafraîchir avec délai pour la saisie
+        dom.filterPerson.addEventListener('input', debouncedTableRefresh);
         dom.resetFiltersBtn.addEventListener('click', () => {
             console.log("Reset filters clicked.");
             dom.filterMonth.value = '';
-            dom.filterYear.value = '';
-            dom.filterPerson.value = '';
-            // Rafraîchir le tableau si on est sur une vue tableau
-            // S'assurer que le filtre année est réinitialisé à l'année courante
+            // Reset year filter to the current year
              const currentYear = new Date().getFullYear();
-             dom.filterYear.value = currentYear; // Set back to current year
+             dom.filterYear.value = currentYear;
+            dom.filterPerson.value = '';
+             // Manually trigger table refresh IF user is on a table view
             if (currentView === 'my-trips' || currentView === 'all-trips') {
                 subscribeToTrajets();
             }
         });
 
-        // Boutons de navigation entre les vues (onglets)
-        dom.formViewBtn.addEventListener('click', () => switchView('form'));
-        dom.myTripsBtn.addEventListener('click', () => switchView('my-trips'));
-        dom.allTripsBtn.addEventListener('click', () => switchView('all-trips'));
-        dom.calendarViewBtn.addEventListener('click', () => switchView('calendar'));
-        dom.statsViewBtn.addEventListener('click', () => switchView('stats'));
-
-        // Boutons de navigation du calendrier
-        dom.prevMonthBtn.addEventListener('click', goToPreviousMonth);
-        dom.nextMonthBtn.addEventListener('click', goToNextMonth);
-         // Les clics sur les jours du calendrier sont gérés par handleCalendarClick via délégation
-
-        // Initialisation au chargement du DOM
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM Ready. Waiting for Firebase Auth state...");
-            // L'initialisation principale se fait dans onAuthStateChanged
+        // Tab bar navigation buttons
+        dom.tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const view = button.dataset.view;
+                if (view) {
+                    // Before switching, check if user is editing. If so, confirm leaving.
+                    if (dom.editIdInput.value && currentView === 'form') {
+                        if (!window.confirm("Vous êtes en train de modifier un trajet. Voulez-vous quitter sans enregistrer ?")) {
+                            return; // User cancelled leaving the form
+                        }
+                         // If user confirms leaving, reset the form
+                         resetForm();
+                    }
+                    switchView(view);
+                }
+            });
         });
 
-        // Initialisation des filtres année dès que possible
-        populateYearFilter();
+
+        // Calendar navigation buttons
+        dom.prevMonthBtn.addEventListener('click', goToPreviousMonth);
+        dom.nextMonthBtn.addEventListener('click', goToNextMonth);
+         // Clicks on calendar days are handled by handleCalendarClick via delegation
+
+
+        // Initial setup on DOM ready
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM Ready. Waiting for Firebase Auth state...");
+            // The onAuthStateChanged listener will handle the main initialization
+            // Populate year filter early, before auth state is known
+            populateYearFilter();
+
+            // Set the default state visually while waiting for auth
+            dom.contentContainer.style.display = 'none';
+            dom.tabBar.style.display = 'none';
+            dom.authContainer.style.display = 'block'; // Ensure auth is visible
+            dom.tabButtons.forEach(button => {
+                if (button.dataset.view === 'my-trips') button.classList.add('active');
+                else button.classList.remove('active');
+            });
+
+        });
     </script>
 </body>
 </html>
