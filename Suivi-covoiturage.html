@@ -1226,7 +1226,7 @@
             }
         }
 
-        function subscribeToTrajets() {
+                function subscribeToTrajets() {
             if (currentView !== 'my-trips' && currentView !== 'all-trips') return; // Ne rien faire si on n'est pas sur une vue tableau
             console.log(`subscribeToTrajets called for view: ${currentView}`);
 
@@ -1242,57 +1242,62 @@
             const month = dom.filterMonth.value, year = dom.filterYear.value;
 
             // Application des filtres de date
-            if (month && year) {
-                const y = parseInt(year), m = parseInt(month);
-                // Assurer que le mois est sur 2 chiffres
-                const monthPadded = String(m).padStart(2,'0');
-                // Date de début: YYYY-MM-01T00:00:00
-                const start = `${y}-${monthPadded}-01`;
-                // Date de fin: Premier jour du mois suivant
-                const nextMonthDate = new Date(y, m, 1); // Mois JS 0-indexé, m est 1-indexé -> m = mois suivant
-                const end = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2,'0')}-01`;
-                console.log(`Filtering by date range: >= ${start} and < ${end}`);
-                query = query.where('date', '>=', start).where('date', '<', end);
-            } else if (year) {
-                const y = parseInt(year);
-                // Date de début: YYYY-01-01T00:00:00
-                const start = `${y}-01-01`;
-                // Date de fin: Premier jour de l'année suivante
-                const end = `${y + 1}-01-01`;
-                console.log(`Filtering by year range: >= ${start} and < ${end}`);
-                query = query.where('date', '>=', start).where('date', '<', end);
-            }
+            // ... (Votre code pour les filtres de date reste inchangé) ...
+             if (month && year) {
+                 const y = parseInt(year), m = parseInt(month);
+                 const monthPadded = String(m).padStart(2,'0');
+                 const start = `${y}-${monthPadded}-01`;
+                 const nextMonthDate = new Date(y, m, 1);
+                 const end = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2,'0')}-01`;
+                 console.log(`Filtering Firestore by date range: >= ${start} and < ${end}`);
+                 // Appliquer les filtres Firestore *avant* orderBy pour de meilleures performances si possible
+                 // Note: Firestore ne permet qu'un seul champ dans les requêtes d'intervalle et le orderBy
+                 // Si vous filtrez par date range, vous DEVEZ order by date
+                 query = query.where('date', '>=', start).where('date', '<', end);
+             } else if (year) {
+                 const y = parseInt(year);
+                 const start = `${y}-01-01`;
+                 const end = `${y + 1}-01-01`;
+                 console.log(`Filtering Firestore by year range: >= ${start} and < ${end}`);
+                 query = query.where('date', '>=', start).where('date', '<', end);
+             }
+             // IMPORTANT: Le orderBy('date', 'desc') doit venir après les filtres de date si présents
+             query = query.orderBy('date', 'desc');
 
-            // Tri par date décroissante (le plus récent en premier)
-            query = query.orderBy('date', 'desc');
 
             // Écoute des changements en temps réel
             trajetsUnsubscribe = query.onSnapshot((snapshot) => {
                 console.log("Table onSnapshot triggered: received", snapshot.docs.length, "docs for query.");
                 let trajets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Application du filtre par personne (après récupération des données)
+                // Application du filtre par personne (après récupération des données car la recherche est sur plusieurs champs)
                 const term = dom.filterPerson.value.trim().toLowerCase();
                 if (term) {
                     trajets = trajets.filter(t =>
                         (t.conducteur && t.conducteur.toLowerCase().includes(term)) ||
-                        (t.passagers && Array.isArray(t.passagers) && t.passagers.some(p => typeof p === 'string' && p.toLowerCase().includes(term)))
+                        (t.passagers && Array.isArray(t.passagers) && t.passagers.some(p => typeof p === 'string' && String(p).toLowerCase().includes(term))) ||
+                        (t.createdByName && t.createdByName.toLowerCase().includes(term)) // Optionnel: permettre de filtrer par la personne qui a ajouté le trajet
                     );
                     console.log(`Filtered by person "${term}", remaining: ${trajets.length}`);
                 }
 
-                // Filtrage spécifique pour "Mes Trajets"
+                // Filtrage spécifique pour "Mes Trajets" - MODIFICATION ICI
                 if (currentView === 'my-trips') {
                     const user = auth.currentUser;
-                    if (user && user.displayName) {
-                        const name = user.displayName;
+                    if (user && user.uid) { // Assurez-vous que l'utilisateur est connecté et a un UID
+                        const userName = user.displayName; // Nom affiché de l'utilisateur
+                        const userId = user.uid; // UID de l'utilisateur
+
                         trajets = trajets.filter(t =>
-                            t.conducteur === name ||
-                            (t.passagers && Array.isArray(t.passagers) && t.passagers.includes(name))
+                            t.createdByUid === userId || // Le trajet a été créé par cet utilisateur
+                            (t.passagers && Array.isArray(t.passagers) && userName && t.passagers.includes(userName)) // L'utilisateur est listé comme passager (match exact du displayName)
+                            // Optionnel: si vous voulez aussi inclure les trajets où l'utilisateur est *listé* comme conducteur,
+                            // mais attention aux variations de nom :
+                            // || (t.conducteur && t.conducteur.trim() === userName)
                         );
-                        console.log(`Filtered for "My Trips" (user: ${name}), remaining: ${trajets.length}`);
+                        console.log(`Filtered for "My Trips" (user UID: ${userId}, name: ${userName}), remaining: ${trajets.length}`);
                     } else {
-                        console.log("Filtering for 'My Trips', but no user or displayName found. Showing empty list.");
+                        console.log("Filtering for 'My Trips', but no user or UID found. Showing empty list.");
                         trajets = []; // Ne rien montrer si l'utilisateur n'est pas identifié correctement
                     }
                 }
