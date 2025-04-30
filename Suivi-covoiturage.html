@@ -1965,99 +1965,104 @@
              }
         }
 
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            console.log("Form submitted.");
+        
 
-            const date = dom.dateInput.value;
-            const conducteur = dom.conducteurInput.value.trim();
+function handleFormSubmit(event) {
+    event.preventDefault();
+    console.log("handleFormSubmit started."); // <-- Ajoutez ceci
 
-            if (!date) { showNotification("Veuillez sélectionner une date.", true); dom.dateInput.focus(); return; }
-            if (!conducteur) { showNotification("Veuillez entrer le nom du conducteur.", true); dom.conducteurInput.focus(); return; }
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { showNotification("Format de date invalide (AAAA-MM-JJ attendu).", true); dom.dateInput.focus(); return; }
+    const date = dom.dateInput.value;
+    const conducteur = dom.conducteurInput.value.trim();
 
-
-            const commentaire = dom.commentaireInput.value.trim();
-            // Get passengers, filter empty strings and trim
-            const passagers = Array.from(dom.passengerContainer.querySelectorAll('.passenger-input'))
-                                   .map(input => input.value.trim())
-                                   .filter(value => value);
-
-            const trajetId = dom.editIdInput.value;
-            const user = auth.currentUser;
-
-            // Prepare data object
-            const data = {
-                date: date,
-                conducteur: conducteur,
-                passagers: passagers,
-                commentaire: commentaire,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            // Add user info (createdBy on create, lastModifiedBy on update)
-            if (user) {
-                 // Always update last modified info
-                data.lastModifiedByUid = user.uid;
-                data.lastModifiedByName = user.displayName || user.email;
-                // Add created info only on create
-                if (!trajetId) {
-                     data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                     data.createdByUid = user.uid;
-                     data.createdByName = user.displayName || user.email;
-                }
-            } else if (!trajetId) { // Anonymous create
-                 data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                 data.createdByUid = 'anonymous';
-                 data.createdByName = 'Anonyme';
-            }
+    if (!date) { showNotification("Veuillez sélectionner une date.", true); console.log("Validation failed: date missing"); return; }
+    console.log("Date validation passed."); // <-- Ajoutez ceci
+    if (!conducteur) { showNotification("Veuillez entrer le nom du conducteur.", true); console.log("Validation failed: conducteur missing"); return; }
+    console.log("Conducteur validation passed."); // <-- Ajoutez ceci
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { showNotification("Format de date invalide (AAAA-MM-JJ attendu).", true); console.log("Validation failed: date format"); return; }
+     console.log("Date format validation passed."); // <-- Ajoutez ceci
 
 
-            // Disable button and show loading
-            dom.submitBtn.disabled = true;
-            dom.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
+    const commentaire = dom.commentaireInput.value.trim();
+    const passagers = Array.from(dom.passengerContainer.querySelectorAll('.passenger-input'))
+                           .map(input => input.value.trim())
+                           .filter(value => value);
 
-            let promise;
-            let successMsg;
+    console.log("Passengers collected:", passagers); // <-- Ajoutez ceci
+    console.log("Preparing data..."); // <-- Ajoutez ceci
 
-            if (trajetId) { // Update mode
-                console.log("Updating trajet ID:", trajetId, " Data:", data);
-                 // Do not overwrite createdBy fields during update
-                 delete data.createdByUid;
-                 delete data.createdByName;
-                 delete data.createdAt; // Ensure this is not updated
-                promise = db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
-                successMsg = "Trajet mis à jour avec succès !";
-            } else { // Add mode
-                console.log("Adding new trajet. Data:", data);
-                promise = db.collection(COLLECTION_TRAJETS).add(data);
-                successMsg = "Nouveau trajet ajouté avec succès !";
-            }
+    const trajetId = dom.editIdInput.value;
+    const user = auth.currentUser;
 
-            // Execute the promise
-            promise.then((docRef) => {
-                console.log("Firestore operation successful.", trajetId ? `Updated doc ID: ${trajetId}` : `Added doc ID: ${docRef?.id}`);
-                showNotification(successMsg);
-                resetForm(); // Reset form after success
-                allTripsDataCache = null; // Invalidate stats cache
+    // Prepare data object
+    const data = {
+        date: date,
+        conducteur: conducteur,
+        passagers: passagers,
+        commentaire: commentaire,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
 
-                // Optional: Switch view after save
-                // Switch back to "My Trips" table after adding/updating
-                switchView('my-trips');
-
-            }).catch(error => {
-                console.error("Error saving trajet to Firestore:", error);
-                if (error.code === 'permission-denied') {
-                     showNotification("Erreur : Vous n'avez pas les permissions pour effectuer cette opération.", true);
-                } else {
-                     showNotification("Erreur lors de la sauvegarde : " + error.message, true);
-                }
-            }).finally(() => {
-                // Re-enable button and restore text
-                dom.submitBtn.disabled = false;
-                dom.submitBtn.innerHTML = dom.editIdInput.value ? '<i class="fas fa-save"></i> Mettre à jour' : 'Enregistrer';
-            });
+    // Add user info
+    if (user) {
+        data.lastModifiedByUid = user.uid;
+        data.lastModifiedByName = user.displayName || user.email;
+        if (!trajetId) {
+            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            data.createdByUid = user.uid;
+            data.createdByName = user.displayName || user.email;
         }
+    } else if (!trajetId) {
+         console.warn("Form submitted by anonymous user!"); // <-- Warning for anonymous
+         data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+         data.createdByUid = 'anonymous';
+         data.createdByName = 'Anonyme';
+    }
+
+
+    // Disable button and show loading
+    dom.submitBtn.disabled = true;
+    dom.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
+     console.log("Submit button disabled."); // <-- Ajoutez ceci
+
+
+    let promise;
+    let successMsg;
+
+    if (trajetId) { // Update mode
+        console.log("Attempting to update trajet ID:", trajetId, " Data:", data); // <-- Log update attempt
+         delete data.createdByUid;
+         delete data.createdByName;
+         delete data.createdAt;
+        promise = db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
+        successMsg = "Trajet mis à jour avec succès !";
+    } else { // Add mode
+        console.log("Attempting to add new trajet. Data:", data); // <-- Log add attempt
+        promise = db.collection(COLLECTION_TRAJETS).add(data);
+        successMsg = "Nouveau trajet ajouté avec succès !";
+    }
+
+    // Execute the promise
+    promise.then((docRef) => {
+        console.log("Firestore operation successful.", trajetId ? `Updated doc ID: ${trajetId}` : `Added doc ID: ${docRef?.id}`);
+        showNotification(successMsg);
+        resetForm();
+        allTripsDataCache = null;
+        switchView('my-trips');
+    }).catch(error => {
+        console.error("Error saving trajet to Firestore:", error); // <-- Log Firestore error
+        if (error.code === 'permission-denied') {
+             showNotification("Erreur : Vous n'avez pas les permissions pour effectuer cette opération.", true);
+             console.error("Firestore permission denied error."); // <-- Specific log
+        } else {
+             showNotification("Erreur lors de la sauvegarde : " + error.message, true);
+             console.error("Other Firestore error:", error.message); // <-- Specific log
+        }
+    }).finally(() => {
+        console.log("Firestore promise finished. Re-enabling button."); // <-- Log finally
+        dom.submitBtn.disabled = false;
+        dom.submitBtn.innerHTML = dom.editIdInput.value ? '<i class="fas fa-save"></i> Mettre à jour' : 'Enregistrer';
+    });
+}
 
         // Debounce function for filtering
         function debounce(func, wait) {
