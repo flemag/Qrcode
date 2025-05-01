@@ -724,7 +724,14 @@
         #logout-btn { margin-top: 10px; } /* Space below name */
          .profile-info { flex-direction: column; align-items: center; }
 
-        .main-content { padding: 15px; padding-bottom: 70px; } /* Adjust padding */
+        .main-content {
+        flex-grow: 1;
+        padding: 15px;
+        padding-bottom: 100px; /* Increased from 80px */
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+    }
         .content > section { padding: 20px; }
         h2 { font-size: 1.6rem; margin-bottom: 15px; }
 
@@ -830,7 +837,14 @@
          .profile-info > div { font-size: 0.9rem; }
          #logout-btn { padding: 5px 10px; font-size: 0.85rem; }
 
-         .main-content { padding: 10px; padding-bottom: 65px; } /* Adjust padding */
+         .main-content {
+         flex-grow: 1;
+         padding: 10px;
+         padding-bottom: 90px; /* Increased from 65px */
+         max-width: 1000px;
+         margin: 0 auto;
+         width: 100%;
+     }
          .content > section { padding: 15px; margin-bottom: 15px;}
          h2 { font-size: 1.4rem; margin-bottom: 12px; }
 
@@ -867,9 +881,10 @@
 
          /* Tab bar adjustments */
          .tab-button { font-size: 0.65rem; min-width: 60px; padding: 8px 3px;}
-         .tab-button i { font-size: 1.1rem;}
-          .notification { bottom: 65px; }
-    }
+      .tab-button i { font-size: 1.1rem;}
+      /* MODIFICATION ICI - Adjust notification position to match new padding */
+       .notification { bottom: 70px; } /* Adjust if needed based on body padding */
+}
 
     /* Desktop specific adjustments (larger screens) */
     @media (min-width: 768px) {
