@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrouveRecette - Demande de recettes</title>
+    <style>
+        /* Reset et fond */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #1f1c2c, #928dab);
+            display: flex;
+            flex-direction: column; /* Pour empiler le formulaire et les résultats */
+            justify-content: flex-start; /* Aligner en haut */
+            align-items: center;
+            padding: 40px;
+            gap: 30px; /* Espace entre le formulaire et les résultats */
+            scroll-behavior: smooth; /* Pour le défilement fluide */
+        }
+
+        /* Conteneurs principaux */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 750px; /* Augmenté un peu pour les résultats */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s ease-in-out;
+            color: #fff; /* Couleur du texte dans les conteneurs */
+        }
+
+        /* Styles spécifiques pour le conteneur du formulaire */
+         .form-container {
+             /* Transition pour la hauteur du conteneur global si nécessaire,
+                mais on va surtout animer le contenu interne */
+             transition: max-height 0.5s ease-in-out;
+             overflow: hidden; /* Cache le contenu qui dépasse pendant la transition */
+         }
+
+         /* Titre principal du formulaire */
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: margin-bottom 0.5s ease-in-out; /* Anime la marge quand il devient cliquable */
+        }
+
+        /* Styles du titre quand le formulaire est replié */
+         #form-title.collapsed {
+             margin-bottom: 0; /* Réduit la marge sous le titre replié */
+             cursor: pointer; /* Indique qu'il est cliquable */
+             text-decoration: none; /* Enlève le soulignement par défaut */
+             /* Ajout d'une petite flèche CSS */
+             position: relative;
+             padding-right: 25px; /* Espace pour la flèche */
+         }
+          #form-title.collapsed:hover {
+              text-decoration: underline; /* Souligne au survol */
+          }
+
+
+         #form-title.collapsed::after {
+             content: '▼'; /* Flèche vers le bas */
+             position: absolute;
+             right: 0;
+             top: 50%;
+             transform: translateY(-50%);
+             font-size: 0.8em;
+             transition: transform 0.3s ease-in-out; /* Animation pour la flèche si besoin (non utilisée ici) */
+         }
+
+
+         /* Contenu du formulaire (ce qui va être caché/montré) */
+         #form-content {
+             overflow: hidden;
+             transition: max-height 0.5s ease-in-out; /* Anime la hauteur */
+             max-height: 1500px; /* Hauteur maximale suffisante pour l'état déplié */
+         }
+
+
+        /* Groupes de formulaire */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.8);
+            transition: 0.3s;
+            color: #333; /* Couleur du texte dans les inputs */
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 8px rgba(0, 150, 255, 0.4);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Boutons */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 150, 255, 0.3);
+        }
+         .btn:disabled {
+            background: linear-gradient(135deg, #aaa, #bbb);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-size: 0.95em;
+            margin-right: 15px;
+            color: #fff; /* Assurer la couleur blanche pour les labels checkbox */
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        /* Indicateur de chargement */
+        #loading-indicator {
+            text-align: center; /* Keep text-align for text */
+            font-size: 1.5em;
+            color: #fff;
+            display: flex; /* Use flexbox to center items */
+            flex-direction: column; /* Stack spinner and text vertically */
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            padding: 20px;
+            /* transition: opacity 0.3s ease-in-out; */ /* Optional fade effect */
+        }
+
+        /* Spinner CSS */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff; /* La partie animée */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px; /* Espace entre spinner et texte */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        /* Zone de résultats */
+        #results-container {
+            display: none; /* Caché par défaut */
+            padding: 40px;
+            color: #eee; /* Texte légèrement plus clair */
+        }
+
+        #results-container h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center; /* Center main titles */
+            width: 100%;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3); /* Separator line */
+            padding-bottom: 10px;
+            margin-top: 40px; /* Space above section titles */
+        }
+         #results-container h2:first-of-type {
+             margin-top: 0; /* No extra space for the very first title */
+         }
+
+
+        .recipe {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+             /* Effet hover sympa */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+         .recipe:hover {
+             transform: translateY(-5px);
+             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+         }
+
+
+        .recipe h3 {
+            color: #fff;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 1.4em; /* Slightly larger recipe titles */
+             text-align: left;
+             border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+             padding-bottom: 5px;
+        }
+
+         .recipe h4 {
+             color: #ccc;
+             margin-top: 15px;
+             margin-bottom: 8px;
+             font-size: 1.1em;
+         }
+
+
+        .recipe ul, .recipe ol {
+            margin-left: 25px; /* Increased indent */
+            margin-bottom: 15px; /* More space after lists */
+            list-style-type: disc; /* Default list style */
+        }
+         .recipe ol {
+             list-style-type: decimal;
+         }
+
+        .recipe li {
+            margin-bottom: 8px;
+            line-height: 1.6; /* Increased line height for readability */
+        }
+
+         .recipe p {
+             margin-bottom: 10px;
+             line-height: 1.6;
+         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+             body {
+                 padding: 20px;
+                 gap: 20px;
+             }
+            .container {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+             .recipe {
+                 padding: 20px;
+             }
+             .recipe h3 {
+                 font-size: 1.2em;
+             }
+             #results-container h2 {
+                 font-size: 1.5em;
+             }
+             #form-title.collapsed {
+                 padding-right: 20px;
+             }
+        }
+    </style>
+</head>
+<body>
+    <div class="container form-container">
+        <h1 id="form-title">Ont mange quoi ?</h1>
+        <div id="form-content">
+            <form id="recipeForm">
+                <div class="form-group">
+                    <label for="ingredients">Ingrédients disponibles (séparés par des virgules)</label>
+                    <input type="text" id="ingredients" name="ingredients" required placeholder="Ex: œufs, lait, fromage">
+                </div>
+
+                <div class="form-group">
+                    <label>Type de recette souhaitée</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="recipeType" value="sweet"> Sucré</label>
+                        <label><input type="checkbox" name="recipeType" value="meal"> Plat principal</label>
+                        <label><input type="checkbox" name="recipeType" value="starter"> Entrée</label>
+                        <label><input type="checkbox" name="recipeType" value="dessert"> Dessert</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantities">Quantités disponibles (ex: 2 œufs, 500ml lait)</label>
+                    <input type="text" id="quantities" name="quantities" placeholder="Facultatif">
+                </div>
+
+                <div class="form-group">
+                    <label for="people">Pour combien de personnes ?</label>
+                    <input type="number" id="people" name="people" min="1" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="restrictions">Restrictions alimentaires (facultatif)</label>
+                    <textarea id="restrictions" name="restrictions" placeholder="Allergies, végétarien, etc..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="urgency">Priorité de la recette</label>
+                    <select id="urgency" name="urgency">
+                        <option value="normal">Normale</option>
+                        <option value="urgent">Urgente (temps de préparation court)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Trouver des recettes</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="loading-indicator">
+        <div class="spinner"></div> Recherche de recettes en cours...
+    </div>
+
+    <div id="results-container" class="container">
+        </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ========================================================================
+        // === !!! MISE EN GARDE SÉCURITÉ EXTRÊME !!! =============================
+        // === NE LAISSEZ PAS VOTRE CLÉ API GEMINI ICI EN PRODUCTION ! ============
+        // === Utilisez un backend pour appeler l'API en toute sécurité. =========
+        // ========================================================================
+        const GEMINI_API_KEY = "AIzaSyAXJwPEjuf4Bh2gTDjrKYKGU-VXjMCM4rU"; // <-- REMPLACEZ CECI PAR VOTRE CLÉ
+        // ========================================================================
+
+        // Configuration Firebase (à remplacer par la vôtre si vous l'utilisez toujours)
+        // Si vous n'utilisez pas Firebase pour stocker les requêtes, vous pouvez supprimer ce bloc
+        const firebaseConfig = {
+             apiKey: "YOUR_FIREBASE_API_KEY", // Remplacer par votre clé Firebase si besoin
+             authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+             projectId: "your-project-id",
+             storageBucket: "your-project-id.appspot.com",
+             messagingSenderId: "YOUR_SENDER_ID",
+             appId: "YOUR_APP_ID"
+        };
+
+         // Initialisation Firebase (si vous l'utilisez)
+         let db = null;
+         if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_FIREBASE_API_KEY') {
+              try {
+                  firebase.initializeApp(firebaseConfig);
+                  db = firebase.firestore();
+              } catch (e) {
+                  console.error("Erreur d'initialisation de Firebase:", e);
+                  console.warn("L'enregistrement des requêtes ne fonctionnera pas.");
+              }
+         } else {
+             console.warn("Firebase non configuré ou clé manquante. L'enregistrement des requêtes ne fonctionnera pas.");
+         }
+
+
+        // Récupération des éléments DOM
+        const formContainer = document.querySelector('.form-container');
+        const formTitle = document.getElementById('form-title');
+        const formContent = document.getElementById('form-content');
+        const recipeForm = document.getElementById('recipeForm');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const resultsContainer = document.getElementById('results-container');
+        const submitButton = recipeForm.querySelector('button[type="submit"]');
+        const spinnerElement = loadingIndicator.querySelector('.spinner'); // Récupérer le spinner
+
+
+        // Variable pour garder l'état du formulaire
+        let isFormCollapsed = false; // Le formulaire commence déplié
+
+        // Fonction pour replier le formulaire
+        function collapseForm() {
+            if (!isFormCollapsed) {
+                formContent.style.maxHeight = '0'; // Commence l'animation de repli
+                formTitle.classList.add('collapsed'); // Ajoute la classe pour changer le style du titre
+                isFormCollapsed = true;
+            }
+        }
+
+        // Fonction pour déplier le formulaire
+        function expandForm() {
+            if (isFormCollapsed) {
+                // On met une hauteur large pour s'assurer que tout le contenu est visible
+                formContent.style.maxHeight = '1500px'; // Assurez-vous que c'est > hauteur max réelle
+                formTitle.classList.remove('collapsed');
+                isFormCollapsed = false;
+                 // Optionnel: faire défiler vers le formulaire quand on le déplie
+                 formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Ajouter l'écouteur de clic au titre du formulaire pour basculer
+        formTitle.addEventListener('click', () => {
+            if (isFormCollapsed) {
+                expandForm();
+            }
+             // Ne rien faire si le formulaire est déjà déplié
+        });
+
+
+        // Gestion du formulaire
+        recipeForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Réinitialiser l'affichage avant la nouvelle recherche
+            loadingIndicator.style.display = 'flex'; // Utilisez flex car le conteneur est flex
+            spinnerElement.style.display = 'block'; // Afficher le spinner
+            resultsContainer.style.display = 'none';
+            resultsContainer.innerHTML = ''; // Vider les résultats précédents
+            submitButton.disabled = true; // Désactiver le bouton pendant le chargement
+            // expandForm(); // Pas forcément utile d'expand ici si on scroll au chargement
+
+            // Faire défiler la page vers l'indicateur de chargement CENTRÉ
+            loadingIndicator.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+
+            // Collecte et nettoyage des données
+            const formData = new FormData(this);
+            const rawData = {};
+            formData.forEach((value, key) => {
+                rawData[key] = value ? value.trim() : ''; // Gérer les valeurs null/undefined
+            });
+
+            // Traitement avancé des données
+            const processedData = {
+                ingredients: rawData.ingredients.split(',').map(i => i.trim()).filter(i => i),
+                recipeTypes: formData.getAll('recipeType'),
+                quantities: parseQuantities(rawData.quantities),
+                people: parseInt(rawData.people) || 1,
+                restrictions: rawData.restrictions ? rawData.restrictions.split(',').map(r => r.trim()).filter(r => r) : [],
+                urgent: rawData.urgency === 'urgent',
+                timestamp: new Date()
+            };
+
+             // Vérifier si au moins un ingrédient est saisi
+             if (processedData.ingredients.length === 0) {
+                 alert("Veuillez saisir au moins un ingrédient.");
+                 loadingIndicator.style.display = 'none';
+                 spinnerElement.style.display = 'none'; // Cacher le spinner aussi
+                 submitButton.disabled = false;
+                 return; // Arrêter l'exécution si pas d'ingrédients
+             }
+
+
+            // Stockage dans Firebase (si configuré)
+            if (db) {
+                try {
+                    await db.collection("userRequests").add(processedData);
+                    console.log("Données sauvegardées avec succès dans Firebase !");
+                } catch (error) {
+                    console.error("Erreur d'enregistrement Firebase: ", error);
+                }
+            }
+
+            // Préparation de la requête Gemini
+            const geminiPayload = {
+                contents: [{
+                    parts: [{
+                        text: generatePrompt(processedData)
+                    }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 3000, // Peut-être augmenter encore pour les deux listes complètes
+                    topP: 0.95,
+                    topK: 40
+                }
+                // safetySettings: [ ... ] // Optionnel: ajouter des paramètres de sécurité si besoin
+            };
+
+            // Appel à l'API Gemini
+            try {
+                // !!! UTILISER VOTRE CLÉ API ICI - TRÈS DANGEREUX CÔTÉ CLIENT !!!
+                // Utilisation de gemini-1.5-flash-latest pour potentiellement mieux gérer le format complexe
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // L'EN-TÊTE 'Authorization' EST SUPPRIMÉ COMME CONSEILLÉ
+                    },
+                    body: JSON.stringify(geminiPayload)
+                });
+
+                // Vérifier si la réponse HTTP est un succès (code 2xx)
+                if (!response.ok) {
+                     const errorBody = await response.text(); // Essayer de lire le corps pour plus de détails
+                     throw new Error(`Erreur API Gemini: Statut HTTP ${response.status} - ${response.statusText}. Détails: ${errorBody.substring(0, 200)}...`); // Limiter la taille de l'erreur
+                }
+
+                const result = await response.json();
+                console.log("Réponse brute de l'API Gemini:", result);
+
+                // Afficher les résultats, masquer l'indicateur de chargement et replier le formulaire
+                loadingIndicator.style.display = 'none';
+                spinnerElement.style.display = 'none'; // Cacher le spinner
+                submitButton.disabled = false; // Réactiver le bouton
+
+                displayResults(result); // Appeler la fonction pour afficher les recettes
+
+                collapseForm(); // Replier le formulaire APRÈS avoir affiché les résultats
+
+                 // --- NOUVEAU : Délai avant de faire défiler vers les résultats ---
+                 // Laisse le temps à l'animation de repli du formulaire de se terminer
+                 setTimeout(() => {
+                      // Faire défiler la page vers le début des résultats
+                      resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                 }, 600); // Délai de 600ms (légèrement plus long que la transition de 500ms)
+
+
+            } catch (error) {
+                console.error("Erreur lors de l'appel API Gemini:", error);
+                loadingIndicator.style.display = 'none';
+                spinnerElement.style.display = 'none'; // Cacher le spinner
+                submitButton.disabled = false; // Réactiver le bouton
+                displayError("Une erreur est survenue lors de la recherche de recettes. Veuillez réessayer."); // Afficher un message d'erreur convivial
+                console.error("Détails de l'erreur:", error); // Log l'erreur complète dans la console
+                 // Ne pas replier le formulaire en cas d'erreur pour que l'utilisateur puisse corriger
+            }
+        });
+
+        // Fonction de parsing des quantités
+        function parseQuantities(quantityString) {
+            if (!quantityString) return {};
+            const quantities = {};
+            quantityString.split(',').forEach(item => {
+                const parts = item.trim().split('=');
+                if (parts.length > 1) {
+                    const ingredient = parts[0].trim();
+                    const amount = parts.slice(1).join('=').trim();
+                     if (ingredient && amount) {
+                         quantities[ingredient] = amount;
+                     }
+                } else {
+                    const ingredient = parts[0].trim();
+                    if (ingredient) {
+                        quantities[ingredient] = 'quantité indéterminée';
+                    }
+                }
+            });
+            return quantities;
+        }
+
+        // Fonction de génération du prompt pour Gemini
+        function generatePrompt(data) {
+             let prompt = "Je souhaite obtenir des suggestions de recettes basées sur les ingrédients et contraintes suivants. Veuillez me proposer DEUX types de recettes :";
+
+             prompt += "\n- Ingrédients disponibles : " + data.ingredients.join(', ');
+
+             if (Object.keys(data.quantities).length > 0) {
+                 prompt += "\n- Quantités spécifiées :";
+                 Object.entries(data.quantities).forEach(([ing, qty]) => {
+                     prompt += `\n  • ${ing}: ${qty}`;
+                 });
+             } else {
+                  prompt += "\n- Quantités non spécifiées pour la plupart des ingrédients.";
+             }
+
+             if (data.recipeTypes.length > 0) {
+                 prompt += "\n- Type(s) de recette souhaité(s) : " + data.recipeTypes.join(', ');
+             } else {
+                  prompt += "\n- Type(s) de recette non spécifié(s), proposez des plats variés (entrées, plats, desserts)."
+             }
+
+             prompt += `\n- Pour ${data.people} personne(s)`;
+
+             if (data.restrictions && data.restrictions.length > 0) {
+                 prompt += "\n- Restrictions alimentaires : " + data.restrictions.join(', ');
+             }
+
+             prompt += data.urgent ? "\n- La recette doit être rapide à préparer (< 30-45 minutes total)." : "\n- Le temps de préparation n'est pas une contrainte majeure.";
+
+             prompt += `\n\nVeuillez fournir votre réponse au format JSON UNIQUEMENT, sans aucun texte supplémentaire avant ou après le bloc JSON. Le JSON doit contenir un objet unique avec DEUX clés principales :
+ 1.  \`recettesStrictes\`: Un tableau contenant 1 à 3 recettes qui utilisent **STRICTEMENT UNIQUEMENT** les ingrédients listés dans "Ingrédients disponibles". N'ajoutez AUCUN ingrédient non mentionné dans cette liste.
+ 2.  \`recettesAvecAjouts\`: Un tableau contenant 2 à 4 recettes qui utilisent les ingrédients listés, et peuvent inclure des ingrédients **communs et basiques** supplémentaires (eau, sel, poivre, huile, beurre, oignon, ail, etc.) ou d'autres ingrédients plausibles qui complètent la recette.
+
+ Pour chaque recette dans ces deux tableaux, veuillez inclure les informations suivantes :
+ {
+   "nom": "Nom de la recette",
+   "ingrédients": {
+     "Nom Ingrédient 1": "Quantité 1",
+     "Nom Ingrédient 2": "Quantité 2",
+     "...": "..."
+   },
+   "étapes": [
+     "Étape 1 de préparation.",
+     "Étape 2 de préparation.",
+     "..."
+   ],
+   "tempsPreparation": "Temps total estimé (ex: 30 min)",
+   "difficulté": "Niveau de difficulté (ex: Facile, Moyen, Difficile)",
+   "adaptations": [
+     "Suggestion d'adaptation 1.",
+     "..."
+   ],
+    "note": "Brève note sur la recette si nécessaire (optionnel)"
+ }
+
+ Veuillez vous assurer que les clés JSON sont exactes (\`recettesStrictes\`, \`recettesAvecAjouts\`, \`nom\`, \`ingrédients\`, \`étapes\`, \`tempsPreparation\`, \`difficulté\`, \`adaptations\`, \`note\`).`;
+
+             console.log("Prompt envoyé à Gemini:", prompt);
+             return prompt;
+        }
+
+        // Fonction pour afficher les résultats
+        function displayResults(result) {
+            loadingIndicator.style.display = 'none';
+            spinnerElement.style.display = 'none';
+            resultsContainer.innerHTML = '';
+
+            if (!(result && result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0)) {
+                 displayError("Aucune réponse valide reçue de l'API Gemini.");
+                 console.warn("Réponse API vide ou mal formée:", result);
+                 return;
+            }
+
+            let textResponse = result.candidates[0].content.parts[0].text;
+
+            try {
+                textResponse = textResponse.replace(/```json\n/g, '').replace(/\n```/g, '').trim();
+                const recipeData = JSON.parse(textResponse);
+                console.log("Données JSON parsées:", recipeData);
+
+                const strictRecipes = recipeData.recettesStrictes;
+                const addedRecipes = recipeData.recettesAvecAjouts;
+
+                const hasStrict = strictRecipes && Array.isArray(strictRecipes) && strictRecipes.length > 0;
+                const hasAdded = addedRecipes && Array.isArray(addedRecipes) && addedRecipes.length > 0;
+
+                if (hasStrict || hasAdded) {
+
+                    if (hasStrict) {
+                        resultsContainer.innerHTML += '<h2>Recettes avec vos seuls ingrédients</h2>';
+                        strictRecipes.forEach(recipe => {
+                            appendRecipeToContainer(recipe, resultsContainer);
+                        });
+                    }
+
+                    if (hasAdded) {
+                        resultsContainer.innerHTML += '<h2>Recettes avec ingrédients supplémentaires possibles</h2>';
+                         const noteAdded = document.createElement('p');
+                         noteAdded.style.cssText = "font-style: italic; margin-bottom: 20px; text-align: center; color: #bbb;";
+                         noteAdded.textContent = "(Ces recettes peuvent nécessiter quelques ingrédients basiques ou communs en plus de ceux que vous avez listés.)";
+                         resultsContainer.appendChild(noteAdded);
+
+                        addedRecipes.forEach(recipe => {
+                            appendRecipeToContainer(recipe, resultsContainer);
+                        });
+                    }
+
+                } else {
+                     displayError("Aucune recette trouvée correspondant à vos critères (même avec des ajouts).");
+                     console.warn("Réponse API ne contient pas de recettes valides dans 'recettesStrictes' ou 'recettesAvecAjouts':", recipeData);
+                }
+
+            } catch (error) {
+                console.error("Erreur lors du parsing JSON de la réponse API ou structure inattendue:", error);
+                displayError("Impossible d'interpréter la réponse de l'API. Le format de réponse n'est pas celui attendu.");
+            }
+
+            resultsContainer.style.display = 'block';
+        }
+
+         // Fonction utilitaire pour ajouter une seule recette au conteneur
+         function appendRecipeToContainer(recipe, containerElement) {
+             const recipeDiv = document.createElement('div');
+             recipeDiv.classList.add('recipe');
+
+             recipeDiv.innerHTML += `<h3>${escapeHTML(recipe.nom || 'Recette sans nom')}</h3>`;
+
+             if (recipe.ingrédients && Object.keys(recipe.ingrédients).length > 0) {
+                 recipeDiv.innerHTML += '<h4>Ingrédients :</h4><ul>';
+                 for (const ingredient in recipe.ingrédients) {
+                     recipeDiv.innerHTML += `<li>${escapeHTML(ingredient)}: ${escapeHTML(recipe.ingrédients[ingredient])}</li>`;
+                 }
+                 recipeDiv.innerHTML += '</ul>';
+             }
+
+             if (recipe.étapes && Array.isArray(recipe.étapes) && recipe.étapes.length > 0) {
+                 recipeDiv.innerHTML += '<h4>Étapes :</h4><ol>';
+                 recipe.étapes.forEach(etape => {
+                     recipeDiv.innerHTML += `<li>${escapeHTML(etape)}</li>`;
+                 });
+                 recipeDiv.innerHTML += '</ol>';
+             }
+
+              if (recipe.tempsPreparation) {
+                  recipeDiv.innerHTML += `<p><strong>Temps de préparation :</strong> ${escapeHTML(recipe.tempsPreparation)}</p>`;
+              }
+              if (recipe.difficulté) {
+                  recipeDiv.innerHTML += `<p><strong>Difficulté :</strong> ${escapeHTML(recipe.difficulté)}</p>`;
+              }
+              if (recipe.note) {
+                  recipeDiv.innerHTML += `<p><strong>Note :</strong> ${escapeHTML(recipe.note)}</p>`;
+              }
+
+
+             if (recipe.adaptations && Array.isArray(recipe.adaptations) && recipe.adaptations.length > 0) {
+                 recipeDiv.innerHTML += '<h4>Adaptations possibles :</h4><ul>';
+                 recipe.adaptations.forEach(adaptation => {
+                     recipeDiv.innerHTML += `<li>${escapeHTML(adaptation)}</li>`;
+                 });
+                 recipeDiv.innerHTML += '</ul>';
+             }
+
+             containerElement.appendChild(recipeDiv);
+         }
+
+
+        // Fonction pour afficher un message d'erreur ou d'information dans la zone de résultats
+        function displayError(message) {
+             resultsContainer.innerHTML = `<h2>Information</h2><p style="color: #ff6b6b; text-align: center;">${escapeHTML(message)}</p><p style="text-align: center;">Veuillez vérifier vos ingrédients ou réessayer plus tard.</p>`;
+             resultsContainer.style.display = 'block';
+        }
+
+         // Fonction utilitaire pour échapper le HTML (sécurité contre XSS si le modèle renvoie du HTML)
+         function escapeHTML(str) {
+             if (typeof str !== 'string') return str;
+             const div = document.createElement('div');
+             div.appendChild(document.createTextNode(str));
+             return div.innerHTML;
+         }
+
+
+         // Masquer les résultats et le chargement au chargement initial
+         document.addEventListener('DOMContentLoaded', () => {
+             resultsContainer.style.display = 'none';
+             loadingIndicator.style.display = 'none';
+             spinnerElement.style.display = 'none'; // Cacher le spinner au départ
+             // S'assurer que le formulaire est bien déplié au départ
+             expandForm(); // Appeler expand pour initialiser max-height
+             isFormCollapsed = false; // S'assurer de l'état initial correct
+         });
+
+    </script>
+</body>
+</html>
