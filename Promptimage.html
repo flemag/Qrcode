@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Prompt pour Images IA</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #generatedPrompt {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border: 1px dashed #bdc3c7;
+            border-radius: 6px;
+            margin-top: 25px;
+            white-space: pre-wrap; /* Conserve les retours à la ligne et espaces */
+            word-wrap: break-word;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .prompt-output h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .copy-button {
+            background-color: #2ecc71;
+            margin-left: 10px;
+        }
+        .copy-button:hover {
+            background-color: #27ae60;
+        }
+
+        .info-tooltip {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Générateur de Prompt pour Images IA</h1>
+        <p style="text-align: center; margin-bottom: 25px;">Remplissez les champs ci-dessous pour construire un prompt détaillé et efficace pour la génération d'images par IA.</p>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="imageType">Type d'image souhaitée :</label>
+                <select id="imageType">
+                    <option value="">-- Choisir un type --</option>
+                    <option value="Portrait">Portrait</option>
+                    <option value="Paysage">Paysage</option>
+                    <option value="Produit">Illustration de produit</option>
+                    <option value="Scène futuriste">Scène futuriste</option>
+                    <option value="Infographie">Infographie</option>
+                    <option value="Personnage">Illustration de personnage</option>
+                    <option value="Nature morte">Nature morte artistique</option>
+                    <option value="Scène d'action">Scène d'action</option>
+                    <option value="Logo">Logo minimaliste</option>
+                    <option value="Conceptuel">Illustration conceptuelle</option>
+                    <option value="Autre">Autre (décrire ci-dessous)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="mainSubject">Sujet principal :</label>
+                <input type="text" id="mainSubject" placeholder="Ex: un chaton joueur, une ville cyberpunk">
+                <small class="info-tooltip">Le cœur de votre image.</small>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="details">Éléments essentiels et détails :</label>
+                <textarea id="details" placeholder="Ex: chaton avec des yeux bleus vifs jouant avec une pelote de laine rouge, ville avec des gratte-ciels organiques et des véhicules volants."></textarea>
+                <small class="info-tooltip">Décrivez les caractéristiques clés, objets, personnages, actions spécifiques.</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="artisticStyle">Style artistique/visuel :</label>
+                <input type="text" id="artisticStyle" placeholder="Ex: hyperréaliste, peinture à l'huile, flat design, style Ghibli, cyberpunk">
+                <small class="info-tooltip">Ex: "photographique", "aquarelle", "pixel art", "minimaliste", "surréaliste".</small>
+            </div>
+
+            <div class="form-group">
+                <label for="artistReference">Référence artistique (optionnel) :</label>
+                <input type="text" id="artistReference" placeholder="Ex: dans le style de Van Gogh, inspiré par Albert Bierstadt">
+                <small class="info-tooltip">Mentionner des artistes, mouvements ou œuvres peut guider l'IA.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="lighting">Éclairage :</label>
+                <input type="text" id="lighting" placeholder="Ex: lumière dorée du coucher de soleil, éclairage studio professionnel, néon bleu et violet">
+                <small class="info-tooltip">Direction, intensité, couleur (ex: "doux venant de la gauche", "contre-jour dramatique").</small>
+            </div>
+
+            <div class="form-group">
+                <label for="colors">Palette de couleurs (optionnel) :</label>
+                <input type="text" id="colors" placeholder="Ex: tons pastel, monochrome bleu, rouge et noir contrastés">
+                <small class="info-tooltip">Précisez les couleurs dominantes ou une ambiance colorimétrique.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="composition">Composition / Angle de vue :</label>
+                <input type="text" id="composition" placeholder="Ex: vue en plongée, gros plan, panoramique, 3/4">
+                <small class="info-tooltip">Perspective, cadrage (ex: "contre-plongée", "vue de dessus").</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="background">Arrière-plan / Environnement :</label>
+                <input type="text" id="background" placeholder="Ex: fond neutre flou, forêt ancienne, intérieur d'un vaisseau spatial">
+                <small class="info-tooltip">Décrivez ce qui entoure le sujet principal.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="atmosphere">Ambiance / Humeur :</label>
+                <input type="text" id="atmosphere" placeholder="Ex: joyeuse et ensoleillée, sombre et mystérieuse, épique">
+                 <small class="info-tooltip">L'émotion ou le sentiment que l'image doit évoquer.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="technicalParams">Paramètres techniques (format, résolution) :</label>
+                <input type="text" id="technicalParams" placeholder="Ex: format 16:9, haute résolution, 4K">
+                <small class="info-tooltip">Proportions, qualité d'image.</small>
+            </div>
+            
+            <div class="form-group full-width">
+                <label for="negativePrompt">Éléments à éviter (négatif - optionnel) :</label>
+                <input type="text" id="negativePrompt" placeholder="Ex: éviter: flou, texte, couleurs criardes, mains mal formées">
+                <small class="info-tooltip">Ce que vous ne voulez PAS voir dans l'image.</small>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button id="generateBtn">Générer le Prompt</button>
+        </div>
+
+        <div class="prompt-output full-width" style="margin-top: 30px;">
+            <h3>Votre Prompt Généré :</h3>
+            <pre id="generatedPrompt">Remplissez le formulaire et cliquez sur "Générer le Prompt".</pre>
+            <button id="copyBtn" class="copy-button" style="display: none;">Copier le Prompt</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageTypeSelect = document.getElementById('imageType');
+            const mainSubjectInput = document.getElementById('mainSubject');
+            const detailsTextarea = document.getElementById('details');
+            const artisticStyleInput = document.getElementById('artisticStyle');
+            const artistReferenceInput = document.getElementById('artistReference');
+            const lightingInput = document.getElementById('lighting');
+            const colorsInput = document.getElementById('colors');
+            const compositionInput = document.getElementById('composition');
+            const backgroundInput = document.getElementById('background');
+            const atmosphereInput = document.getElementById('atmosphere');
+            const technicalParamsInput = document.getElementById('technicalParams');
+            const negativePromptInput = document.getElementById('negativePrompt');
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const generatedPromptPre = document.getElementById('generatedPrompt');
+            const copyBtn = document.getElementById('copyBtn');
+
+            // Pré-remplissage basé sur le type d'image sélectionné (exemples de l'article)
+            imageTypeSelect.addEventListener('change', function() {
+                const selectedType = this.value;
+                switch(selectedType) {
+                    case "Portrait":
+                        mainSubjectInput.placeholder = "Ex: une femme entrepreneur dans la trentaine";
+                        detailsTextarea.placeholder = "Ex: cheveux bruns mi-longs, lunettes modernes, expression confiante, tailleur bleu foncé";
+                        backgroundInput.placeholder = "Ex: fond neutre flou";
+                        lightingInput.placeholder = "Ex: éclairage studio professionnel";
+                        artisticStyleInput.placeholder = "Ex: style photographique corporate";
+                        technicalParamsInput.placeholder = "Ex: haute résolution, proportions 3:4";
+                        break;
+                    case "Paysage":
+                        mainSubjectInput.placeholder = "Ex: un paysage montagneux";
+                        detailsTextarea.placeholder = "Ex: sommets enneigés reflétant la lumière dorée, lac turquoise en contrebas, quelques sapins au premier plan";
+                        lightingInput.placeholder = "Ex: au coucher du soleil";
+                        atmosphereInput.placeholder = "Ex: ciel dégradé orange-violet avec quelques nuages effilés";
+                        artisticStyleInput.placeholder = "Ex: style hyperréaliste";
+                        artistReferenceInput.placeholder = "Ex: inspiration des œuvres d'Albert Bierstadt";
+                        technicalParamsInput.placeholder = "Ex: format panoramique 16:9";
+                        break;
+                    case "Produit":
+                        mainSubjectInput.placeholder = "Ex: une montre connectée moderne";
+                        detailsTextarea.placeholder = "Ex: reflets subtils sur le verre, bracelet noir mat, écran affichant des stats de fitness";
+                        backgroundInput.placeholder = "Ex: sur fond dégradé bleu clair à blanc";
+                        compositionInput.placeholder = "Ex: vue 3/4";
+                        lightingInput.placeholder = "Ex: éclairage doux venant de la gauche, ombres légères";
+                        artisticStyleInput.placeholder = "Ex: illustration 3D minimaliste, style épuré et élégant";
+                        technicalParamsInput.placeholder = "Ex: haute définition";
+                        break;
+                    // Ajouter d'autres cas si besoin, basés sur l'article
+                    default:
+                        // Réinitialiser les placeholders génériques
+                        mainSubjectInput.placeholder = "Ex: un chaton joueur, une ville cyberpunk";
+                        detailsTextarea.placeholder = "Ex: chaton avec des yeux bleus vifs jouant avec une pelote de laine rouge, ville avec des gratte-ciels organiques et des véhicules volants.";
+                        backgroundInput.placeholder = "Ex: fond neutre flou, forêt ancienne, intérieur d'un vaisseau spatial";
+                        lightingInput.placeholder = "Ex: lumière dorée du coucher de soleil, éclairage studio professionnel, néon bleu et violet";
+                        artisticStyleInput.placeholder = "Ex: hyperréaliste, peinture à l'huile, flat design, style Ghibli, cyberpunk";
+                        technicalParamsInput.placeholder = "Ex: format 16:9, haute résolution, 4K";
+                        artistReferenceInput.placeholder = "Ex: dans le style de Van Gogh, inspiré par Albert Bierstadt";
+                        compositionInput.placeholder = "Ex: vue en plongée, gros plan, panoramique, 3/4";
+                        atmosphereInput.placeholder = "Ex: joyeuse et ensoleillée, sombre et mystérieuse, épique";
+
+                        break;
+                }
+            });
+
+
+            generateBtn.addEventListener('click', function() {
+                let promptParts = [];
+
+                const imageType = imageTypeSelect.value;
+                const mainSubject = mainSubjectInput.value.trim();
+                const details = detailsTextarea.value.trim();
+                const artisticStyle = artisticStyleInput.value.trim();
+                const artistReference = artistReferenceInput.value.trim();
+                const lighting = lightingInput.value.trim();
+                const colors = colorsInput.value.trim();
+                const composition = compositionInput.value.trim();
+                const background = backgroundInput.value.trim();
+                const atmosphere = atmosphereInput.value.trim();
+                const technicalParams = technicalParamsInput.value.trim();
+                const negativePrompt = negativePromptInput.value.trim();
+
+                // Structure de base du prompt
+                let baseCommand = "Crée une image de"; // Ou "Génère", "Imagine", etc.
+                if (imageType) {
+                     baseCommand = `Crée ${getArticle(imageType)} ${imageType.toLowerCase()}`;
+                } else if (mainSubject) {
+                     baseCommand = `Crée une image de`;
+                }
+
+
+                if (mainSubject) {
+                    promptParts.push(`${mainSubject}`);
+                } else if (!imageType) {
+                     generatedPromptPre.textContent = "Veuillez au moins spécifier un sujet principal ou un type d'image.";
+                     copyBtn.style.display = 'none';
+                     return;
+                }
+
+
+                if (details) promptParts.push(`${details}`);
+                
+                // Combinaison logique pour un flux plus naturel
+                if (background) promptParts.push(`sur un arrière-plan de ${background}`);
+                else if (imageType === "Produit" && !background) promptParts.push("sur un fond épuré");
+
+
+                if (lighting) promptParts.push(`avec un éclairage ${lighting}`);
+                if (atmosphere) promptParts.push(`créant une ambiance ${atmosphere}`);
+                if (colors) promptParts.push(`utilisant une palette de couleurs ${colors}`);
+                if (composition) promptParts.push(`avec une composition en ${composition}`);
+                
+                if (artisticStyle) {
+                    if (artistReference) {
+                        promptParts.push(`dans un style ${artisticStyle}, inspiré par ${artistReference}`);
+                    } else {
+                        promptParts.push(`dans un style ${artisticStyle}`);
+                    }
+                } else if (artistReference) {
+                    promptParts.push(`inspiré par ${artistReference}`);
+                }
+
+                if (technicalParams) promptParts.push(technicalParams);
+
+                let finalPrompt = `${baseCommand} ${promptParts.join(", ")}.`;
+                
+                // Ajout du prompt négatif s'il existe
+                if (negativePrompt) {
+                    finalPrompt += ` --no ${negativePrompt}`; // Utilisation courante pour les prompts négatifs, ou "éviter: ..."
+                }
+                
+                generatedPromptPre.textContent = finalPrompt.replace(/,\./g, '.').replace(/,,/g, ','); // Nettoyage
+                copyBtn.style.display = 'inline-block';
+            });
+
+            copyBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(generatedPromptPre.textContent)
+                    .then(() => {
+                        copyBtn.textContent = 'Copié !';
+                        setTimeout(() => {
+                            copyBtn.textContent = 'Copier le Prompt';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Erreur de copie : ', err);
+                        alert("La copie a échoué. Veuillez copier manuellement.");
+                    });
+            });
+
+            // Helper function pour l'article (un/une)
+            function getArticle(word) {
+                if (!word) return "";
+                word = word.toLowerCase();
+                const vowels = "aeiouyàâéèêëîïôùûü";
+                const feminineEnds = ["tion", "sion", "ure", "ade", "ée", "ie", "té", "esse", "ance", "ence"];
+                
+                let isFeminine = feminineEnds.some(end => word.endsWith(end));
+                // Exceptions et cas courants
+                if (["infographie", "illustration", "nature morte", "scène"].some(fem => word.includes(fem))) isFeminine = true;
+                if (["portrait", "paysage", "produit", "logo", "concept"].some(masc => word.includes(masc))) isFeminine = false;
+
+
+                if (vowels.includes(word.charAt(0))) {
+                    return "une "; // Pour "illustration" etc., même si on pourrait dire "un conceptuel", on part du principe que le type sera souvent au féminin
+                } else {
+                    return isFeminine ? "une " : "un ";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
