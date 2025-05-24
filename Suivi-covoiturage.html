@@ -222,9 +222,27 @@
         .calendar-controls h3 { font-size: 1.1rem; } #trips-for-day { padding: 12px; margin-top: 15px; } #trips-for-day li { font-size: 0.85rem; padding-left: 12px; }
         .form-row, .form-group { flex: 1 1 100%; min-width: auto; } .action-buttons { justify-content: center; } .action-buttons button { width: 100%; max-width: 300px; }
         .filters { flex-direction: column; gap: 10px; } .filter-group { flex-direction: column; align-items: flex-start; gap: 5px; } .filter-group select, .filter-group input { width: 100%; } #reset-filters { align-self: stretch; }
-        .notification { bottom: 70px; left: 10px; right: 10px; width: auto; min-width: auto; }
+        .notification {
+            bottom: 70px; /* Keep this */
+            /* REMOVE left: 10px; right: 10px; width: auto; min-width: auto; */
+
+            /* ADD these for centering and size constraint */
+            max-width: calc(100% - 40px); /* Allows for 20px margin on each side */
+            margin-left: auto;
+            margin-right: auto;
+            left: 0; /* Required for auto margins to work with fixed positioning */
+            right: 0;/* Required for auto margins to work with fixed positioning */
+
+            /* ADD these for reduced size */
+            padding: 10px 15px;
+            font-size: 0.85rem;
+        }
         .driver-overview-table { display: none; } /* Cacher le tableau sur mobile */
         .driver-cards-container { display: flex; } /* Afficher les cartes sur mobile */
+
+        .btn-edit, .btn-delete {
+            padding: 8px 12px; /* Increased padding for mobile */
+        }
     }
 
     @media (max-width: 480px) { /* Styles Très Petit Mobile */
@@ -232,7 +250,12 @@
         h2 { font-size: 1.4rem; } h3 { font-size: 1.2rem; } #stats-section h4, #trips-for-day h4 { font-size: 1rem; }
         #table-section td, #table-section td::before { font-size: 0.8rem; }
         .calendar-day { min-height: 60px; padding-top: 18px; } .calendar-day .day-number { font-size: 0.6rem; } .calendar-day .trip-summary { font-size: 0.55rem; }
-        .tab-button { font-size: 0.65rem; min-width: 60px; } .tab-button i { font-size: 1.1rem; } .notification { bottom: 70px; }
+        .tab-button { font-size: 0.65rem; min-width: 60px; } .tab-button i { font-size: 1.1rem; }
+        .notification {
+            /* Inherits bottom: 70px, max-width, margins, left, right from 767px block */
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
         .driver-card .member-name { font-size: 1.1rem; } .driver-card .card-stat { font-size: 0.85rem; } .driver-card .suggestion-icon-card { font-size: 1.3rem; }
     }
 
