@@ -1563,7 +1563,8 @@
                     timesDriven: 0,
                     timesPassenger: 0,
                     lastDriveDate: null,
-                    tripsSinceLastDrive: 0
+                    tripsSinceLastDrive: 0,
+                    drivesByPassengerCount: {0: 0, 1: 0, 2: 0, 3: 0, "4+": 0}
                 };
             });
 
@@ -1575,6 +1576,20 @@
                 if (driver && GROUP_MEMBERS.includes(driver)) {
                     memberStats[driver].timesDriven++;
                     memberStats[driver].lastDriveDate = trip.date; // Keep the latest date
+
+                    const numPassengers = trip.passagers?.filter(p => String(p)?.trim()).length || 0;
+                    if (numPassengers === 0) {
+                        memberStats[driver].drivesByPassengerCount[0]++;
+                    } else if (numPassengers === 1) {
+                        memberStats[driver].drivesByPassengerCount[1]++;
+                    } else if (numPassengers === 2) {
+                        memberStats[driver].drivesByPassengerCount[2]++;
+                    } else if (numPassengers === 3) {
+                        memberStats[driver].drivesByPassengerCount[3]++;
+                    } else { // 4 or more passengers
+                        memberStats[driver].drivesByPassengerCount["4+"]++;
+                    }
+
                     isGroupTrip = true;
                 }
                 passengers.forEach(p => {
@@ -1636,7 +1651,7 @@
 
             let cardsHtml = '<div class="driver-cards-container">';
             let tableHtml = `<div class="table-container driver-overview-table-container"><table class="driver-overview-table">
-                                <thead><tr><th>Participant</th><th>Conduites</th><th>Passager</th><th>Dern. Conduite</th><th>Trajets<br>Groupe Depuis</th><th>Suggéré</th></tr></thead><tbody>`; // Adjusted header
+                                <thead><tr><th>Participant</th><th>Conduites</th><th>Passager</th><th>Dern. Conduite</th><th>Trajets<br>Groupe Depuis</th><th>Détail Conduites (pass.)</th><th>Suggéré</th></tr></thead><tbody>`; // Adjusted header
 
 
             GROUP_MEMBERS.forEach(member => {
@@ -1664,12 +1679,22 @@
                             <div class="card-stat"><strong>Passager :</strong> <span>${stats.timesPassenger}</span></div>
                             <div class="card-stat"><strong>Dernière Conduite :</strong> <span>${lastDriveDisplay}</span></div>
                             <div class="card-stat"><strong>Trajets du Groupe Depuis :</strong> <span>${tripsSinceDisplay}</span></div>
+                            ${byPassengerCountsDetail}
                         </div>`;
 
                 // HTML pour le tableau (desktop)
+                const passengerCountsSummaryArray = [];
+                if (counts[0] > 0) passengerCountsSummaryArray.push(`0p: ${counts[0]}`);
+                if (counts[1] > 0) passengerCountsSummaryArray.push(`1p: ${counts[1]}`);
+                if (counts[2] > 0) passengerCountsSummaryArray.push(`2p: ${counts[2]}`);
+                if (counts[3] > 0) passengerCountsSummaryArray.push(`3p: ${counts[3]}`);
+                if (counts["4+"] > 0) passengerCountsSummaryArray.push(`4+p: ${counts["4+"]}`);
+                const passengerCountsSummary = passengerCountsSummaryArray.length > 0 ? passengerCountsSummaryArray.join(', ') : '<em>N/A</em>';
+
                 tableHtml += `<tr class="${isSuggested ? `suggested-driver ${driverColorClass}` : driverColorClass}">
                                     <td>${stats.name}</td><td>${stats.timesDriven}</td><td>${stats.timesPassenger}</td>
                                     <td>${lastDriveDisplay}</td><td>${tripsSinceDisplay}</td>
+                                    <td>${passengerCountsSummary}</td>
                                     <td class="suggestion-cell">${suggestionIcon}</td></tr>`;
             });
             cardsHtml += '</div>';
