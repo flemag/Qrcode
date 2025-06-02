@@ -1667,6 +1667,13 @@
                 const suggestionIcon = isSuggested ? `<i class="fas fa-star suggestion-icon"></i>` : '';
                 const suggestionIconCard = isSuggested ? `<i class="fas fa-star suggestion-icon-card ${driverColorClass}"></i>` : '';
 
+                const counts = stats.drivesByPassengerCount; // Ensure counts is defined here
+                let byPassengerCountsDetail = '';
+                if (counts[0] > 0) byPassengerCountsDetail += `<div class="card-stat"><strong>Conduites (0 pass.):</strong> <span>${counts[0]}</span></div>`;
+                if (counts[1] > 0) byPassengerCountsDetail += `<div class="card-stat"><strong>Conduites (1 pass.):</strong> <span>${counts[1]}</span></div>`;
+                if (counts[2] > 0) byPassengerCountsDetail += `<div class="card-stat"><strong>Conduites (2 pass.):</strong> <span>${counts[2]}</span></div>`;
+                if (counts[3] > 0) byPassengerCountsDetail += `<div class="card-stat"><strong>Conduites (3 pass.):</strong> <span>${counts[3]}</span></div>`;
+                if (counts["4+"] > 0) byPassengerCountsDetail += `<div class="card-stat"><strong>Conduites (4+ pass.):</strong> <span>${counts["4+"]}</span></div>`;
 
                 // HTML pour les cartes (mobile)
                 cardsHtml += `
