@@ -3,11 +3,12 @@
     --primary-color: #2c3e50; /* Dark Blue */
     --secondary-color: #3498db; /* Bright Blue */
     --accent-color: #e74c3c; /* Reddish Accent */
-    --light-gray-color: #ecf0f1; /* Light Gray */
-    --medium-gray-color: #bdc3c7; /* Medium Gray */
+    --light-gray-color: #f0f3f4; /* Lighter Gray for backgrounds */
+    --medium-gray-color: #bdc3c7; /* Medium Gray for borders */
     --dark-gray-color: #7f8c8d; /* Dark Gray */
-    --text-color: #333;
-    --background-color: #f4f4f8;
+    --text-color: #333333;
+    --text-color-light: #555555;
+    --background-color: #e9ecef; /* Light background for the page */
     --white-color: #ffffff;
 
     --font-family-sans-serif: 'Helvetica Neue', Arial, sans-serif;
@@ -15,9 +16,9 @@
 }
 
 body {
-    font-family: var(--font-family-sans-serif);
-    font-size: 16px;
-    line-height: 1.6;
+    font-family: var(--font-family-serif); /* Changed to serif for body */
+    font-size: 17px; /* Adjusted for readability */
+    line-height: 1.7; /* Adjusted for readability */
     color: var(--text-color);
     background-color: var(--background-color);
     margin: 0;
@@ -25,62 +26,116 @@ body {
 }
 
 main {
-    max-width: 1200px;
+    max-width: 800px; /* Comfortable reading width */
     margin: 20px auto;
-    padding: 0 20px;
+    padding: 20px 30px; /* More padding */
     background-color: var(--white-color);
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.15);
 }
 
-header, footer {
+/* Site Header */
+.site-header {
     background-color: var(--primary-color);
     color: var(--white-color);
-    padding: 1em 0;
+    padding: 1.5em 1em;
     text-align: center;
+    margin-bottom: 2em;
 }
 
-header h1 {
+.site-header h1 {
+    font-family: var(--font-family-sans-serif);
+    font-size: 2.8em;
     margin: 0;
-    font-size: 2.5em;
+    color: var(--white-color); /* Ensure color override */
+}
+
+/* Footer */
+footer {
+    background-color: var(--dark-gray-color); /* Darker footer */
+    color: var(--light-gray-color);
+    padding: 1.5em 0;
+    text-align: center;
+    margin-top: 2em;
+    font-size: 0.85em;
 }
 
 footer p {
     margin: 0;
-    font-size: 0.9em;
 }
 
-/* Typography */
-h1, h2, h3 {
+/* General Typography - Headings use Sans Serif */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-sans-serif);
     color: var(--primary-color);
     font-weight: 600;
     line-height: 1.3;
-}
-
-h1 { /* Already styled in header, this is for potential h1 in main */
-    font-size: 2.2em;
-    margin-top: 0.5em;
+    margin-top: 1em;
     margin-bottom: 0.5em;
 }
 
-h2 {
-    font-size: 1.8em;
-    margin-top: 1.5em;
-    margin-bottom: 0.8em;
-    border-bottom: 2px solid var(--secondary-color);
-    padding-bottom: 0.3em;
+/* "À la Une" Section */
+#a-la-une {
+    background-color: var(--light-gray-color);
+    padding: 1.5em;
+    margin-bottom: 2.5em;
+    border-top: 3px solid var(--secondary-color);
+    border-bottom: 3px solid var(--secondary-color);
 }
 
-h3 {
-    font-size: 1.4em;
+#a-la-une h2 { /* Title: "À la Une" */
+    font-size: 2em;
+    color: var(--primary-color);
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    text-align: center;
+}
+
+#a-la-une h3 { /* Sub-title: "Points clés..." */
+    font-size: 1.5em;
+    color: var(--secondary-color);
+    font-weight: 500;
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
+    text-align: center;
+}
+
+/* Article Styling */
+article {
+    margin-bottom: 2.5em;
+    padding-bottom: 1.5em;
+    border-bottom: 1px solid var(--medium-gray-color);
+}
+
+article:last-of-type { /* Last article in a sequence */
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+article h2 { /* Article Titles */
+    font-size: 2.2em; /* More impactful */
+    color: var(--primary-color);
+    margin-bottom: 0.75em;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.25em;
+}
+
+article h3 { /* Subheadings within Articles */
+    font-size: 1.6em;
+    color: var(--secondary-color); /* Consistent with #a-la-une h3 */
     margin-top: 1.2em;
     margin-bottom: 0.6em;
-    color: var(--secondary-color);
 }
 
-p {
-    margin-bottom: 1em;
+article p {
+    font-size: 1em; /* Relative to body font-size */
+    line-height: 1.7; /* Consistent with body */
+    color: var(--text-color-light); /* Slightly lighter for article text */
+    margin-bottom: 1.2em;
 }
 
+/* Links */
 a {
     color: var(--secondary-color);
     text-decoration: none;
@@ -91,38 +146,41 @@ a:hover, a:focus {
     text-decoration: underline;
 }
 
-/* Lists */
-ul {
-    list-style-type: disc;
+/* Lists (general) */
+ul, ol {
     margin-left: 20px;
     margin-bottom: 1em;
+    padding-left: 1em; /* Ensure padding for list markers */
 }
 
-ul li {
-    margin-bottom: 0.5em;
+ul li, ol li {
+    margin-bottom: 0.6em;
+    line-height: 1.6;
 }
 
-/* Tables */
+/* Tables within Articles */
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 0.5em;
     margin-bottom: 1.5em;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
 caption {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: var(--primary-color);
-    padding: 0.5em;
+    font-size: 1em; /* More subtle caption */
+    font-weight: normal;
+    font-family: var(--font-family-sans-serif);
+    color: var(--dark-gray-color);
+    padding: 0.5em 0;
     text-align: left;
-    caption-side: top;
-    margin-bottom: 0.5em;
+    caption-side: bottom; /* Common in news for tables */
+    margin-top: 0.3em;
 }
 
 th, td {
     border: 1px solid var(--medium-gray-color);
-    padding: 0.75em;
+    padding: 0.6em 0.8em; /* Slightly adjusted padding */
     text-align: left;
     vertical-align: top;
 }
@@ -130,7 +188,8 @@ th, td {
 th {
     background-color: var(--light-gray-color);
     color: var(--primary-color);
-    font-weight: 600;
+    font-weight: 600; /* Sans-serif already applied via h1-h6 rule if th uses them, else explicitly: */
+    font-family: var(--font-family-sans-serif);
 }
 
 tbody tr:nth-child(even) {
@@ -138,87 +197,122 @@ tbody tr:nth-child(even) {
 }
 
 tbody tr:hover {
-    background-color: var(--light-gray-color);
+    background-color: #f1f1f1; /* Slightly different hover */
 }
 
-/* Sections */
+/* References Section */
+#references {
+    background-color: var(--light-gray-color);
+    padding: 1.5em;
+    margin-top: 2.5em; /* Separated from last article */
+    border-top: 1px solid var(--medium-gray-color);
+}
+
+#references h2 {
+    font-size: 1.8em; /* Prominent but not like article titles */
+    color: var(--primary-color);
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0.75em;
+}
+
+#references ul {
+    list-style-type: square; /* Differentiate from other lists */
+}
+
+#references ul li {
+    font-size: 0.9em; /* Smaller font for references */
+    margin-bottom: 0.4em;
+}
+
+#references ul li a {
+    color: var(--primary-color); /* Match heading color for a subtle look */
+}
+#references ul li a:hover {
+    color: var(--accent-color);
+}
+
+
+/* Generic Section styling (less emphasis now) */
 section {
-    padding: 1.5em 0;
+    padding: 1em 0; /* Reduced default padding */
     margin-bottom: 1em;
 }
-
+/* Remove border from generic section:not(:last-child) if it was there */
 section:not(:last-child) {
-    border-bottom: 1px solid var(--medium-gray-color);
+    border-bottom: none;
 }
+
 
 /* Responsive Design */
 
 /* Small screens (e.g., mobile phones) */
 @media (max-width: 600px) {
     body {
-        font-size: 15px;
+        font-size: 16px; /* Slightly smaller on mobile */
     }
 
     main {
-        margin: 10px;
-        padding: 0 15px;
+        margin: 0; /* Full width on mobile */
+        padding: 15px; /* Reduced padding */
+        width: auto;
+        max-width: none; /* Override desktop max-width */
     }
 
-    header h1 {
-        font-size: 1.8em;
+    .site-header h1 {
+        font-size: 2em; /* Adjust site title */
     }
 
-    h1 {
-        font-size: 1.9em;
+    #a-la-une h2 {
+        font-size: 1.7em;
     }
-
-    h2 {
-        font-size: 1.6em;
-    }
-
-    h3 {
+    #a-la-une h3 {
         font-size: 1.3em;
     }
 
-    /* Make tables scrollable horizontally on small screens */
+    article h2 { /* Article titles */
+        font-size: 1.8em;
+    }
+
+    article h3 { /* Subheadings in articles */
+        font-size: 1.4em;
+    }
+
+    /* Table scrolling from previous version - keep if needed */
     table {
         display: block;
         overflow-x: auto;
-        white-space: nowrap; /* Prevents content wrapping that could break layout */
+        white-space: nowrap;
     }
 
     th, td {
-        /* Ensure cells don't collapse too much, adjust as needed */
         min-width: 100px;
     }
 }
 
 /* Medium screens (e.g., tablets) */
-@media (min-width: 601px) and (max-width: 992px) {
+@media (min-width: 601px) and (max-width: 900px) { /* Adjusted max-width for tablets */
     main {
-        max-width: 95%;
-        padding: 0 25px;
+        max-width: 90%; /* Allow a bit more width than phones */
+        padding: 20px 25px;
     }
 
-    header h1 {
-        font-size: 2.2em;
+    .site-header h1 {
+        font-size: 2.5em;
     }
 
-    h1 {
+    article h2 {
         font-size: 2em;
     }
 
-    h2 {
-        font-size: 1.7em;
-    }
-
-    h3 {
-        font-size: 1.35em;
+    article h3 {
+        font-size: 1.5em;
     }
 }
 
-/* Large screens (desktops) - already covered by base styles */
-@media (min-width: 993px) {
-    /* Styles for large screens can go here if needed,
-       but base styles are already targeting this. */
+/* Large screens (desktops) - base styles target this */
+@media (min-width: 901px) {
+    /* Styles for large screens are generally covered by base styles.
+       main max-width is 800px. */
 }
