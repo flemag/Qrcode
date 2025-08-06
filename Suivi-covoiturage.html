@@ -681,13 +681,17 @@
     .driver-overview-table { display: none; /* Caché par défaut, affiché par media query desktop */ width: 100%; border-collapse: collapse; margin-top: 10px; }
     .driver-overview-table th, .driver-overview-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: middle; }
     .driver-overview-table th { background-color: #f0f0f0; font-weight: 500; color: var(--text-color-dark); }
+    .driver-overview-table .rank-cell, .driver-overview-table .score-cell { text-align: center; font-weight: 500; }
+    .driver-overview-table .score-cell { font-size: 1.1rem; }
     .driver-overview-table td.suggestion-cell { text-align: center; }
-    .driver-overview-table .suggestion-icon { color: var(--accent-color); font-size: 1.3rem; }
-    .driver-overview-table tr.suggested-driver.driver-1 td { background-color: var(--driver-color-1-bg); color: var(--driver-color-1-text); font-weight: 500; }
+    .driver-overview-table .suggestion-icon { color: var(--accent-color); font-size: 1.5rem; } /* Made icon bigger */
+
+    .driver-overview-table tr.suggested-driver { font-weight: 700; /* Bolder text for the whole row */ }
+    .driver-overview-table tr.suggested-driver.driver-1 td { background-color: var(--driver-color-1-bg); color: var(--driver-color-1-text); }
     .driver-overview-table tr.suggested-driver.driver-1 .suggestion-icon { color: var(--driver-color-1-text); }
-    .driver-overview-table tr.suggested-driver.driver-2 td { background-color: var(--driver-color-2-bg); color: var(--driver-color-2-text); font-weight: 500; }
+    .driver-overview-table tr.suggested-driver.driver-2 td { background-color: var(--driver-color-2-bg); color: var(--driver-color-2-text); }
     .driver-overview-table tr.suggested-driver.driver-2 .suggestion-icon { color: var(--driver-color-2-text); }
-    .driver-overview-table tr.suggested-driver.driver-3 td { background-color: var(--driver-color-3-bg); color: var(--driver-color-3-text); font-weight: 500; }
+    .driver-overview-table tr.suggested-driver.driver-3 td { background-color: var(--driver-color-3-bg); color: var(--driver-color-3-text); }
     .driver-overview-table tr.suggested-driver.driver-3 .suggestion-icon { color: var(--driver-color-3-text); }
 
     /* Mobile Cards for Aperçu Conduites */
@@ -695,57 +699,103 @@
     .driver-card {
         background-color: var(--md-sys-color-surface); 
         border: 1px solid var(--md-sys-color-outline);
-        border-radius: var(--border-radius-large); /* Updated border-radius */
+        border-radius: var(--border-radius-large);
         padding: 15px; 
-        box-shadow: var(--card-shadow); /* Updated shadow */
+        padding-top: 20px;
+        box-shadow: var(--card-shadow);
         display: flex; flex-direction: column;
-        border-left-width: 5px; 
+        border-left-width: 6px; /* Thicker side border */
         border-left-style: solid;
-        border-left-color: var(--md-sys-color-outline); /* Default for non-specific driver cards */
+        border-left-color: var(--md-sys-color-outline);
         position: relative; 
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .driver-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px var(--shadow-color); }
     .driver-card.driver-1 { border-left-color: var(--driver-color-1-text); }
     .driver-card.driver-2 { border-left-color: var(--driver-color-2-text); }
     .driver-card.driver-3 { border-left-color: var(--driver-color-3-text); }
 
-    .driver-card .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; /* Slightly increased margin */ }
+    .driver-card .card-rank {
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        padding: 4px 10px;
+        border-radius: var(--border-radius-large) 0 var(--border-radius-medium) 0;
+        font-size: 0.9rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+    .driver-card.driver-1 .card-rank { background-color: var(--driver-color-1-text); }
+    .driver-card.driver-2 .card-rank { background-color: var(--driver-color-2-text); }
+    .driver-card.driver-3 .card-rank { background-color: var(--driver-color-3-text); }
+
+    .driver-card .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .driver-card .member-name { 
-        font-size: 1.2rem; /* Adjusted font size */
-        font-weight: 500; /* Standard weight */
-        color: var(--md-sys-color-on-surface); /* Default color */
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: var(--md-sys-color-on-surface);
     }
     .driver-card.driver-1 .member-name { color: var(--driver-color-1-text); }
     .driver-card.driver-2 .member-name { color: var(--driver-color-2-text); }
     .driver-card.driver-3 .member-name { color: var(--driver-color-3-text); }
 
     .driver-card .suggestion-icon-card { 
-        font-size: 1.5rem; 
-        color: var(--md-sys-color-tertiary); /* Use tertiary for general suggestion */
+        font-size: 1.8rem; /* Bigger icon */
+        color: var(--md-sys-color-tertiary);
     }
+    .driver-card.suggested-driver .suggestion-icon-card {
+        /* Add a subtle animation to the suggested icon */
+        animation: pulse-crown 1.5s infinite;
+    }
+    @keyframes pulse-crown {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+        100% { transform: scale(1); }
+    }
+
     .driver-card.suggested-driver .suggestion-icon-card.driver-1 { color: var(--driver-color-1-text); }
     .driver-card.suggested-driver .suggestion-icon-card.driver-2 { color: var(--driver-color-2-text); }
     .driver-card.suggested-driver .suggestion-icon-card.driver-3 { color: var(--driver-color-3-text); }
 
-    .driver-card .card-stat { display: flex; justify-content: space-between; padding: 6px 0; /* Adjusted padding */ border-bottom: 1px dotted var(--md-sys-color-outline); font-size: 0.9rem; }
+    .driver-card .card-stat { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted var(--md-sys-color-outline); font-size: 0.9rem; }
     .driver-card .card-stat:last-child { border-bottom: none; }
-    .driver-card .card-stat strong { 
-        color: var(--md-sys-color-on-surface-variant); /* Updated color for label */
-        font-weight: 400; /* Regular weight for label */
+    .driver-card .card-stat strong { color: var(--md-sys-color-on-surface-variant); font-weight: 400; }
+    .driver-card .card-stat span { font-weight: 500; color: var(--md-sys-color-on-surface); }
+
+    .driver-card .card-stat-score {
+        background-color: var(--md-sys-color-surface-variant);
+        margin: 5px -15px; /* Extend to edges */
+        padding: 8px 15px;
+        border-top: 1px solid var(--md-sys-color-outline);
+        border-bottom: 1px solid var(--md-sys-color-outline);
     }
-    .driver-card .card-stat span { 
-        font-weight: 500; 
-        color: var(--md-sys-color-on-surface); /* Value color */
-    }
+    .driver-card .card-stat-score strong { font-weight: 500; color: var(--md-sys-color-on-surface); }
+    .driver-card .card-stat-score span { font-size: 1.3rem; font-weight: 700; color: var(--md-sys-color-primary); }
+    .driver-card.driver-1 .card-stat-score span { color: var(--driver-color-1-text); }
+    .driver-card.driver-2 .card-stat-score span { color: var(--driver-color-2-text); }
+    .driver-card.driver-3 .card-stat-score span { color: var(--driver-color-3-text); }
+
 
     .driver-card.suggested-driver {
-        border: 1px solid var(--md-sys-color-primary); /* Highlight with primary border */
-        box-shadow: 0 0 0 1px var(--md-sys-color-primary) inset, var(--card-shadow); /* Inner glow and standard shadow */
+        border-width: 2px; /* Thicker border on all sides */
+        border-color: var(--md-sys-color-primary);
+        box-shadow: 0 0 0 3px var(--primary-color-light-transparent), var(--card-shadow); /* Outer glow */
     }
-    /* Keep specific driver suggested styles if they need to override the general suggested style border */
-    .driver-card.suggested-driver.driver-1 { border-color: var(--driver-color-1-text); box-shadow: 0 0 0 1px var(--driver-color-1-text) inset, var(--card-shadow); }
-    .driver-card.suggested-driver.driver-2 { border-color: var(--driver-color-2-text); box-shadow: 0 0 0 1px var(--driver-color-2-text) inset, var(--card-shadow); }
-    .driver-card.suggested-driver.driver-3 { border-color: var(--driver-color-3-text); box-shadow: 0 0 0 1px var(--driver-color-3-text) inset, var(--card-shadow); }
+    .driver-card.suggested-driver.driver-1 { border-color: var(--driver-color-1-text); box-shadow: 0 0 0 3px var(--driver-color-1-bg), var(--card-shadow); }
+    .driver-card.suggested-driver.driver-2 { border-color: var(--driver-color-2-text); box-shadow: 0 0 0 3px var(--driver-color-2-bg), var(--card-shadow); }
+    .driver-card.suggested-driver.driver-3 { border-color: var(--driver-color-3-text); box-shadow: 0 0 0 3px var(--driver-color-3-bg), var(--card-shadow); }
 
+    .suggestion-text {
+        font-size: 0.85rem;
+        color: var(--md-sys-color-on-surface-variant);
+        margin-top: 8px;
+        padding: 4px 8px;
+        background-color: var(--md-sys-color-surface-variant);
+        border-radius: var(--border-radius-small);
+        display: none; /* Hidden by default, shown via JS */
+    }
 
     .general-stats-summary { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); }
     .general-stats-summary p { font-size: 0.95rem; margin-bottom: 5px; }
@@ -1006,6 +1056,7 @@
                             <label for="conducteur" class="required-label">Conducteur</label>
                             <input type="text" id="conducteur" list="conducteur-list" placeholder="Nom du conducteur" required>
                             <datalist id="conducteur-list"></datalist>
+                            <div id="driver-suggestion" class="suggestion-text"></div>
                         </div>
                     </div>
                     <label>Passagers</label>
@@ -1123,7 +1174,8 @@
             calendarGrid: document.getElementById('calendar-grid'), tripsForDayDiv: document.getElementById('trips-for-day'),
             statsSection: document.getElementById('stats-section'), statsContent: document.getElementById('stats-content'),
             statsTitle: document.getElementById('stats-title'),
-            notificationDiv: document.getElementById('notification')
+            notificationDiv: document.getElementById('notification'),
+            driverSuggestion: document.getElementById('driver-suggestion')
         };
 
             // ... (previous firebase config and dom refs) ...
@@ -1274,6 +1326,7 @@
         dom.formTitle.textContent = 'Ajouter un Trajet';
         dom.submitBtn.innerHTML = 'Enregistrer'; // Reset button text/icon
         dom.cancelEditBtn.style.display = 'none';
+        dom.driverSuggestion.style.display = 'none'; // Hide suggestion on reset
 
         // Clear existing passenger rows except the first one
         const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
@@ -1297,6 +1350,59 @@
         // DO NOT pre-fill conductor here. Datalist provides suggestions.
     }
 
+    // --- New function to get only the suggested driver's name ---
+    async function getSuggestedDriver() {
+        const allTrips = await fetchAllTripsData();
+        if (!allTrips) return null;
+
+        const memberStats = {};
+        GROUP_MEMBERS.forEach(member => {
+            memberStats[member] = { name: member, timesDriven: 0, equityScore: 0 };
+        });
+
+        allTrips.forEach(trip => {
+            const driver = trip.conducteur?.trim();
+            const passengers = trip.passagers?.map(p => String(p)?.trim()).filter(p => p) || [];
+
+            if (driver && GROUP_MEMBERS.includes(driver)) {
+                memberStats[driver].timesDriven++;
+                const pointsGained = passengers.length > 0 ? passengers.length : 1;
+                memberStats[driver].equityScore += pointsGained;
+            }
+            passengers.forEach(p => {
+                if (GROUP_MEMBERS.includes(p)) {
+                    memberStats[p].equityScore -= 1;
+                }
+            });
+        });
+
+        const sortedMembers = [...GROUP_MEMBERS].sort((a, b) => {
+            const sA = memberStats[a], sB = memberStats[b];
+            if (sA.equityScore !== sB.equityScore) return sA.equityScore - sB.equityScore;
+            if (sA.timesDriven !== sB.timesDriven) return sA.timesDriven - sB.timesDriven;
+            return a.localeCompare(b);
+        });
+
+        return sortedMembers.length > 0 ? sortedMembers[0] : null;
+    }
+
+    // --- New function to display the suggestion in the form ---
+    async function updateDriverSuggestion() {
+        dom.driverSuggestion.style.display = 'none';
+        dom.driverSuggestion.textContent = 'Chargement de la suggestion...';
+        try {
+            const suggestedDriver = await getSuggestedDriver();
+            if (suggestedDriver) {
+                dom.driverSuggestion.innerHTML = `💡 Suggestion : <strong>${suggestedDriver}</strong>`;
+                dom.driverSuggestion.style.display = 'block';
+            }
+        } catch (error) {
+            console.error("Error getting driver suggestion:", error);
+            dom.driverSuggestion.style.display = 'none';
+        }
+    }
+
+
     // --- Modify switchView to call updateSuggestionDatalists for the form view ---
     function switchView(view) {
         console.log("Switching view to:", view);
@@ -1316,6 +1422,7 @@
                 activeSection = dom.formSection;
                 if (!dom.editIdInput.value) resetForm(); // Reset form only if adding a new trip
                 updateSuggestionDatalists(); // <-- Update suggestions when entering form view
+                updateDriverSuggestion();
                 break;
             case 'my-trips':
             case 'all-trips':
@@ -1562,58 +1669,48 @@
                     name: member,
                     timesDriven: 0,
                     timesPassenger: 0,
-                    lastDriveDate: null,
-                    tripsSinceLastDrive: 0
+                    passengersDriven: 0,
+                    equityScore: 0
                 };
             });
 
             let groupTripsCount = 0;
             allTrips.forEach(trip => {
                 const driver = trip.conducteur?.trim();
-                const passengers = trip.passagers?.map(p => String(p)?.trim()) || [];
-                let isGroupTrip = false;
+                const passengers = trip.passagers?.map(p => String(p)?.trim()).filter(p => p) || [];
+
+                // Determine if this trip involves any group member
+                const isGroupTrip = GROUP_MEMBERS.includes(driver) || passengers.some(p => GROUP_MEMBERS.includes(p));
+                if (isGroupTrip) {
+                    groupTripsCount++;
+                }
+
+                // Calculate stats based on the new equity score logic
                 if (driver && GROUP_MEMBERS.includes(driver)) {
                     memberStats[driver].timesDriven++;
-                    memberStats[driver].lastDriveDate = trip.date; // Keep the latest date
-                    isGroupTrip = true;
+                    // Le conducteur gagne des points pour chaque passager.
+                    // S'il n'y a pas de passagers, on peut considérer que le trajet "vaut" 1 point pour l'effort.
+                    const pointsGained = passengers.length > 0 ? passengers.length : 1;
+                    memberStats[driver].equityScore += pointsGained;
+                    memberStats[driver].passengersDriven += passengers.length;
                 }
                 passengers.forEach(p => {
                     if (GROUP_MEMBERS.includes(p)) {
                         memberStats[p].timesPassenger++;
-                        isGroupTrip = true;
+                        // Chaque trajet en tant que passager "coûte" 1 point.
+                        memberStats[p].equityScore -= 1;
                     }
                 });
-                if (isGroupTrip) groupTripsCount++;
             });
 
-            GROUP_MEMBERS.forEach(member => {
-                if (memberStats[member].lastDriveDate) {
-                    let count = 0;
-                    // Count group trips that occurred strictly AFTER the member's last drive date
-                    for (const trip of allTrips) {
-                         const driverInGroup = GROUP_MEMBERS.includes(trip.conducteur?.trim());
-                         const passengerInGroup = trip.passagers?.some(p => GROUP_MEMBERS.includes(String(p)?.trim()));
-                        if (driverInGroup || passengerInGroup) { // Only count group trips
-                            if (trip.date > memberStats[member].lastDriveDate) count++;
-                            // If date is the same, check if it was a different driver from the group
-                            else if (trip.date === memberStats[member].lastDriveDate && driverInGroup && trip.conducteur?.trim() !== member) count++;
-                        }
-                    }
-                    memberStats[member].tripsSinceLastDrive = count;
-                } else {
-                    // If a member never drove, the number of trips since their last drive is the total group trip count
-                    memberStats[member].tripsSinceLastDrive = groupTripsCount;
-                }
-            });
-
-            // Sort members for suggestion: highest tripsSinceLastDrive first, then fewest timesDriven, then earliest lastDriveDate, then alphabetically
+            // Sort members for suggestion: lowest equityScore first, then fewest times driven, then alphabetically
             const sortedMembers = [...GROUP_MEMBERS].sort((a, b) => {
                 const sA = memberStats[a],
-                    sB = memberStats[b];
+                      sB = memberStats[b];
 
-                // Primary sort: trips since last drive (descending)
-                if (sB.tripsSinceLastDrive !== sA.tripsSinceLastDrive) {
-                    return sB.tripsSinceLastDrive - sA.tripsSinceLastDrive;
+                // Primary sort: equity score (ascending)
+                if (sA.equityScore !== sB.equityScore) {
+                    return sA.equityScore - sB.equityScore;
                 }
 
                 // Secondary sort: fewest times driven (ascending)
@@ -1621,63 +1718,62 @@
                      return sA.timesDriven - sB.timesDriven;
                 }
 
-                // Tertiary sort: earliest last drive date (ascending - null comes first)
-                if (!sA.lastDriveDate && sB.lastDriveDate) return -1;
-                if (sA.lastDriveDate && !sB.lastDriveDate) return 1;
-                if (sA.lastDriveDate && sB.lastDriveDate) {
-                    return new Date(sA.lastDriveDate) - new Date(sB.lastDriveDate);
-                }
-
-                // Quaternary sort: alphabetical by name (ascending)
+                // Tertiary sort: alphabetical by name (ascending)
                 return a.localeCompare(b);
             });
+
             const suggestedDriverName = sortedMembers.length > 0 ? sortedMembers[0] : null;
 
 
             let cardsHtml = '<div class="driver-cards-container">';
             let tableHtml = `<div class="table-container driver-overview-table-container"><table class="driver-overview-table">
-                                <thead><tr><th>Participant</th><th>Conduites</th><th>Passager</th><th>Dern. Conduite</th><th>Trajets<br>Groupe Depuis</th><th>Suggéré</th></tr></thead><tbody>`; // Adjusted header
+                                <thead><tr><th>#</th><th>Participant</th><th>Score</th><th>Conduites</th><th>Passager</th><th>Suggéré</th></tr></thead><tbody>`;
 
-
-            GROUP_MEMBERS.forEach(member => {
+            let rank = 1;
+            sortedMembers.forEach(member => {
                 const stats = memberStats[member];
                 const isSuggested = suggestedDriverName === member;
-                const driverColorClass = getDriverClass(member) || 'driver-default'; // Fallback class
-                const lastDriveDisplay = stats.lastDriveDate ? new Date(stats.lastDriveDate + 'T00:00:00Z').toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                }) : '<em>Jamais</em>';
-                const tripsSinceDisplay = (stats.lastDriveDate === null) ? groupTripsCount : stats.tripsSinceLastDrive; // Show total group trips if never drove
-                const suggestionIcon = isSuggested ? `<i class="fas fa-star suggestion-icon"></i>` : '';
-                const suggestionIconCard = isSuggested ? `<i class="fas fa-star suggestion-icon-card ${driverColorClass}"></i>` : '';
-
+                const driverColorClass = getDriverClass(member) || 'driver-default';
+                const suggestionIcon = isSuggested ? `<i class="fas fa-crown suggestion-icon"></i>` : '';
+                const suggestionIconCard = isSuggested ? `<i class="fas fa-crown suggestion-icon-card ${driverColorClass}"></i>` : '';
 
                 // HTML pour les cartes (mobile)
                 cardsHtml += `
                         <div class="driver-card ${driverColorClass} ${isSuggested ? 'suggested-driver' : ''}">
+                            <div class="card-rank">#${rank}</div>
                             <div class="card-header">
                                 <span class="member-name">${stats.name}</span>
                                 ${suggestionIconCard}
                             </div>
+                            <div class="card-stat card-stat-score"><strong>Score d'Équité :</strong> <span>${stats.equityScore}</span></div>
                             <div class="card-stat"><strong>Conduites :</strong> <span>${stats.timesDriven}</span></div>
                             <div class="card-stat"><strong>Passager :</strong> <span>${stats.timesPassenger}</span></div>
-                            <div class="card-stat"><strong>Dernière Conduite :</strong> <span>${lastDriveDisplay}</span></div>
-                            <div class="card-stat"><strong>Trajets du Groupe Depuis :</strong> <span>${tripsSinceDisplay}</span></div>
+                            <div class="card-stat"><strong>Passagers Transportés :</strong> <span>${stats.passengersDriven}</span></div>
                         </div>`;
 
                 // HTML pour le tableau (desktop)
                 tableHtml += `<tr class="${isSuggested ? `suggested-driver ${driverColorClass}` : driverColorClass}">
-                                    <td>${stats.name}</td><td>${stats.timesDriven}</td><td>${stats.timesPassenger}</td>
-                                    <td>${lastDriveDisplay}</td><td>${tripsSinceDisplay}</td>
+                                    <td class="rank-cell">${rank}</td>
+                                    <td>${stats.name}</td>
+                                    <td class="score-cell">${stats.equityScore}</td>
+                                    <td>${stats.timesDriven}</td>
+                                    <td>${stats.timesPassenger}</td>
                                     <td class="suggestion-cell">${suggestionIcon}</td></tr>`;
+                rank++;
             });
             cardsHtml += '</div>';
             tableHtml += `</tbody></table></div>`;
 
             dom.statsContent.innerHTML = `<h4>État des Conduites</h4>${cardsHtml}${tableHtml}
-                    <div class="general-stats-summary"><h4>Résumé Global</h4>
-                    <p><strong>Nombre total de trajets du groupe :</strong> ${groupTripsCount}</p></div>`;
+                    <div class="general-stats-summary">
+                        <h4>Résumé Global</h4>
+                        <p><strong>Nombre total de trajets du groupe :</strong> ${groupTripsCount}</p>
+                        <p style="font-size: 0.8rem; color: var(--text-color-medium); margin-top: 10px;">
+                            <i class="fas fa-info-circle"></i> Le <strong>Score d'Équité</strong> est calculé comme suit :
+                            Points gagnés en conduisant (1 point par passager, ou 1 point si seul) moins les points pour chaque trajet en tant que passager.
+                            Le score le plus bas indique la priorité pour conduire.
+                        </p>
+                    </div>`;
 
         } catch (error) {
             console.error("Error in fetchAndRenderDriverOverview:", error);
