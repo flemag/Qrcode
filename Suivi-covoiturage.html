@@ -1718,7 +1718,7 @@
 
             if (driver && participants.includes(driver)) {
                 memberStats[driver].timesDriven++;
-                const pointsGained = passengers.length > 0 ? passengers.length : 1;
+                const pointsGained = passengers.length;
                 memberStats[driver].equityScore += pointsGained;
             }
             passengers.forEach(p => {
@@ -1779,9 +1779,8 @@
                 // Calculate stats based on the new equity score logic
                 if (driver && GROUP_MEMBERS.includes(driver)) {
                     memberStats[driver].timesDriven++;
-                    // Le conducteur gagne des points pour chaque passager.
-                    // S'il n'y a pas de passagers, on peut considérer que le trajet "vaut" 1 point pour l'effort.
-                    const pointsGained = passengers.length > 0 ? passengers.length : 1;
+                    // Le conducteur gagne des points uniquement pour chaque passager. Conduire seul = 0 points.
+                    const pointsGained = passengers.length;
                     memberStats[driver].equityScore += pointsGained;
                     memberStats[driver].passengersDriven += passengers.length;
                 }
@@ -1861,7 +1860,7 @@
                         <p><strong>Nombre total de trajets du groupe :</strong> ${groupTripsCount}</p>
                         <p style="font-size: 0.8rem; color: var(--text-color-medium); margin-top: 10px;">
                             <i class="fas fa-info-circle"></i> Le <strong>Score d'Équité</strong> est calculé comme suit :
-                            Points gagnés en conduisant (1 point par passager, ou 1 point si seul) moins les points pour chaque trajet en tant que passager.
+                            Points gagnés en conduisant (1 point par passager) moins les points pour chaque trajet en tant que passager. Conduire seul vaut 0 point.
                             Le score le plus bas indique la priorité pour conduire.
                         </p>
                     </div>
