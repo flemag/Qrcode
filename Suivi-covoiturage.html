@@ -1869,10 +1869,10 @@
 
             // --- Scenarios Calculation ---
             const scenarios = [
-                { title: "Trajet Steve & Marc", participants: ["Steve", "Marc"] },
-                { title: "Trajet Steve & Julien", participants: ["Steve", "Julien"] },
-                { title: "Trajet Marc & Julien", participants: ["Marc", "Julien"] },
-                { title: "Trajet Steve, Marc & Julien", participants: ["Steve", "Marc", "Julien"] }
+                { title: "Si Trajet Steve & Marc", participants: ["Steve", "Marc"] },
+                { title: "Si Trajet Steve & Julien", participants: ["Steve", "Julien"] },
+                { title: "Si Trajet Marc & Julien", participants: ["Marc", "Julien"] },
+                { title: "Si Trajet Steve, Marc & Julien", participants: ["Steve", "Marc", "Julien"] }
             ].filter(s => s.participants.every(p => GROUP_MEMBERS.includes(p))); // Ensure scenario participants are in the main group
 
             let scenarioHtml = '<h4><i class="fas fa-users"></i> Suggestions par Scénario Spécifique</h4>';
