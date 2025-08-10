@@ -134,8 +134,22 @@
     #login-btn img { width: 18px; height: 18px; }
 
     .main-content { flex-grow: 1; padding: 20px; max-width: 1000px; margin: 0 auto; width: 100%; padding-bottom: 80px; }
-    .content > section { background-color: var(--surface-color); padding: 25px; border-radius: var(--border-radius); box-shadow: var(--card-shadow); margin-bottom: 20px; display: none; }
-    .content > section.active { display: block; }
+    .content > section {
+        background-color: var(--surface-color);
+        padding: 25px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        margin-bottom: 20px;
+        display: none;
+        transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    .content > section.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
 
     h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
     h3 { color: var(--secondary-color); margin: 20px 0 10px; font-size: 1.4rem; }
@@ -622,7 +636,7 @@
         font-family: inherit; 
         font-size: 0.75rem; /* Adjusted text font-size */
         color: var(--md-sys-color-on-surface-variant); /* Inactive color */
-        transition: color 0.2s, background-color 0.2s; 
+        transition: color 0.2s, background-color 0.2s, transform 0.1s ease-out;
         min-width: 80px; /* Adjusted min-width */
         text-align: center; 
         gap: 4px; 
@@ -637,6 +651,11 @@
     .tab-button:hover:not(.active) { 
         color: var(--md-sys-color-on-surface); 
         background-color: rgba(0,0,0,0.04); /* Subtle hover background */
+        transform: scale(1.05);
+    }
+    .tab-button:active {
+        transform: scale(0.98);
+        transition-duration: 0.05s;
     }
     .tab-button.active { 
         color: var(--md-sys-color-on-secondary-container); /* Active text/icon color */
@@ -647,109 +666,76 @@
         content: none; /* Removed underline indicator */
     }
 
-    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
-    .calendar-controls button { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--primary-color); padding: 5px 10px; transition: color 0.2s; }
-    .calendar-controls button:hover { color: var(--primary-dark); } .calendar-controls h3 { margin: 0; font-size: 1.3rem; color: var(--text-color-dark); text-align: center; flex-grow: 1; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; border: 1px solid var(--border-color); padding: 4px; background-color: var(--background-color); border-radius: var(--border-radius); }
-    .calendar-day { border: 1px solid #eee; padding: 5px; padding-top: 25px; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; position: relative; background-color: var(--surface-color); font-size: 0.8rem; overflow: hidden; border-radius: 4px; }
-    .calendar-day.selected { border-color: var(--primary-color); box-shadow: 0 0 0 2px var(--primary-color) inset; }
-    .calendar-day.driver-1 { background-color: var(--driver-color-1-bg); } .calendar-day.driver-1:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
-    .calendar-day.driver-2 { background-color: var(--driver-color-2-bg); } .calendar-day.driver-2:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
-    .calendar-day.driver-3 { background-color: var(--driver-color-3-bg); } .calendar-day.driver-3:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
-    .calendar-day:hover:not(.empty):not(.weekday-header) { background-color: #f0f0f0; }
-    .calendar-day.today { border: 2px solid var(--primary-color); font-weight: bold; } .calendar-day.today .day-number { color: var(--primary-color); font-weight: 700; }
-    .calendar-day .day-number { font-size: 0.7rem; font-weight: 500; color: var(--text-color-medium); position: absolute; top: 5px; right: 7px; padding: 2px 4px; z-index: 1; background-color: rgba(255,255,255,0.8); border-radius: 3px; }
-    .calendar-day.today .day-number { background-color: rgba(255,255,255,0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .calendar-day .trip-summary { font-size: 0.65rem; line-height: 1.3; padding: 1px 4px; border-radius: 4px; margin-top: 4px; display: inline-block; max-width: 98%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; background-color: transparent; color: var(--text-color-medium); }
-    .calendar-day.driver-1 .trip-summary { color: var(--driver-color-1-text); } .calendar-day.driver-2 .trip-summary { color: var(--driver-color-2-text); } .calendar-day.driver-3 .trip-summary { color: var(--driver-color-3-text); }
-    .calendar-day.empty { background-color: #fcfcfc; cursor: default; border-color: #f5f5f5; } .calendar-day.empty:hover { background-color: #fcfcfc; }
-    .calendar-day.weekday-header { font-weight: bold; text-align: center; padding: 8px 5px; background-color: #e8e8e8; border: none; border-bottom: 1px solid var(--border-color); min-height: auto; cursor: default; color: var(--text-color-dark); font-size: 0.7rem; position: relative; padding-top: 8px; border-radius: 0; }
-    .calendar-day.weekday-header:hover { background-color: #e8e8e8; }
 
-    #trips-for-day { background-color: #f1f3f4; padding: 15px; border-radius: var(--border-radius); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); margin-top: 20px; border: 1px solid var(--border-color); min-height: 100px; }
-    #trips-for-day ul { list-style: none; padding: 0; }
-    #trips-for-day li { padding: 10px 5px; border-bottom: 1px solid #e0e0e0; font-size: 0.9rem; line-height: 1.5; padding-left: 15px; border-left: 5px solid transparent; transition: border-left-color 0.2s ease; }
-    #trips-for-day li div { margin-bottom: 3px; } #trips-for-day li strong { color: var(--text-color-dark); display: inline-block; min-width: 80px; margin-right: 10px; font-weight: 500; }
-    #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); } #trips-for-day li .driver-name.driver-1 { color: var(--driver-color-1-text); font-weight: 700;}
-    #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); } #trips-for-day li .driver-name.driver-2 { color: var(--driver-color-2-text); font-weight: 700;}
-    #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); } #trips-for-day li .driver-name.driver-3 { color: var(--driver-color-3-text); font-weight: 700;}
-    #trips-for-day li:last-child { border-bottom: none; } #trips-for-day p { color: var(--text-color-medium); font-style: italic; text-align: center; padding: 20px 0; }
-
-    /* Styles for "Aperçu Conduites" (Stats) */
-    #stats-content { color: var(--text-color-dark); }
-    /* Desktop Table for Aperçu Conduites */
-    .driver-overview-table { display: none; /* Caché par défaut, affiché par media query desktop */ width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .driver-overview-table th, .driver-overview-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: middle; }
-    .driver-overview-table th { background-color: #f0f0f0; font-weight: 500; color: var(--text-color-dark); }
-    .driver-overview-table td.suggestion-cell { text-align: center; }
-    .driver-overview-table .suggestion-icon { color: var(--accent-color); font-size: 1.3rem; }
-    .driver-overview-table tr.suggested-driver.driver-1 td { background-color: var(--driver-color-1-bg); color: var(--driver-color-1-text); font-weight: 500; }
-    .driver-overview-table tr.suggested-driver.driver-1 .suggestion-icon { color: var(--driver-color-1-text); }
-    .driver-overview-table tr.suggested-driver.driver-2 td { background-color: var(--driver-color-2-bg); color: var(--driver-color-2-text); font-weight: 500; }
-    .driver-overview-table tr.suggested-driver.driver-2 .suggestion-icon { color: var(--driver-color-2-text); }
-    .driver-overview-table tr.suggested-driver.driver-3 td { background-color: var(--driver-color-3-bg); color: var(--driver-color-3-text); font-weight: 500; }
-    .driver-overview-table tr.suggested-driver.driver-3 .suggestion-icon { color: var(--driver-color-3-text); }
-
-    /* Mobile Cards for Aperçu Conduites */
-    .driver-cards-container { display: flex; flex-direction: column; gap: 15px; }
-    .driver-card {
-        background-color: var(--md-sys-color-surface); 
-        border: 1px solid var(--md-sys-color-outline);
-        border-radius: var(--border-radius-large); /* Updated border-radius */
-        padding: 15px; 
-        box-shadow: var(--card-shadow); /* Updated shadow */
-        display: flex; flex-direction: column;
-        border-left-width: 5px; 
-        border-left-style: solid;
-        border-left-color: var(--md-sys-color-outline); /* Default for non-specific driver cards */
-        position: relative; 
+    /* Styles for New Scenario-based Overview */
+    .suggestion-container {
+        background-color: var(--md-sys-color-primary-container);
+        color: var(--md-sys-color-on-primary-container);
+        border-radius: var(--border-radius-large);
+        padding: 20px;
+        margin-bottom: 25px;
+        text-align: center;
+        box-shadow: var(--card-shadow);
     }
-    .driver-card.driver-1 { border-left-color: var(--driver-color-1-text); }
-    .driver-card.driver-2 { border-left-color: var(--driver-color-2-text); }
-    .driver-card.driver-3 { border-left-color: var(--driver-color-3-text); }
-
-    .driver-card .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; /* Slightly increased margin */ }
-    .driver-card .member-name { 
-        font-size: 1.2rem; /* Adjusted font size */
-        font-weight: 500; /* Standard weight */
-        color: var(--md-sys-color-on-surface); /* Default color */
+    .suggestion-container .suggestion-header {
+        font-size: 1rem;
+        font-weight: 400;
+        margin-bottom: 8px;
+        opacity: 0.8;
     }
-    .driver-card.driver-1 .member-name { color: var(--driver-color-1-text); }
-    .driver-card.driver-2 .member-name { color: var(--driver-color-2-text); }
-    .driver-card.driver-3 .member-name { color: var(--driver-color-3-text); }
-
-    .driver-card .suggestion-icon-card { 
-        font-size: 1.5rem; 
-        color: var(--md-sys-color-tertiary); /* Use tertiary for general suggestion */
+    .suggestion-container .suggested-driver-name {
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 12px;
     }
-    .driver-card.suggested-driver .suggestion-icon-card.driver-1 { color: var(--driver-color-1-text); }
-    .driver-card.suggested-driver .suggestion-icon-card.driver-2 { color: var(--driver-color-2-text); }
-    .driver-card.suggested-driver .suggestion-icon-card.driver-3 { color: var(--driver-color-3-text); }
-
-    .driver-card .card-stat { display: flex; justify-content: space-between; padding: 6px 0; /* Adjusted padding */ border-bottom: 1px dotted var(--md-sys-color-outline); font-size: 0.9rem; }
-    .driver-card .card-stat:last-child { border-bottom: none; }
-    .driver-card .card-stat strong { 
-        color: var(--md-sys-color-on-surface-variant); /* Updated color for label */
-        font-weight: 400; /* Regular weight for label */
+    .suggestion-container .suggested-driver-name i {
+        font-size: 1.8rem;
+        color: var(--md-sys-color-primary);
     }
-    .driver-card .card-stat span { 
-        font-weight: 500; 
-        color: var(--md-sys-color-on-surface); /* Value color */
+    .suggestion-container .suggestion-reason {
+        font-size: 0.9rem;
+        line-height: 1.5;
     }
 
-    .driver-card.suggested-driver {
-        border: 1px solid var(--md-sys-color-primary); /* Highlight with primary border */
-        box-shadow: 0 0 0 1px var(--md-sys-color-primary) inset, var(--card-shadow); /* Inner glow and standard shadow */
+    .balance-cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
     }
-    /* Keep specific driver suggested styles if they need to override the general suggested style border */
-    .driver-card.suggested-driver.driver-1 { border-color: var(--driver-color-1-text); box-shadow: 0 0 0 1px var(--driver-color-1-text) inset, var(--card-shadow); }
-    .driver-card.suggested-driver.driver-2 { border-color: var(--driver-color-2-text); box-shadow: 0 0 0 1px var(--driver-color-2-text) inset, var(--card-shadow); }
-    .driver-card.suggested-driver.driver-3 { border-color: var(--driver-color-3-text); box-shadow: 0 0 0 1px var(--driver-color-3-text) inset, var(--card-shadow); }
-
-
-    .general-stats-summary { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); }
-    .general-stats-summary p { font-size: 0.95rem; margin-bottom: 5px; }
-    .general-stats-summary strong { color: var(--text-color-dark); }
+    .balance-card {
+        background-color: var(--md-sys-color-surface-variant);
+        border-radius: var(--border-radius-large);
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .balance-card .balance-card-header {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--md-sys-color-on-surface-variant);
+        text-align: center;
+    }
+    .balance-card .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+    .balance-card .stat-item .label {
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .balance-card .stat-item .value {
+        font-weight: 500;
+        color: var(--md-sys-color-on-surface);
+        padding: 3px 8px;
+        border-radius: var(--border-radius-pill);
+        background-color: var(--md-sys-color-surface);
+    }
 
     @media (max-width: 767px) { /* Styles Mobile */
         body { padding-bottom: 60px; } 
@@ -1056,7 +1042,7 @@
             </section>
 
             <section id="stats-section">
-                <h2 id="stats-title">Aperçu des Conduites</h2>
+                <h2 id="stats-title">Aperçu & Suggestions</h2>
                 <div id="stats-content"><div class="loading-spinner"><i class="fas fa-spinner"></i></div></div>
             </section>
         </div>
@@ -1540,150 +1526,132 @@
         }
     }
 
-    // --- Modify fetchAndRenderDriverOverview to use cached data or fetch it ---
-    async function fetchAndRenderDriverOverview() { // Renommée pour clarté
+    // --- New fetchAndRenderDriverOverview for Scenario-Based View ---
+    async function fetchAndRenderDriverOverview() {
         if (isFetchingStats) return;
         isFetchingStats = true;
         dom.statsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
-        dom.statsTitle.textContent = "Aperçu des Conduites";
+        dom.statsTitle.textContent = "Aperçu & Suggestions";
 
         try {
-            const allTrips = await fetchAllTripsData(); // <-- Use the shared fetch function
+            const allTrips = await fetchAllTripsData();
 
             if (!allTrips || allTrips.length === 0) {
-                dom.statsContent.innerHTML = `<h4>État des Conduites</h4><p class="empty-message"><i class="fas fa-info-circle"></i> Aucune donnée de trajet.</p>`;
+                dom.statsContent.innerHTML = `<p class="empty-message"><i class="fas fa-info-circle"></i> Aucune donnée de trajet pour générer un aperçu.</p>`;
                 isFetchingStats = false;
                 return;
             }
 
-            const memberStats = {};
+            // --- 1. Calculate Overall Stats for Suggestion ---
+            const overallStats = {};
             GROUP_MEMBERS.forEach(member => {
-                memberStats[member] = {
-                    name: member,
-                    timesDriven: 0,
-                    timesPassenger: 0,
-                    lastDriveDate: null,
-                    tripsSinceLastDrive: 0
-                };
+                overallStats[member] = { name: member, timesDriven: 0, lastDriveDate: null, tripsSinceLastDrive: 0 };
             });
 
             let groupTripsCount = 0;
             allTrips.forEach(trip => {
                 const driver = trip.conducteur?.trim();
                 const passengers = trip.passagers?.map(p => String(p)?.trim()) || [];
-                let isGroupTrip = false;
-                if (driver && GROUP_MEMBERS.includes(driver)) {
-                    memberStats[driver].timesDriven++;
-                    memberStats[driver].lastDriveDate = trip.date; // Keep the latest date
-                    isGroupTrip = true;
-                }
-                passengers.forEach(p => {
-                    if (GROUP_MEMBERS.includes(p)) {
-                        memberStats[p].timesPassenger++;
-                        isGroupTrip = true;
+                if (GROUP_MEMBERS.includes(driver) || passengers.some(p => GROUP_MEMBERS.includes(p))) {
+                    groupTripsCount++;
+                    if (driver && GROUP_MEMBERS.includes(driver)) {
+                        overallStats[driver].timesDriven++;
+                        overallStats[driver].lastDriveDate = trip.date;
                     }
-                });
-                if (isGroupTrip) groupTripsCount++;
+                }
             });
 
             GROUP_MEMBERS.forEach(member => {
-                if (memberStats[member].lastDriveDate) {
+                if (overallStats[member].lastDriveDate) {
                     let count = 0;
-                    // Count group trips that occurred strictly AFTER the member's last drive date
                     for (const trip of allTrips) {
-                         const driverInGroup = GROUP_MEMBERS.includes(trip.conducteur?.trim());
-                         const passengerInGroup = trip.passagers?.some(p => GROUP_MEMBERS.includes(String(p)?.trim()));
-                        if (driverInGroup || passengerInGroup) { // Only count group trips
-                            if (trip.date > memberStats[member].lastDriveDate) count++;
-                            // If date is the same, check if it was a different driver from the group
-                            else if (trip.date === memberStats[member].lastDriveDate && driverInGroup && trip.conducteur?.trim() !== member) count++;
+                        const driverInGroup = GROUP_MEMBERS.includes(trip.conducteur?.trim());
+                        const passengerInGroup = trip.passagers?.some(p => GROUP_MEMBERS.includes(String(p)?.trim()));
+                        if ((driverInGroup || passengerInGroup) && trip.date > overallStats[member].lastDriveDate) {
+                            count++;
                         }
                     }
-                    memberStats[member].tripsSinceLastDrive = count;
+                    overallStats[member].tripsSinceLastDrive = count;
                 } else {
-                    // If a member never drove, the number of trips since their last drive is the total group trip count
-                    memberStats[member].tripsSinceLastDrive = groupTripsCount;
+                    overallStats[member].tripsSinceLastDrive = groupTripsCount;
                 }
             });
 
-            // Sort members for suggestion: highest tripsSinceLastDrive first, then fewest timesDriven, then earliest lastDriveDate, then alphabetically
             const sortedMembers = [...GROUP_MEMBERS].sort((a, b) => {
-                const sA = memberStats[a],
-                    sB = memberStats[b];
-
-                // Primary sort: trips since last drive (descending)
-                if (sB.tripsSinceLastDrive !== sA.tripsSinceLastDrive) {
-                    return sB.tripsSinceLastDrive - sA.tripsSinceLastDrive;
-                }
-
-                // Secondary sort: fewest times driven (ascending)
-                if (sA.timesDriven !== sB.timesDriven) {
-                     return sA.timesDriven - sB.timesDriven;
-                }
-
-                // Tertiary sort: earliest last drive date (ascending - null comes first)
+                const sA = overallStats[a], sB = overallStats[b];
+                if (sB.tripsSinceLastDrive !== sA.tripsSinceLastDrive) return sB.tripsSinceLastDrive - sA.tripsSinceLastDrive;
+                if (sA.timesDriven !== sB.timesDriven) return sA.timesDriven - sB.timesDriven;
                 if (!sA.lastDriveDate && sB.lastDriveDate) return -1;
                 if (sA.lastDriveDate && !sB.lastDriveDate) return 1;
-                if (sA.lastDriveDate && sB.lastDriveDate) {
-                    return new Date(sA.lastDriveDate) - new Date(sB.lastDriveDate);
-                }
-
-                // Quaternary sort: alphabetical by name (ascending)
+                if (sA.lastDriveDate && sB.lastDriveDate) return new Date(sA.lastDriveDate) - new Date(sB.lastDriveDate);
                 return a.localeCompare(b);
             });
             const suggestedDriverName = sortedMembers.length > 0 ? sortedMembers[0] : null;
+            const suggestionReason = `Suggéré car il/elle n'a pas conduit depuis ${overallStats[suggestedDriverName]?.tripsSinceLastDrive || 0} trajet(s) du groupe.`;
 
-
-            let cardsHtml = '<div class="driver-cards-container">';
-            let tableHtml = `<div class="table-container driver-overview-table-container"><table class="driver-overview-table">
-                                <thead><tr><th>Participant</th><th>Conduites</th><th>Passager</th><th>Dern. Conduite</th><th>Trajets<br>Groupe Depuis</th><th>Suggéré</th></tr></thead><tbody>`; // Adjusted header
-
+            // --- 2. Calculate Monthly Stats for Balance ---
+            const monthlyStats = {};
+            const now = new Date();
+            const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
             GROUP_MEMBERS.forEach(member => {
-                const stats = memberStats[member];
-                const isSuggested = suggestedDriverName === member;
-                const driverColorClass = getDriverClass(member) || 'driver-default'; // Fallback class
-                const lastDriveDisplay = stats.lastDriveDate ? new Date(stats.lastDriveDate + 'T00:00:00Z').toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                }) : '<em>Jamais</em>';
-                const tripsSinceDisplay = (stats.lastDriveDate === null) ? groupTripsCount : stats.tripsSinceLastDrive; // Show total group trips if never drove
-                const suggestionIcon = isSuggested ? `<i class="fas fa-star suggestion-icon"></i>` : '';
-                const suggestionIconCard = isSuggested ? `<i class="fas fa-star suggestion-icon-card ${driverColorClass}"></i>` : '';
-
-
-                // HTML pour les cartes (mobile)
-                cardsHtml += `
-                        <div class="driver-card ${driverColorClass} ${isSuggested ? 'suggested-driver' : ''}">
-                            <div class="card-header">
-                                <span class="member-name">${stats.name}</span>
-                                ${suggestionIconCard}
-                            </div>
-                            <div class="card-stat"><strong>Conduites :</strong> <span>${stats.timesDriven}</span></div>
-                            <div class="card-stat"><strong>Passager :</strong> <span>${stats.timesPassenger}</span></div>
-                            <div class="card-stat"><strong>Dernière Conduite :</strong> <span>${lastDriveDisplay}</span></div>
-                            <div class="card-stat"><strong>Trajets du Groupe Depuis :</strong> <span>${tripsSinceDisplay}</span></div>
-                        </div>`;
-
-                // HTML pour le tableau (desktop)
-                tableHtml += `<tr class="${isSuggested ? `suggested-driver ${driverColorClass}` : driverColorClass}">
-                                    <td>${stats.name}</td><td>${stats.timesDriven}</td><td>${stats.timesPassenger}</td>
-                                    <td>${lastDriveDisplay}</td><td>${tripsSinceDisplay}</td>
-                                    <td class="suggestion-cell">${suggestionIcon}</td></tr>`;
+                monthlyStats[member] = { name: member, drives: 0, passengerRides: 0 };
             });
-            cardsHtml += '</div>';
-            tableHtml += `</tbody></table></div>`;
 
-            dom.statsContent.innerHTML = `<h4>État des Conduites</h4>${cardsHtml}${tableHtml}
-                    <div class="general-stats-summary"><h4>Résumé Global</h4>
-                    <p><strong>Nombre total de trajets du groupe :</strong> ${groupTripsCount}</p></div>`;
+            const monthlyTrips = allTrips.filter(trip => trip.date.startsWith(currentMonthStr));
+            monthlyTrips.forEach(trip => {
+                const driver = trip.conducteur?.trim();
+                if (driver && GROUP_MEMBERS.includes(driver)) {
+                    monthlyStats[driver].drives++;
+                }
+                trip.passagers?.forEach(p => {
+                    const passenger = String(p)?.trim();
+                    if (passenger && GROUP_MEMBERS.includes(passenger)) {
+                        monthlyStats[passenger].passengerRides++;
+                    }
+                });
+            });
+
+            // --- 3. Render HTML ---
+            let suggestionHtml = '';
+            if (suggestedDriverName) {
+                const driverColorClass = getDriverClass(suggestedDriverName);
+                suggestionHtml = `
+                    <div class="suggestion-container ${driverColorClass}">
+                        <div class="suggestion-header">Prochain conducteur suggéré</div>
+                        <div class="suggested-driver-name">
+                            <i class="fas fa-star"></i>
+                            <span>${suggestedDriverName}</span>
+                        </div>
+                        <p class="suggestion-reason">${suggestionReason}</p>
+                    </div>`;
+            }
+
+            let balanceHtml = '<h3>Équilibre ce mois-ci</h3><div class="balance-cards-container">';
+            GROUP_MEMBERS.forEach(member => {
+                const stats = monthlyStats[member];
+                const driverColorClass = getDriverClass(member);
+                balanceHtml += `
+                    <div class="balance-card ${driverColorClass}">
+                        <div class="balance-card-header">${stats.name}</div>
+                        <div class="stat-item">
+                            <span class="label">En tant que conducteur</span>
+                            <span class="value">${stats.drives}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">En tant que passager</span>
+                            <span class="value">${stats.passengerRides}</span>
+                        </div>
+                    </div>`;
+            });
+            balanceHtml += '</div>';
+
+            dom.statsContent.innerHTML = suggestionHtml + balanceHtml;
 
         } catch (error) {
             console.error("Error in fetchAndRenderDriverOverview:", error);
             const msg = error.code === 'permission-denied' ? "permissions." : error.message;
-            dom.statsContent.innerHTML = `<h4>État des Conduites</h4><p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur: ${msg}</p>`;
-             // allTripsDataCache = null; // Already nullified in fetchAllTripsData on error
+            dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors de la génération de l'aperçu: ${msg}</p>`;
         } finally {
             isFetchingStats = false;
         }
