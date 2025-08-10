@@ -134,22 +134,8 @@
     #login-btn img { width: 18px; height: 18px; }
 
     .main-content { flex-grow: 1; padding: 20px; max-width: 1000px; margin: 0 auto; width: 100%; padding-bottom: 80px; }
-    .content > section {
-        background-color: var(--surface-color);
-        padding: 25px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--card-shadow);
-        margin-bottom: 20px;
-        display: none;
-        transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    .content > section.active {
-        display: block;
-        opacity: 1;
-        transform: translateY(0);
-    }
+    .content > section { background-color: var(--surface-color); padding: 25px; border-radius: var(--border-radius); box-shadow: var(--card-shadow); margin-bottom: 20px; display: none; }
+    .content > section.active { display: block; }
 
     h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 20px; font-size: 1.8rem; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
     h3 { color: var(--secondary-color); margin: 20px 0 10px; font-size: 1.4rem; }
@@ -636,7 +622,7 @@
         font-family: inherit; 
         font-size: 0.75rem; /* Adjusted text font-size */
         color: var(--md-sys-color-on-surface-variant); /* Inactive color */
-        transition: color 0.2s, background-color 0.2s, transform 0.1s ease-out;
+        transition: color 0.2s, background-color 0.2s;
         min-width: 80px; /* Adjusted min-width */
         text-align: center; 
         gap: 4px; 
@@ -651,11 +637,6 @@
     .tab-button:hover:not(.active) { 
         color: var(--md-sys-color-on-surface); 
         background-color: rgba(0,0,0,0.04); /* Subtle hover background */
-        transform: scale(1.05);
-    }
-    .tab-button:active {
-        transform: scale(0.98);
-        transition-duration: 0.05s;
     }
     .tab-button.active { 
         color: var(--md-sys-color-on-secondary-container); /* Active text/icon color */
@@ -666,75 +647,94 @@
         content: none; /* Removed underline indicator */
     }
 
+    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
+    .calendar-controls button { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--primary-color); padding: 5px 10px; transition: color 0.2s; }
+    .calendar-controls button:hover { color: var(--primary-dark); } .calendar-controls h3 { margin: 0; font-size: 1.3rem; color: var(--text-color-dark); text-align: center; flex-grow: 1; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; border: 1px solid var(--border-color); padding: 4px; background-color: var(--background-color); border-radius: var(--border-radius); }
+    .calendar-day { border: 1px solid #eee; padding: 5px; padding-top: 25px; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; position: relative; background-color: var(--surface-color); font-size: 0.8rem; overflow: hidden; border-radius: 4px; }
+    .calendar-day.selected { border-color: var(--primary-color); box-shadow: 0 0 0 2px var(--primary-color) inset; }
+    .calendar-day.driver-1 { background-color: var(--driver-color-1-bg); } .calendar-day.driver-1:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
+    .calendar-day.driver-2 { background-color: var(--driver-color-2-bg); } .calendar-day.driver-2:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
+    .calendar-day.driver-3 { background-color: var(--driver-color-3-bg); } .calendar-day.driver-3:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
+    .calendar-day:hover:not(.empty):not(.weekday-header) { background-color: #f0f0f0; }
+    .calendar-day.today { border: 2px solid var(--primary-color); font-weight: bold; } .calendar-day.today .day-number { color: var(--primary-color); font-weight: 700; }
+    .calendar-day .day-number { font-size: 0.7rem; font-weight: 500; color: var(--text-color-medium); position: absolute; top: 5px; right: 7px; padding: 2px 4px; z-index: 1; background-color: rgba(255,255,255,0.8); border-radius: 3px; }
+    .calendar-day.today .day-number { background-color: rgba(255,255,255,0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .calendar-day .trip-summary { font-size: 0.65rem; line-height: 1.3; padding: 1px 4px; border-radius: 4px; margin-top: 4px; display: inline-block; max-width: 98%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; background-color: transparent; color: var(--text-color-medium); }
+    .calendar-day.driver-1 .trip-summary { color: var(--driver-color-1-text); } .calendar-day.driver-2 .trip-summary { color: var(--driver-color-2-text); } .calendar-day.driver-3 .trip-summary { color: var(--driver-color-3-text); }
+    .calendar-day.empty { background-color: #fcfcfc; cursor: default; border-color: #f5f5f5; } .calendar-day.empty:hover { background-color: #fcfcfc; }
+    .calendar-day.weekday-header { font-weight: bold; text-align: center; padding: 8px 5px; background-color: #e8e8e8; border: none; border-bottom: 1px solid var(--border-color); min-height: auto; cursor: default; color: var(--text-color-dark); font-size: 0.7rem; position: relative; padding-top: 8px; border-radius: 0; }
+    .calendar-day.weekday-header:hover { background-color: #e8e8e8; }
 
-    /* Styles for New Scenario-based Overview */
-    .suggestion-container {
-        background-color: var(--md-sys-color-primary-container);
-        color: var(--md-sys-color-on-primary-container);
+    #trips-for-day { background-color: #f1f3f4; padding: 15px; border-radius: var(--border-radius); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); margin-top: 20px; border: 1px solid var(--border-color); min-height: 100px; }
+    #trips-for-day ul { list-style: none; padding: 0; }
+    #trips-for-day li { padding: 10px 5px; border-bottom: 1px solid #e0e0e0; font-size: 0.9rem; line-height: 1.5; padding-left: 15px; border-left: 5px solid transparent; transition: border-left-color 0.2s ease; }
+    #trips-for-day li div { margin-bottom: 3px; } #trips-for-day li strong { color: var(--text-color-dark); display: inline-block; min-width: 80px; margin-right: 10px; font-weight: 500; }
+    #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); } #trips-for-day li .driver-name.driver-1 { color: var(--driver-color-1-text); font-weight: 700;}
+    #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); } #trips-for-day li .driver-name.driver-2 { color: var(--driver-color-2-text); font-weight: 700;}
+    #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); } #trips-for-day li .driver-name.driver-3 { color: var(--driver-color-3-text); font-weight: 700;}
+    #trips-for-day li:last-child { border-bottom: none; } #trips-for-day p { color: var(--text-color-medium); font-style: italic; text-align: center; padding: 20px 0; }
+
+    /* Styles for Scenario-based Suggestions */
+    .scenario-cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .scenario-card {
+        background-color: var(--md-sys-color-surface);
+        border: 1px solid var(--md-sys-color-outline);
         border-radius: var(--border-radius-large);
-        padding: 20px;
-        margin-bottom: 25px;
-        text-align: center;
+        padding: 15px;
         box-shadow: var(--card-shadow);
     }
-    .suggestion-container .suggestion-header {
+    .scenario-card .scenario-header {
         font-size: 1rem;
-        font-weight: 400;
-        margin-bottom: 8px;
-        opacity: 0.8;
+        font-weight: 500;
+        color: var(--md-sys-color-on-surface-variant);
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--md-sys-color-surface-variant);
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    .suggestion-container .suggested-driver-name {
-        font-size: 2rem;
+    .scenario-card .scenario-header i {
+        color: var(--md-sys-color-secondary);
+    }
+    .scenario-card .suggestion-body {
+        text-align: center;
+        padding: 10px 0;
+    }
+    .scenario-card .suggestion-label {
+        font-size: 0.85rem;
+        color: var(--md-sys-color-on-surface-variant);
+        margin-bottom: 4px;
+    }
+    .scenario-card .suggested-driver {
+        font-size: 1.5rem;
         font-weight: 700;
+        color: var(--md-sys-color-primary);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 12px;
-        margin-bottom: 12px;
+        gap: 8px;
+        margin-bottom: 10px;
     }
-    .suggestion-container .suggested-driver-name i {
-        font-size: 1.8rem;
-        color: var(--md-sys-color-primary);
+    .scenario-card .suggested-driver i {
+        font-size: 1.2rem;
+        color: var(--md-sys-color-tertiary);
     }
-    .suggestion-container .suggestion-reason {
-        font-size: 0.9rem;
-        line-height: 1.5;
+    .scenario-card .suggestion-reason {
+        font-size: 0.8rem;
+        color: var(--md-sys-color-on-surface-variant);
+        font-style: italic;
     }
-
-    .balance-cards-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-    }
-    .balance-card {
-        background-color: var(--md-sys-color-surface-variant);
-        border-radius: var(--border-radius-large);
-        padding: 15px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .balance-card .balance-card-header {
-        font-size: 1.1rem;
-        font-weight: 500;
+    .scenario-card .no-history {
+        font-style: italic;
         color: var(--md-sys-color-on-surface-variant);
         text-align: center;
-    }
-    .balance-card .stat-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.9rem;
-    }
-    .balance-card .stat-item .label {
-        color: var(--md-sys-color-on-surface-variant);
-    }
-    .balance-card .stat-item .value {
-        font-weight: 500;
-        color: var(--md-sys-color-on-surface);
-        padding: 3px 8px;
-        border-radius: var(--border-radius-pill);
-        background-color: var(--md-sys-color-surface);
+        padding: 20px 0;
     }
 
     @media (max-width: 767px) { /* Styles Mobile */
@@ -1042,7 +1042,7 @@
             </section>
 
             <section id="stats-section">
-                <h2 id="stats-title">Aperçu & Suggestions</h2>
+                <h2 id="stats-title">Suggestions par Scénario</h2>
                 <div id="stats-content"><div class="loading-spinner"><i class="fas fa-spinner"></i></div></div>
             </section>
         </div>
@@ -1526,132 +1526,137 @@
         }
     }
 
-    // --- New fetchAndRenderDriverOverview for Scenario-Based View ---
+    // --- New fetchAndRenderDriverOverview for Scenario-Based Suggestions ---
     async function fetchAndRenderDriverOverview() {
         if (isFetchingStats) return;
         isFetchingStats = true;
-        dom.statsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
-        dom.statsTitle.textContent = "Aperçu & Suggestions";
+        dom.statsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement des scénarios...</div>`;
 
         try {
             const allTrips = await fetchAllTripsData();
-
-            if (!allTrips || allTrips.length === 0) {
-                dom.statsContent.innerHTML = `<p class="empty-message"><i class="fas fa-info-circle"></i> Aucune donnée de trajet pour générer un aperçu.</p>`;
+            if (!allTrips) {
+                dom.statsContent.innerHTML = `<p class="empty-message"><i class="fas fa-info-circle"></i> Aucune donnée de trajet pour générer des suggestions.</p>`;
                 isFetchingStats = false;
                 return;
             }
 
-            // --- 1. Calculate Overall Stats for Suggestion ---
-            const overallStats = {};
-            GROUP_MEMBERS.forEach(member => {
-                overallStats[member] = { name: member, timesDriven: 0, lastDriveDate: null, tripsSinceLastDrive: 0 };
-            });
-
-            let groupTripsCount = 0;
-            allTrips.forEach(trip => {
-                const driver = trip.conducteur?.trim();
-                const passengers = trip.passagers?.map(p => String(p)?.trim()) || [];
-                if (GROUP_MEMBERS.includes(driver) || passengers.some(p => GROUP_MEMBERS.includes(p))) {
-                    groupTripsCount++;
-                    if (driver && GROUP_MEMBERS.includes(driver)) {
-                        overallStats[driver].timesDriven++;
-                        overallStats[driver].lastDriveDate = trip.date;
+            // Helper to generate combinations
+            function getCombinations(array, size) {
+                const result = [];
+                function combination(index, currentCombo) {
+                    if (currentCombo.length === size) {
+                        result.push([...currentCombo]);
+                        return;
                     }
+                    if (index === array.length) return;
+                    currentCombo.push(array[index]);
+                    combination(index + 1, currentCombo);
+                    currentCombo.pop();
+                    combination(index + 1, currentCombo);
                 }
-            });
-
-            GROUP_MEMBERS.forEach(member => {
-                if (overallStats[member].lastDriveDate) {
-                    let count = 0;
-                    for (const trip of allTrips) {
-                        const driverInGroup = GROUP_MEMBERS.includes(trip.conducteur?.trim());
-                        const passengerInGroup = trip.passagers?.some(p => GROUP_MEMBERS.includes(String(p)?.trim()));
-                        if ((driverInGroup || passengerInGroup) && trip.date > overallStats[member].lastDriveDate) {
-                            count++;
-                        }
-                    }
-                    overallStats[member].tripsSinceLastDrive = count;
-                } else {
-                    overallStats[member].tripsSinceLastDrive = groupTripsCount;
-                }
-            });
-
-            const sortedMembers = [...GROUP_MEMBERS].sort((a, b) => {
-                const sA = overallStats[a], sB = overallStats[b];
-                if (sB.tripsSinceLastDrive !== sA.tripsSinceLastDrive) return sB.tripsSinceLastDrive - sA.tripsSinceLastDrive;
-                if (sA.timesDriven !== sB.timesDriven) return sA.timesDriven - sB.timesDriven;
-                if (!sA.lastDriveDate && sB.lastDriveDate) return -1;
-                if (sA.lastDriveDate && !sB.lastDriveDate) return 1;
-                if (sA.lastDriveDate && sB.lastDriveDate) return new Date(sA.lastDriveDate) - new Date(sB.lastDriveDate);
-                return a.localeCompare(b);
-            });
-            const suggestedDriverName = sortedMembers.length > 0 ? sortedMembers[0] : null;
-            const suggestionReason = `Suggéré car il/elle n'a pas conduit depuis ${overallStats[suggestedDriverName]?.tripsSinceLastDrive || 0} trajet(s) du groupe.`;
-
-            // --- 2. Calculate Monthly Stats for Balance ---
-            const monthlyStats = {};
-            const now = new Date();
-            const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-            GROUP_MEMBERS.forEach(member => {
-                monthlyStats[member] = { name: member, drives: 0, passengerRides: 0 };
-            });
-
-            const monthlyTrips = allTrips.filter(trip => trip.date.startsWith(currentMonthStr));
-            monthlyTrips.forEach(trip => {
-                const driver = trip.conducteur?.trim();
-                if (driver && GROUP_MEMBERS.includes(driver)) {
-                    monthlyStats[driver].drives++;
-                }
-                trip.passagers?.forEach(p => {
-                    const passenger = String(p)?.trim();
-                    if (passenger && GROUP_MEMBERS.includes(passenger)) {
-                        monthlyStats[passenger].passengerRides++;
-                    }
-                });
-            });
-
-            // --- 3. Render HTML ---
-            let suggestionHtml = '';
-            if (suggestedDriverName) {
-                const driverColorClass = getDriverClass(suggestedDriverName);
-                suggestionHtml = `
-                    <div class="suggestion-container ${driverColorClass}">
-                        <div class="suggestion-header">Prochain conducteur suggéré</div>
-                        <div class="suggested-driver-name">
-                            <i class="fas fa-star"></i>
-                            <span>${suggestedDriverName}</span>
-                        </div>
-                        <p class="suggestion-reason">${suggestionReason}</p>
-                    </div>`;
+                combination(0, []);
+                return result;
             }
 
-            let balanceHtml = '<h3>Équilibre ce mois-ci</h3><div class="balance-cards-container">';
-            GROUP_MEMBERS.forEach(member => {
-                const stats = monthlyStats[member];
-                const driverColorClass = getDriverClass(member);
-                balanceHtml += `
-                    <div class="balance-card ${driverColorClass}">
-                        <div class="balance-card-header">${stats.name}</div>
-                        <div class="stat-item">
-                            <span class="label">En tant que conducteur</span>
-                            <span class="value">${stats.drives}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="label">En tant que passager</span>
-                            <span class="value">${stats.passengerRides}</span>
-                        </div>
-                    </div>`;
-            });
-            balanceHtml += '</div>';
+            const scenarios = [
+                ...getCombinations(GROUP_MEMBERS, 3),
+                ...getCombinations(GROUP_MEMBERS, 2)
+            ].sort((a, b) => b.length - a.length || a.join(',').localeCompare(b.join(','))); // Sort by size then name
 
-            dom.statsContent.innerHTML = suggestionHtml + balanceHtml;
+            let cardsHtml = '<div class="scenario-cards-container">';
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for (const group of scenarios) {
+                const groupSet = new Set(group);
+
+                // Filter trips relevant to this specific group
+                const groupTrips = allTrips.filter(trip => {
+                    const participants = new Set([trip.conducteur?.trim(), ...(trip.passagers?.map(p => String(p)?.trim()) || [])]);
+                    if (participants.size !== groupSet.size) return false;
+                    return [...participants].every(p => groupSet.has(p));
+                });
+
+                const groupStats = {};
+                group.forEach(member => {
+                    groupStats[member] = { name: member, timesDriven: 0, lastDriveDate: null, futureDrives: 0 };
+                });
+
+                groupTrips.forEach(trip => {
+                    const driver = trip.conducteur?.trim();
+                    if (group.includes(driver)) {
+                        groupStats[driver].timesDriven++;
+                        if (trip.date > (groupStats[driver].lastDriveDate || '')) {
+                             groupStats[driver].lastDriveDate = trip.date;
+                        }
+                        if (trip.date > todayStr) {
+                             groupStats[driver].futureDrives++;
+                        }
+                    }
+                });
+
+                let suggestedDriver = null;
+                let reason = "Aucun historique de trajet pour ce groupe.";
+
+                if (groupTrips.length > 0) {
+                    // Sort members to find the best candidate
+                    const sortedGroupMembers = [...group].sort((a, b) => {
+                        const sA = groupStats[a], sB = groupStats[b];
+                        // 1. Prioritize members with no future drives scheduled
+                        if (sA.futureDrives !== sB.futureDrives) return sA.futureDrives - sB.futureDrives;
+                        // 2. Prioritize member who drove longest ago (or never)
+                        const dateA = sA.lastDriveDate ? new Date(sA.lastDriveDate) : new Date(0);
+                        const dateB = sB.lastDriveDate ? new Date(sB.lastDriveDate) : new Date(0);
+                        if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
+                        // 3. Prioritize member who drove the least number of times
+                        if (sA.timesDriven !== sB.timesDriven) return sA.timesDriven - sB.timesDriven;
+                        // 4. Alphabetical tie-breaker
+                        return a.localeCompare(b);
+                    });
+
+                    suggestedDriver = sortedGroupMembers[0];
+                    const stats = groupStats[suggestedDriver];
+                    if (stats.futureDrives > 0) {
+                        reason = `Conduira ${stats.futureDrives}x prochainement mais reste le meilleur choix.`;
+                    } else if (stats.lastDriveDate) {
+                        const daysAgo = Math.round((new Date(todayStr) - new Date(stats.lastDriveDate)) / (1000 * 60 * 60 * 24));
+                        reason = `Dernière conduite il y a ${daysAgo} jour(s).`;
+                    } else {
+                        reason = `N'a jamais conduit dans cette configuration.`;
+                    }
+                } else {
+                    // If no history, suggest the first person alphabetically
+                    suggestedDriver = [...group].sort()[0];
+                }
+
+                cardsHtml += `
+                    <div class="scenario-card">
+                        <div class="scenario-header">
+                            <i class="fas fa-users"></i>
+                            <span>Groupe : ${group.join(', ')}</span>
+                        </div>`;
+
+                if (suggestedDriver) {
+                    cardsHtml += `
+                        <div class="suggestion-body">
+                            <div class="suggestion-label">Conducteur Suggéré</div>
+                            <div class="suggested-driver">
+                                <i class="fas fa-star"></i>
+                                <span>${suggestedDriver}</span>
+                            </div>
+                            <div class="suggestion-reason">${reason}</div>
+                        </div>`;
+                } else {
+                    cardsHtml += `<div class="no-history">Aucune suggestion disponible.</div>`;
+                }
+                cardsHtml += `</div>`;
+            }
+            cardsHtml += '</div>';
+            dom.statsContent.innerHTML = cardsHtml;
 
         } catch (error) {
             console.error("Error in fetchAndRenderDriverOverview:", error);
             const msg = error.code === 'permission-denied' ? "permissions." : error.message;
-            dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur lors de la génération de l'aperçu: ${msg}</p>`;
+            dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur: ${msg}</p>`;
         } finally {
             isFetchingStats = false;
         }
