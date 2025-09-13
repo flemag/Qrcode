@@ -519,6 +519,64 @@ async function handleFormSubmit(event) {
 
 // --- Event Listeners and Initial Setup ---
 
+// --- Authentication Logic ---
+onAuthStateChanged(auth, user => {
+    const loggedIn = !!user;
+    dom.authContainer.style.display = loggedIn ? 'none' : 'block';
+    dom.contentContainer.style.display = loggedIn ? 'block' : 'none';
+
+    // Show the correct navigation based on screen size
+    if (loggedIn) {
+        if (window.innerWidth < 768) {
+            dom.tabBar.style.display = 'flex';
+            document.getElementById('desktop-nav').style.display = 'none';
+        } else {
+            dom.tabBar.style.display = 'none';
+            document.getElementById('desktop-nav').style.display = 'block';
+        }
+    } else {
+        dom.tabBar.style.display = 'none';
+        document.getElementById('desktop-nav').style.display = 'none';
+    }
+
+
+    if (trajetsUnsubscribe) trajetsUnsubscribe();
+    if (dom.listeTrajetsDiv.dataset.listenerAttached) {
+        dom.listeTrajetsDiv.removeEventListener('click', handleTableActions);
+        delete dom.listeTrajetsDiv.dataset.listenerAttached;
+    }
+
+    if (loggedIn) {
+        dom.profileInfo.innerHTML = `<div>${user.displayName || user.email}</div><img src="${user.photoURL || 'https://via.placeholder.com/40'}" alt="Avatar" referrerpolicy="no-referrer"><button id="logout-btn" title="Déconnexion">Déconnexion</button>`;
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).catch(e => showNotification("Erreur déconnexion.", true)));
+
+        populateYearFilter();
+        resetForm();
+
+        dom.listeTrajetsDiv.addEventListener('click', handleTableActions);
+        dom.listeTrajetsDiv.dataset.listenerAttached = 'true';
+
+        switchView('my-trips');
+        showNotification(`Bienvenue ${user.displayName || user.email} !`);
+    } else {
+        dom.profileInfo.innerHTML = '';
+        ['listeTrajetsDiv', 'calendarGrid', 'tripsForDayDiv', 'statsContent'].forEach(elId => dom[elId].innerHTML = '');
+        dom.tripsForDayDiv.innerHTML = '<p>Veuillez vous connecter.</p>';
+        currentCalendarDate = new Date();
+        dom.contentContainer.querySelectorAll('.content-section').forEach(s => {
+            s.classList.remove('active');
+            s.style.display = 'none';
+        });
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.toggle('active', b.dataset.view === 'my-trips'));
+        allTripsDataCache = null;
+        isFetchingStats = false;
+        currentView = 'my-trips';
+    }
+});
+
+
+// --- Event Listeners and Initial Setup ---
+
 function setupEventListeners() {
     dom.loginBtn.addEventListener('click', () => {
         const provider = new GoogleAuthProvider();
@@ -529,43 +587,6 @@ function setupEventListeners() {
             }[error.code] || `Erreur connexion Google: ${error.message}`;
             showNotification(msg, true);
         });
-    });
-
-    onAuthStateChanged(auth, user => {
-        const loggedIn = !!user;
-        dom.authContainer.style.display = loggedIn ? 'none' : 'block';
-        dom.contentContainer.style.display = loggedIn ? 'block' : 'none';
-        dom.tabBar.style.display = loggedIn ? 'flex' : 'none';
-
-        if (trajetsUnsubscribe) trajetsUnsubscribe();
-        if (dom.listeTrajetsDiv.dataset.listenerAttached) {
-            dom.listeTrajetsDiv.removeEventListener('click', handleTableActions);
-            delete dom.listeTrajetsDiv.dataset.listenerAttached;
-        }
-
-        if (loggedIn) {
-            dom.profileInfo.innerHTML = `<div>${user.displayName || user.email}</div><img src="${user.photoURL || 'https://via.placeholder.com/40'}" alt="Avatar" referrerpolicy="no-referrer"><button id="logout-btn" title="Déconnexion">Déconnexion</button>`;
-            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).catch(e => showNotification("Erreur déconnexion.", true)));
-
-            populateYearFilter();
-            resetForm();
-
-            dom.listeTrajetsDiv.addEventListener('click', handleTableActions);
-            dom.listeTrajetsDiv.dataset.listenerAttached = 'true';
-
-            switchView('my-trips');
-            showNotification(`Bienvenue ${user.displayName || user.email} !`);
-        } else {
-            dom.profileInfo.innerHTML = '';
-            ['listeTrajetsDiv', 'calendarGrid', 'tripsForDayDiv', 'statsContent'].forEach(elId => dom[elId].innerHTML = '');
-            dom.tripsForDayDiv.innerHTML = '<p>Veuillez vous connecter.</p>';
-            currentCalendarDate = new Date();
-            dom.contentContainer.querySelectorAll('section').forEach(s => s.style.display = 'none');
-            dom.tabButtons.forEach(b => b.classList.toggle('active', b.dataset.view === 'my-trips'));
-            allTripsDataCache = null;
-            isFetchingStats = false;
-            currentView = 'my-trips';
-        }
     });
 
     dom.addPassengerBtn.addEventListener('click', () => addPassengerField());
