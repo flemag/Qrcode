@@ -1,0 +1,373 @@
+/*
+   New, simplified stylesheet for the Covoiturage App
+   Built on top of Pico.css
+*/
+
+:root {
+    /* New Color Palette */
+    --pico-primary: #3498db; /* A nice blue */
+    --pico-primary-hover: #2980b9;
+    --pico-primary-focus: rgba(52, 152, 219, 0.25);
+    --pico-primary-inverse: #fff;
+
+    --pico-background-color: #f8f9fa;
+    --pico-card-background-color: #ffffff;
+    --pico-card-border-color: #e9ecef;
+    --pico-border-color: #dee2e6;
+    --pico-h2-color: #34495e;
+    --pico-h3-color: #7f8c8d;
+
+    /* Custom App-Specific Colors */
+    --driver-color-1-bg: #eaf4fc;
+    --driver-color-1-text: #2980b9;
+    --driver-color-2-bg: #e8f6f0;
+    --driver-color-2-text: #27ae60;
+    --driver-color-3-bg: #fef9e7;
+    --driver-color-3-text: #f39c12;
+    --danger-color: #e74c3c;
+    --danger-color-hover: #c0392b;
+
+    /* Custom variables */
+    --pico-border-radius: 0.75rem;
+    --pico-card-border-radius: var(--pico-border-radius);
+    --pico-card-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* --- General App Layout & Typography --- */
+body {
+    padding-bottom: 80px; /* Space for mobile tab bar */
+}
+
+header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--pico-border-color);
+    background-color: var(--pico-card-background-color);
+}
+
+.app-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--pico-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.app-logo i {
+    font-size: 1.5rem;
+    color: var(--pico-primary);
+}
+
+main {
+    padding: 1.5rem;
+}
+
+h2 {
+    margin-bottom: 1.5rem;
+}
+
+/* --- Authentication & Profile --- */
+.auth-container {
+    max-width: 450px;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#logout-btn {
+    --pico-background-color: var(--danger-color);
+    --pico-border-color: var(--danger-color);
+    --pico-color: white;
+}
+#logout-btn:hover {
+    --pico-background-color: var(--danger-color-hover);
+    --pico-border-color: var(--danger-color-hover);
+}
+
+/* --- Forms --- */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.passenger-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.passenger-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.passenger-row input {
+    margin-bottom: 0;
+}
+
+.add-passenger-btn, .remove-passenger-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* --- Table & Filters --- */
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.filters .filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filters label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.5rem;
+    color: #fff;
+    background-color: #95a5a6; /* A neutral gray */
+}
+
+.badge-passenger {
+    background-color: var(--pico-h3-color);
+}
+
+tr[class*="driver-"] {
+    background-color: var(--driver-color-default-bg);
+}
+tr.driver-1 { --driver-color-default-bg: var(--driver-color-1-bg); }
+tr.driver-2 { --driver-color-default-bg: var(--driver-color-2-bg); }
+tr.driver-3 { --driver-color-default-bg: var(--driver-color-3-bg); }
+
+td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: bold; }
+td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: bold; }
+td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: bold; }
+
+/* --- Calendar --- */
+.calendar-container {
+    display: grid;
+    gap: 2rem;
+}
+
+.calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.calendar-controls button {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--pico-primary);
+}
+.calendar-controls h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    padding: 0.5rem;
+    border: 1px solid var(--pico-card-border-color);
+    border-radius: var(--pico-border-radius);
+    min-height: 100px;
+    text-align: right;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    position: relative;
+    background-color: var(--pico-card-background-color);
+}
+
+.calendar-day:not(.empty):not(.weekday-header):hover {
+    border-color: var(--pico-primary);
+}
+.calendar-day.selected {
+    border-color: var(--pico-primary);
+    background-color: rgba(52, 152, 219, 0.1);
+}
+.calendar-day.today {
+    border: 2px solid var(--pico-primary);
+}
+.calendar-day .day-number {
+    font-size: 0.8rem;
+    color: var(--pico-muted-color);
+}
+.calendar-day.today .day-number {
+    color: var(--pico-primary);
+    font-weight: bold;
+}
+.calendar-day.weekday-header {
+    border: none;
+    background: none;
+    min-height: auto;
+    text-align: center;
+    font-weight: bold;
+    cursor: default;
+}
+.calendar-day.empty {
+    background-color: var(--pico-background-color);
+    cursor: default;
+}
+
+.calendar-day .trip-summary {
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin-top: 4px;
+    display: block;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+.calendar-day.driver-1 { background-color: var(--driver-color-1-bg); }
+.calendar-day.driver-2 { background-color: var(--driver-color-2-bg); }
+.calendar-day.driver-3 { background-color: var(--driver-color-3-bg); }
+
+#trips-for-day li[class*="driver-"]::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+#trips-for-day li.driver-1::before { background-color: var(--driver-color-1-text); }
+#trips-for-day li.driver-2::before { background-color: var(--driver-color-2-text); }
+#trips-for-day li.driver-3::before { background-color: var(--driver-color-3-text); }
+#trips-for-day li { padding-left: 2rem; position: relative; }
+
+/* --- Tab Bar --- */
+.tab-bar {
+    display: none; /* Hidden on desktop by default */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--pico-card-background-color);
+    border-top: 1px solid var(--pico-border-color);
+    z-index: 1000;
+}
+.tab-button {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--pico-muted-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+}
+.tab-button i {
+    font-size: 1.25rem;
+}
+.tab-button.active {
+    color: var(--pico-primary);
+}
+
+/* --- Responsive --- */
+@media (min-width: 768px) {
+    .calendar-container {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    .tab-bar {
+        display: flex;
+    }
+    /* Mobile table styles */
+    table thead { display: none; }
+    table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--pico-border-color);
+        border-radius: var(--pico-border-radius);
+        padding: 1rem;
+    }
+    table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        border: none;
+        padding: 0.5rem 0;
+    }
+    table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-align: left;
+        margin-right: 1rem;
+        color: var(--pico-h3-color);
+    }
+}
+
+/* --- Hide/Show Sections --- */
+.content > article.content-section {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.content > article.content-section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
