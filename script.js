@@ -612,8 +612,10 @@ function setupEventListeners() {
         if (['my-trips', 'all-trips'].includes(currentView)) subscribeToTrajets();
     });
 
-    dom.tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
+    const allNavButtons = document.querySelectorAll('.tab-button');
+    allNavButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
             const view = button.dataset.view;
             if (view) {
                 if (dom.editIdInput.value && currentView === 'form' && !window.confirm("Modifications non enregistrées. Quitter quand même ?")) {
@@ -737,18 +739,20 @@ function switchView(view) {
 
     // Animate sections
     const sections = document.querySelectorAll('.content-section');
-    let activeSection = null;
+    const targetSectionId = {
+        'form': 'form-section',
+        'my-trips': 'table-section',
+        'all-trips': 'table-section',
+        'calendar': 'calendar-section',
+        'stats': 'stats-section'
+    }[view];
 
     sections.forEach(section => {
-        const isTarget = section.id.startsWith(view); // e.g., view 'my-trips' matches 'table-section'
-
-        if (isTarget) {
-            activeSection = section;
+        if (section.id === targetSectionId) {
             section.style.display = 'block';
-            setTimeout(() => section.classList.add('active'), 10); // Allow display property to apply before transitioning
+            setTimeout(() => section.classList.add('active'), 10);
         } else {
             section.classList.remove('active');
-            // Hide after transition
             section.addEventListener('transitionend', () => {
                 if (!section.classList.contains('active')) {
                     section.style.display = 'none';
@@ -756,16 +760,6 @@ function switchView(view) {
             }, { once: true });
         }
     });
-
-    // Determine which section to show based on view
-    let targetSectionId;
-    switch (view) {
-        case 'form': targetSectionId = 'form-section'; break;
-        case 'my-trips':
-        case 'all-trips': targetSectionId = 'table-section'; break;
-        case 'calendar': targetSectionId = 'calendar-section'; break;
-        case 'stats': targetSectionId = 'stats-section'; break;
-    }
 
     // Trigger data loading for the new view
     switch (view) {
