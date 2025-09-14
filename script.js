@@ -732,17 +732,12 @@ function switchView(view) {
     console.log("Switching view to:", view);
     currentView = view;
 
-    // Update tab bar UI
+    // 1. Update the active state on the buttons
     document.querySelectorAll('.tab-button').forEach(button => {
         button.classList.toggle('active', button.dataset.view === view);
     });
 
-    // Hide all sections and remove active class
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = 'none';
-        section.classList.remove('active');
-    });
-
+    const sections = document.querySelectorAll('.content-section');
     const targetSectionId = {
         'form': 'form-section',
         'my-trips': 'table-section',
@@ -751,14 +746,23 @@ function switchView(view) {
         'stats': 'stats-section'
     }[view];
 
+    // 2. Hide all sections and remove the active class
+    sections.forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('active');
+    });
+
     const activeSection = document.getElementById(targetSectionId);
 
+    // 3. Show the target section and then add the active class to trigger the animation
     if (activeSection) {
         activeSection.style.display = 'block';
-        activeSection.classList.add('active');
+        setTimeout(() => {
+            activeSection.classList.add('active');
+        }, 10); // Small delay to ensure the display property is set before the transition starts
     }
 
-    // Trigger data loading for the new view
+    // 4. Trigger data loading for the new view
     switch (view) {
         case 'form':
             if (!dom.editIdInput.value) resetForm();
