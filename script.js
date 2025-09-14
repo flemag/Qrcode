@@ -613,12 +613,18 @@ function setupEventListeners() {
     });
 
     const allNavButtons = document.querySelectorAll('.tab-button');
+    console.log(`[DEBUG] Found ${allNavButtons.length} navigation buttons.`);
+
     allNavButtons.forEach(button => {
+        console.log('[DEBUG] Attaching click listener to button:', button);
         button.addEventListener('click', (event) => {
+            console.log('[DEBUG] Click event fired on button:', button);
             event.preventDefault();
             const view = button.dataset.view;
+            console.log(`[DEBUG] Clicked view: ${view}`);
             if (view) {
                 if (dom.editIdInput.value && currentView === 'form' && !window.confirm("Modifications non enregistrées. Quitter quand même ?")) {
+                    console.log('[DEBUG] Navigation cancelled by user.');
                     return;
                 }
                 if (currentView === 'form') resetForm();
