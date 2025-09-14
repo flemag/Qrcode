@@ -20,6 +20,7 @@ try {
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+
 // App Constants
 const COLLECTION_TRAJETS = 'trajets';
 const EDITOR_EMAIL = 'steve.duquesne@gmail.com';
@@ -736,8 +737,12 @@ function switchView(view) {
         button.classList.toggle('active', button.dataset.view === view);
     });
 
-    // Animate sections
-    const sections = document.querySelectorAll('.content-section');
+    // Hide all sections and remove active class
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('active');
+    });
+
     const targetSectionId = {
         'form': 'form-section',
         'my-trips': 'table-section',
@@ -746,19 +751,12 @@ function switchView(view) {
         'stats': 'stats-section'
     }[view];
 
-    sections.forEach(section => {
-        if (section.id === targetSectionId) {
-            section.style.display = 'block';
-            setTimeout(() => section.classList.add('active'), 10);
-        } else {
-            section.classList.remove('active');
-            section.addEventListener('transitionend', () => {
-                if (!section.classList.contains('active')) {
-                    section.style.display = 'none';
-                }
-            }, { once: true });
-        }
-    });
+    const activeSection = document.getElementById(targetSectionId);
+
+    if (activeSection) {
+        activeSection.style.display = 'block';
+        activeSection.classList.add('active');
+    }
 
     // Trigger data loading for the new view
     switch (view) {
