@@ -9,15 +9,16 @@ const firebaseConfig = {
     measurementId: "G-NNKVVTNV4D"
 };
 
-// Destructure Firebase functions from the global `firebase` object
-const { initializeApp } = firebase.app;
-const { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } = firebase.auth;
-const { getFirestore, collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, serverTimestamp } = firebase.firestore;
-
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+} catch (e) {
+    console.error("Firebase init error:", e);
+}
+const db = firebase.firestore();
+const auth = firebase.auth();
 
 // App Constants
 const COLLECTION_TRAJETS = 'trajets';
@@ -93,8 +94,7 @@ async function fetchAllTripsData() {
     }
     console.log("Fetching all trip data for suggestions/stats...");
     try {
-        const q = query(collection(db, COLLECTION_TRAJETS), orderBy("date", "asc"));
-        const snapshot = await getDocs(q);
+        const snapshot = await db.collection(COLLECTION_TRAJETS).orderBy("date", "asc").get();
         allTripsDataCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         console.log(`Fetched ${allTripsDataCache.length} trips.`);
         return allTripsDataCache;
@@ -233,18 +233,18 @@ function subscribeToTrajets() {
 
     dom.listeTrajetsDiv.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
 
-    let q = query(collection(db, COLLECTION_TRAJETS), orderBy('date', 'desc'));
+    let query = db.collection(COLLECTION_TRAJETS).orderBy('date', 'desc');
     const month = dom.filterMonth.value, year = dom.filterYear.value;
     if (month && year) {
-        const startDate = `${year}-${month}-01`;
-        const nextMonthDate = new Date(year, month, 1);
-        const endDate = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2, '0')}-01`;
-        q = query(q, where('date', '>=', startDate), where('date', '<', endDate));
+        const y = parseInt(year), m = parseInt(month); const start = `${y}-${String(m).padStart(2,'0')}-01`;
+        const nextM = new Date(y, m, 1); const end = `${nextM.getFullYear()}-${String(nextM.getMonth() + 1).padStart(2,'0')}-01`;
+        query = query.where('date', '>=', start).where('date', '<', end);
     } else if (year) {
-        q = query(q, where('date', '>=', `${year}-01-01`), where('date', '<', `${parseInt(year) + 1}-01-01`));
+        const y = parseInt(year);
+        query = query.where('date', '>=', `${y}-01-01`).where('date', '<', `${y + 1}-01-01`);
     }
 
-    trajetsUnsubscribe = onSnapshot(q, (snapshot) => {
+    trajetsUnsubscribe = query.onSnapshot((snapshot) => {
         let trajets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const term = dom.filterPerson.value.trim().toLowerCase();
         if (term) {
@@ -276,8 +276,7 @@ async function fetchCalendarTrips(date) {
     const end = `${y}-${String(m + 1).padStart(2, '0')}-${String(new Date(y, m + 1, 0).getDate()).padStart(2, '0')}`;
 
     try {
-        const q = query(collection(db, COLLECTION_TRAJETS), where('date', '>=', start), where('date', '<=', end), orderBy('date', 'asc'));
-        const snapshot = await getDocs(q);
+        const snapshot = await db.collection(COLLECTION_TRAJETS).where('date', '>=', start).where('date', '<=', end).orderBy('date', 'asc').get();
         calendarTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderCalendar(currentCalendarDate);
         dom.tripsForDayDiv.innerHTML = '<p>Cliquez sur un jour pour voir les détails.</p>';
@@ -414,9 +413,9 @@ async function editTrajet(trajetId) {
     await updateSuggestionDatalists();
     switchView('form');
     try {
-        const docRef = doc(db, COLLECTION_TRAJETS, trajetId);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) {
+        const docRef = db.collection(COLLECTION_TRAJETS).doc(trajetId);
+        const docSnap = await docRef.get();
+        if (!docSnap.exists) {
             showNotification("Trajet non trouvé.", true);
             resetForm();
             return;
@@ -450,7 +449,7 @@ async function deleteTrajet(trajetId) {
     }
     if (window.confirm("Supprimer ce trajet ? Cette action est irréversible.")) {
         try {
-            await deleteDoc(doc(db, COLLECTION_TRAJETS, trajetId));
+            await db.collection(COLLECTION_TRAJETS).doc(trajetId).delete();
             showNotification("Trajet supprimé.");
             allTripsDataCache = null; // Invalidate cache
             if (dom.editIdInput.value === trajetId) resetForm();
@@ -480,14 +479,14 @@ async function handleFormSubmit(event) {
         conducteur,
         passagers,
         commentaire,
-        updatedAt: serverTimestamp()
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     if (user) {
         data.lastModifiedByUid = user.uid;
         data.lastModifiedByName = user.displayName || user.email;
         if (!trajetId) {
-            data.createdAt = serverTimestamp();
+            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
             data.createdByUid = user.uid;
             data.createdByName = user.displayName || user.email;
         }
@@ -498,10 +497,10 @@ async function handleFormSubmit(event) {
 
     try {
         if (trajetId) {
-            await updateDoc(doc(db, COLLECTION_TRAJETS, trajetId), data);
+            await db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
             showNotification("Trajet mis à jour !");
         } else {
-            await addDoc(collection(db, COLLECTION_TRAJETS), data);
+            await db.collection(COLLECTION_TRAJETS).add(data);
             showNotification("Trajet ajouté !");
         }
         allTripsDataCache = null; // Invalidate cache
@@ -520,7 +519,7 @@ async function handleFormSubmit(event) {
 // --- Event Listeners and Initial Setup ---
 
 // --- Authentication Logic ---
-onAuthStateChanged(auth, user => {
+auth.onAuthStateChanged(user => {
     const loggedIn = !!user;
     dom.authContainer.style.display = loggedIn ? 'none' : 'block';
     dom.contentContainer.style.display = loggedIn ? 'block' : 'none';
@@ -548,7 +547,7 @@ onAuthStateChanged(auth, user => {
 
     if (loggedIn) {
         dom.profileInfo.innerHTML = `<div>${user.displayName || user.email}</div><img src="${user.photoURL || 'https://via.placeholder.com/40'}" alt="Avatar" referrerpolicy="no-referrer"><button id="logout-btn" title="Déconnexion">Déconnexion</button>`;
-        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).catch(e => showNotification("Erreur déconnexion.", true)));
+        document.getElementById('logout-btn').addEventListener('click', () => auth.signOut().catch(e => showNotification("Erreur déconnexion.", true)));
 
         populateYearFilter();
         resetForm();
@@ -579,8 +578,8 @@ onAuthStateChanged(auth, user => {
 
 function setupEventListeners() {
     dom.loginBtn.addEventListener('click', () => {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider).catch(error => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(error => {
             const msg = {
                 'auth/popup-closed-by-user': "Fenêtre de connexion fermée.",
                 'auth/cancelled-popup-request': "Autre fenêtre de connexion ouverte.",
