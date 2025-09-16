@@ -9,127 +9,169 @@
 
 <style>
     :root {
-        /* Material You Inspired Palette */
-        /* Primary Colors */
-        --md-sys-color-primary: #4285F4; /* Google Blue */
-        --md-sys-color-on-primary: #FFFFFF;
-        --md-sys-color-primary-container: #DCEAFE; /* Light blue container */
-        --md-sys-color-on-primary-container: #0D47A1; /* Darker blue text on light blue */
-        --primary-color-light-transparent: rgba(66, 133, 244, 0.2);
+        /* Palette Modernisée */
+        /* Couleurs Primaires (Bleu vibrant) */
+        --primary-color: #3B71CA;
+        --primary-color-dark: #325DAD;
+        --primary-color-light: #6A95D9;
+        --primary-color-light-transparent: rgba(59, 113, 202, 0.15);
+        --on-primary-color: #FFFFFF;
 
-        /* Secondary Colors */
-        --md-sys-color-secondary: #0F9D58; /* Google Green */
-        --md-sys-color-on-secondary: #FFFFFF;
-        --md-sys-color-secondary-container: #C8E6C9; /* Light green container */
-        --md-sys-color-on-secondary-container: #0A3D24; /* Darker green text on light green */
+        /* Couleurs Secondaires (Vert frais) */
+        --secondary-color: #14A44D;
+        --secondary-color-dark: #10813C;
+        --on-secondary-color: #FFFFFF;
 
-        /* Tertiary/Accent Colors */
-        --md-sys-color-tertiary: #F4B400; /* Google Yellow */
-        --md-sys-color-on-tertiary: #000000; /* Black for better contrast on yellow */
-        --md-sys-color-tertiary-container: #FFF8E1; /* Light yellow container */
-        --md-sys-color-on-tertiary-container: #795500; /* Darker yellow text on light yellow */
+        /* Couleurs d'Accentuation (Ambre doux) */
+        --accent-color: #E4A11B;
+        --on-accent-color: #FFFFFF;
 
-        /* Error Colors */
-        --md-sys-color-error: #B3261E; /* Material Error Red */
-        --md-sys-color-on-error: #FFFFFF;
-        --md-sys-color-error-container: #FADDD7; /* Light red container */
-        --md-sys-color-on-error-container: #410002; /* Dark red on light red container */
+        /* Couleurs de Feedback */
+        --danger-color: #DC3545;
+        --danger-color-light: rgba(220, 53, 69, 0.1);
+        --on-danger-color: #FFFFFF;
+        --success-color: #198754;
+        --success-color-light: rgba(25, 135, 84, 0.1);
 
-        /* Surface and Background Colors */
-        --md-sys-color-surface: #FCFCFC; /* Slightly off-white */
-        --md-sys-color-on-surface: #1F1F1F; /* Dark gray for text on surface */
-        --md-sys-color-surface-variant: #EAEAEA; /* Lighter gray for variants */
-        --md-sys-color-on-surface-variant: #474747; /* Medium gray for text on variant */
-        --md-sys-color-background: #F3F4F8; /* Light bluish gray background */
-        --md-sys-color-on-background: #1F1F1F; /* Dark gray for text on background */
-        --md-sys-color-outline: #7D7D7D; /* Medium gray for outlines/borders */
-        --md-sys-color-inverse-surface: #303030; /* Dark gray for light theme toasts */
-        --md-sys-color-on-inverse-surface: #f5f5f5; /* Light text for on dark toast */
+        /* Couleurs de Fond et de Surface */
+        --background-color: #F8F9FA; /* Fond très clair, presque blanc */
+        --surface-color: #FFFFFF; /* Cartes et sections en blanc pur */
+        --surface-color-variant: #F1F3F5; /* Pour les éléments légèrement en retrait */
 
-        /* Legacy Aliases (Map new Material vars to old names for compatibility) */
-        --primary-color: var(--md-sys-color-primary);
-        --primary-dark: color-mix(in srgb, var(--md-sys-color-primary), black 20%); /* Approximating dark variant */
-        --secondary-color: var(--md-sys-color-secondary);
-        --secondary-dark: color-mix(in srgb, var(--md-sys-color-secondary), black 20%); /* Approximating dark variant */
-        --accent-color: var(--md-sys-color-tertiary);
-        --danger-color: var(--md-sys-color-error);
-        --success-color: var(--md-sys-color-secondary); /* Or a dedicated success color if needed */
-        --background-color: var(--md-sys-color-background);
-        --surface-color: var(--md-sys-color-surface);
-        --text-color-dark: var(--md-sys-color-on-surface);
-        --text-color-medium: var(--md-sys-color-on-surface-variant);
-        --text-color-light: var(--md-sys-color-outline);
-        --border-color: var(--md-sys-color-outline);
-        --shadow-color: rgba(0, 0, 0, 0.08); /* Softer shadow */
+        /* Couleurs de Texte */
+        --text-color-dark: #212529; /* Texte principal, très foncé mais pas noir pur */
+        --text-color-medium: #6C757D; /* Texte secondaire, gris moyen */
+        --text-color-light: #ADB5BD; /* Texte discret, gris clair */
 
-        /* Border Radius */
-        --border-radius-small: 4px;
-        --border-radius-medium: 8px; /* old --border-radius */
-        --border-radius-large: 12px;
-        --border-radius-xlarge: 16px;
-        --border-radius-pill: 999px;
-        --border-radius: var(--border-radius-medium); /* Keep old var for compatibility, points to new medium */
+        /* Autres */
+        --border-color: #DEE2E6; /* Bordures subtiles */
+        --shadow-color: rgba(0, 0, 0, 0.05); /* Ombre douce et diffuse */
 
-        /* Shadows */
-        /* Material 3 Elevation Level 1-2 style shadow */
-        --card-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.10), 0px 1px 3px 0px rgba(0, 0, 0, 0.08); 
-        --input-focus-shadow: 0 0 0 2px var(--primary-color-light-transparent);
+        /* Rayons de Bordure (plus doux) */
+        --border-radius-small: 6px;
+        --border-radius-medium: 12px;
+        --border-radius-large: 16px;
+        --border-radius-pill: 50rem;
+        --border-radius: var(--border-radius-medium);
 
-        /* Couleurs Conducteurs (Kept as is, but could be updated to use Material tones if desired) */
-        --driver-color-1-bg: #e8f0fe; --driver-color-1-text: #174ea6; /* Steve - Existing, check contrast with new bg/text */
-        --driver-color-2-bg: #e6f4ea; --driver-color-2-text: #137333; /* Marc */
-        --driver-color-3-bg: #fef7e0; --driver-color-3-text: #a56000; /* Julien - Jaune plus foncé pour contraste */
-        /* Ajoutez plus si GROUP_MEMBERS > 3 */
-        --driver-color-default-bg: var(--background-color); --driver-color-default-text: var(--text-color-dark);
+        /* Ombres */
+        --card-shadow: 0 4px 12px var(--shadow-color);
+        --input-focus-shadow: 0 0 0 3px var(--primary-color-light-transparent);
+
+        /* Couleurs Conducteurs (Mises à jour pour la nouvelle palette) */
+        --driver-color-1-bg: #EBF1FB; --driver-color-1-text: #325DAD; /* Steve */
+        --driver-color-2-bg: #E8F6EE; --driver-color-2-text: #10813C; /* Marc */
+        --driver-color-3-bg: #FCF5E8; --driver-color-3-text: #B88015; /* Julien */
+        --driver-color-default-bg: var(--surface-color-variant); --driver-color-default-text: var(--text-color-medium);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Roboto', sans-serif; line-height: 1.6; color: var(--text-color-dark); background-color: var(--background-color); min-height: 100vh; display: flex; flex-direction: column; }
+    body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: var(--text-color-dark);
+        background-color: var(--background-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 
-    header { background-color: var(--surface-color); box-shadow: 0 2px 4px var(--shadow-color); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; position: sticky; top: 0; z-index: 1000; }
-    .app-title { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 8px; }
-    .app-logo i { font-size: 1.5rem; color: var(--secondary-color); }
+    header {
+        background-color: var(--surface-color);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 2px 8px var(--shadow-color);
+    }
+    .app-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color-dark);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .app-logo i {
+        font-size: 1.75rem;
+        color: var(--primary-color);
+    }
 
-    .auth-container { text-align: center; padding: 20px; background-color: var(--surface-color); border-radius: var(--border-radius); box-shadow: var(--card-shadow); margin: 20px auto; max-width: 400px; width: 90%; }
-    .profile-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
-    .profile-info > div { font-weight: 500; color: var(--text-color-medium); flex-grow: 1; text-align: right; }
-    .profile-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color); }
-    #logout-btn { 
-        background-color: var(--md-sys-color-error); 
-        color: var(--md-sys-color-on-error); 
-        border: none; 
-        border-radius: var(--border-radius-pill); 
-        padding: 8px 16px; /* Adjusted padding */
-        cursor: pointer; 
-        font-family: inherit; 
-        transition: opacity 0.3s, background-color 0.2s; 
-        font-size: 0.9rem; 
-        align-self: center; 
+    .auth-container {
+        text-align: center;
+        padding: 40px 20px;
+        background-color: var(--surface-color);
+        border-radius: var(--border-radius-large);
+        box-shadow: var(--card-shadow);
+        margin: 40px auto;
+        max-width: 400px;
+        width: 90%;
+    }
+    .profile-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .profile-info > div {
         font-weight: 500;
+        color: var(--text-color-medium);
+        font-size: 0.9rem;
+        text-align: right;
     }
-    #logout-btn:hover { 
-        opacity: 0.9; 
-        background-color: color-mix(in srgb, var(--md-sys-color-error), black 10%);
+    .profile-info img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--surface-color-variant);
     }
-    .auth-message { margin-bottom: 20px; font-weight: 500; color: var(--text-color-dark); }
-    #login-btn { 
-        background-color: var(--md-sys-color-primary-container); 
-        color: var(--md-sys-color-on-primary-container); 
-        border: none; /* Removed border for a more filled look */
-        border-radius: var(--border-radius-pill); 
-        padding: 10px 24px; 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 10px; 
-        cursor: pointer; 
-        font-family: inherit; 
-        font-weight: 500; 
-        transition: background-color 0.2s, box-shadow 0.2s; 
-        box-shadow: var(--card-shadow); /* Added shadow */
+    #logout-btn {
+        background-color: transparent;
+        color: var(--text-color-medium);
+        border: none;
+        border-radius: var(--border-radius-pill);
+        padding: 8px 12px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        font-size: 1.2rem; /* Icon size */
+        line-height: 1;
     }
-    #login-btn:hover { 
-        background-color: color-mix(in srgb, var(--md-sys-color-primary-container), black 5%); 
-        box-shadow: 0 2px 6px var(--shadow-color); 
+    #logout-btn:hover {
+        color: var(--danger-color);
+        background-color: var(--danger-color-light);
+    }
+    .auth-message {
+        margin-bottom: 20px;
+        font-weight: 500;
+        font-size: 1.1rem;
+        color: var(--text-color-dark);
+    }
+    #login-btn {
+        background-color: var(--primary-color);
+        color: var(--on-primary-color);
+        border: none;
+        border-radius: var(--border-radius-pill);
+        padding: 12px 24px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: 500;
+        transition: all 0.2s;
+        box-shadow: var(--card-shadow);
+    }
+    #login-btn:hover {
+        background-color: var(--primary-color-dark);
+        box-shadow: 0 6px 16px var(--shadow-color);
+        transform: translateY(-2px);
     }
     #login-btn img { width: 18px; height: 18px; }
 
@@ -142,822 +184,417 @@
     #stats-section h4, #trips-for-day h4 { color: var(--text-color-dark); margin: 0 0 12px 0; font-size: 1.2rem; font-weight: 500; padding-bottom: 5px; border-bottom: 1px dotted var(--border-color); }
 
     .form-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
-    .form-group { flex: 1 1 250px; }
-    label { 
-        display: block; 
-        margin-bottom: 6px; /* Adjusted margin */
-        font-weight: 400; /* Adjusted font-weight */
-        color: var(--md-sys-color-on-surface-variant); /* Updated color */
-        font-size: 0.9rem; /* Slightly smaller label */
+    .form-group { flex: 1 1 250px; display: flex; flex-direction: column; gap: 6px; }
+    label {
+        font-weight: 500;
+        color: var(--text-color-medium);
+        font-size: 0.85rem;
     }
-    .required-label::after { content: "*"; color: var(--danger-color); margin-left: 4px; }
-    input, textarea, select { 
-        width: 100%; 
-        padding: 12px 16px; /* Adjusted padding */
-        border: none; /* Removed all borders initially */
-        border-bottom: 1px solid var(--md-sys-color-outline); /* Standard underline */
-        border-radius: var(--border-radius-small) var(--border-radius-small) 0 0; /* Rounded top corners */
-        font-family: inherit; 
-        font-size: 1rem; 
-        color: var(--md-sys-color-on-surface); /* Updated text color */
-        background-color: var(--md-sys-color-surface-variant); /* Light fill color */
-        transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s; /* Added transitions */
+    .required-label::after { content: " *"; color: var(--danger-color); }
+    input, textarea, select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-medium);
+        font-family: inherit;
+        font-size: 1rem;
+        color: var(--text-color-dark);
+        background-color: var(--surface-color);
+        transition: all 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: var(--input-focus-shadow);
     }
     textarea {
-        line-height: 1.5; /* Specific for textarea */
-    }
-    input:focus, textarea:focus, select:focus { 
-        outline: none; 
-        border-bottom: 2px solid var(--md-sys-color-primary); /* Thicker, colored underline */
-        box-shadow: none; /* Removed old input-focus-shadow */
-        background-color: var(--md-sys-color-surface); /* Optional: slightly change background on focus */
-        /* To compensate for the thicker border and prevent layout shift, adjust padding or margin if needed */
-        padding-bottom: 11px; /* Original padding 12px - 1px (original border) + 2px (new border) = 1px shift. Adjust if needed. */
+        line-height: 1.5;
+        resize: vertical;
+        min-height: 80px;
     }
     .passenger-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
     .passenger-row { display: flex; gap: 10px; align-items: center; }
     .passenger-row input { flex-grow: 1; }
-    .add-passenger-btn, .remove-passenger-btn { 
-        border: none; 
-        width: 36px; 
-        height: 36px; 
-        border-radius: var(--border-radius-pill); 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        cursor: pointer; 
-        font-size: 1rem; 
-        transition: background-color 0.2s; 
-        flex-shrink: 0; 
+    .add-passenger-btn, .remove-passenger-btn {
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--border-radius-pill);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s;
+        flex-shrink: 0;
     }
     .add-passenger-btn {
-        background-color: var(--md-sys-color-secondary-container);
-        color: var(--md-sys-color-on-secondary-container);
+        background-color: var(--success-color-light);
+        color: var(--success-color);
     }
-    .add-passenger-btn:hover { 
-        background-color: color-mix(in srgb, var(--md-sys-color-secondary-container), black 10%); 
+    .add-passenger-btn:hover {
+        background-color: var(--success-color);
+        color: var(--on-secondary-color);
     }
-    .remove-passenger-btn { 
-        background-color: var(--md-sys-color-error-container);
-        color: var(--md-sys-color-on-error-container);
+    .remove-passenger-btn {
+        background-color: var(--danger-color-light);
+        color: var(--danger-color);
     }
-    .remove-passenger-btn:hover { 
-        background-color: color-mix(in srgb, var(--md-sys-color-error-container), black 10%); 
+    .remove-passenger-btn:hover {
+        background-color: var(--danger-color);
+        color: var(--on-danger-color);
     }
 
     /* General styles for form action buttons */
-    button[type="submit"], button[type="reset"], #cancel-edit { 
-        padding: 10px 24px; 
-        border-radius: var(--border-radius-pill); 
-        cursor: pointer; 
-        font-size: 0.95rem; 
-        font-weight: 500; 
-        transition: background-color 0.2s, opacity 0.2s, box-shadow 0.2s, border-color 0.2s; 
-        font-family: inherit; 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 8px; /* Standard gap for icon buttons */
-        border: none; /* Default to no border, specific buttons can add it */
+    button[type="submit"], button[type="reset"], #cancel-edit {
+        padding: 12px 24px;
+        border-radius: var(--border-radius-pill);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid transparent;
     }
 
-    /* Disabled state for all relevant buttons */
-    button[type="submit"]:disabled, button[type="reset"]:disabled, #cancel-edit:disabled, 
-    .add-passenger-btn:disabled, .remove-passenger-btn:disabled, 
+    /* Disabled state for all buttons */
+    button:disabled,
+    button[type="submit"]:disabled, button[type="reset"]:disabled, #cancel-edit:disabled,
+    .add-passenger-btn:disabled, .remove-passenger-btn:disabled,
     .btn-edit:disabled, .btn-delete:disabled, #reset-filters:disabled {
-        opacity: 0.5; 
-        background-color: var(--md-sys-color-surface-variant) !important; /* Ensure override */
-        color: var(--md-sys-color-on-surface-variant) !important;
-        border: 1px solid var(--md-sys-color-outline) !important;
+        opacity: 0.6 !important;
+        background-color: var(--surface-color-variant) !important;
+        color: var(--text-color-light) !important;
+        border-color: var(--border-color) !important;
         box-shadow: none !important;
-        cursor: not-allowed;
+        cursor: not-allowed !important;
+        transform: none !important;
     }
-    
+
     /* Submit Button - Filled */
-    button[type="submit"] { 
-        background-color: var(--md-sys-color-primary); 
-        color: var(--md-sys-color-on-primary); 
+    button[type="submit"] {
+        background-color: var(--primary-color);
+        color: var(--on-primary-color);
+        border-color: var(--primary-color);
         box-shadow: var(--card-shadow);
     }
-    button[type="submit"]:hover:not(:disabled) { 
-        background-color: var(--primary-dark); 
-        box-shadow: 0 2px 6px var(--shadow-color);
+    button[type="submit"]:hover:not(:disabled) {
+        background-color: var(--primary-color-dark);
+        border-color: var(--primary-color-dark);
+        transform: translateY(-2px);
     }
 
-    /* Reset Button - Tonal */
-    button[type="reset"] { 
-        background-color: var(--md-sys-color-secondary-container); 
-        color: var(--md-sys-color-on-secondary-container); 
+    /* Reset Button - Outline */
+    button[type="reset"] {
+        background-color: transparent;
+        color: var(--text-color-medium);
+        border-color: var(--border-color);
     }
-    button[type="reset"]:hover:not(:disabled) { 
-        background-color: color-mix(in srgb, var(--md-sys-color-secondary-container), black 5%); 
+    button[type="reset"]:hover:not(:disabled) {
+        background-color: var(--surface-color-variant);
+        color: var(--text-color-dark);
     }
 
-    /* Cancel Edit Button - Tonal (Tertiary) */
-    #cancel-edit { 
-        background-color: var(--md-sys-color-tertiary-container); 
-        color: var(--md-sys-color-on-tertiary-container); 
+    /* Cancel Edit Button - Outline Danger */
+    #cancel-edit {
+        background-color: transparent;
+        color: var(--danger-color);
+        border-color: var(--danger-color-light);
         display: none; /* Keep original display behavior */
     }
-    #cancel-edit:hover:not(:disabled) { 
-        background-color: color-mix(in srgb, var(--md-sys-color-tertiary-container), black 5%); 
+    #cancel-edit:hover:not(:disabled) {
+        background-color: var(--danger-color);
+        color: var(--on-danger-color);
+        border-color: var(--danger-color);
     }
     .action-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; flex-wrap: wrap; }
 
 
-    .table-container { overflow-x: auto; margin-top: 15px; }
-    #table-section table { width: 100%; border-collapse: collapse; }
-    thead { background-color: var(--primary-color); color: white; }
-    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
-    td[data-label="Passagers"], td[data-label="Commentaire"], td[data-label="Ajouté par"] { white-space: normal; }
-    tbody tr:nth-child(even) { background-color: #fcfcfc; } tbody tr:hover { background-color: #f5f5f5; }
-    .empty-message { text-align: center; padding: 30px; color: var(--text-color-medium); font-style: italic; } .empty-message i { margin-right: 8px; }
-    .error-message { color: var(--danger-color); font-weight: bold; }
+    .table-container { overflow-x: auto; margin-top: 20px; }
+    #table-section table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    thead {
+        border-bottom: 2px solid var(--border-color);
+    }
+    th {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-color-medium);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+    td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+    }
+    td[data-label="Passagers"], td[data-label="Commentaire"], td[data-label="Ajouté par"] {
+        white-space: normal;
+        min-width: 150px;
+    }
+    tbody tr:hover {
+        background-color: var(--surface-color-variant);
+    }
+    .empty-message { text-align: center; padding: 40px; color: var(--text-color-medium); font-style: italic; }
+    .empty-message i { margin-right: 8px; font-size: 1.2rem; }
+    .error-message { color: var(--danger-color); font-weight: 500; }
 
-    .filters { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; padding: 15px; background-color: #e8e8e8; border-radius: var(--border-radius); }
-    .filter-group { display: flex; align-items: center; gap: 10px; flex: 1 1 20px; }
-    .filter-group label { margin-bottom: 0; white-space: nowrap; font-weight: 100; color: var(--text-color-dark); }
-    .filter-group select, .filter-group input { 
-        margin-bottom: 0; 
-        padding: 10px 12px; /* Updated padding for filter inputs */
-        flex-grow: 1; 
-        min-width: 100px; 
-        border: none; /* Removed all borders initially */
-        border-bottom: 1px solid var(--md-sys-color-outline); /* Standard underline */
-        border-radius: var(--border-radius-small) var(--border-radius-small) 0 0; /* Rounded top corners */
-        background-color: var(--md-sys-color-surface-variant); /* Light fill color for filter inputs */
-        font-family: inherit;
-        font-size: 0.95rem; /* Slightly smaller for filters */
-        color: var(--md-sys-color-on-surface);
+    .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 16px;
+        background-color: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-large);
     }
-    .filter-group select:focus, .filter-group input:focus { 
-        border-bottom: 2px solid var(--md-sys-color-primary); 
-        box-shadow: none; /* Removed old input-focus-shadow */
-        background-color: var(--md-sys-color-surface);
-        padding-bottom: 9px; /* Adjust for border */
+    .filter-group {
+        flex: 1 1 150px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    #reset-filters { 
-        background-color: transparent; 
-        color: var(--md-sys-color-primary); 
-        border: 1px solid var(--md-sys-color-outline); 
-        padding: 8px 16px; 
-        border-radius: var(--border-radius-pill); 
-        cursor: pointer; 
-        font-size: 0.9rem; 
-        transition: background-color 0.2s, border-color 0.2s; 
-        white-space: nowrap; 
+    .filter-group label {
+        margin-bottom: 0;
+        font-size: 0.9rem;
         font-weight: 500;
-        font-family: inherit;
+        color: var(--text-color-medium);
     }
-    #reset-filters:hover:not(:disabled) { 
-        background-color: var(--primary-color-light-transparent); 
-        border-color: var(--md-sys-color-primary);
-    } 
+    .filter-group select, .filter-group input {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+        flex-grow: 1;
+    }
+    #reset-filters {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border: 1px solid var(--border-color);
+        color: var(--text-color-medium);
+        background: transparent;
+        border-radius: var(--border-radius-pill);
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    #reset-filters:hover:not(:disabled) {
+        background-color: var(--surface-color-variant);
+        border-color: var(--text-color-medium);
+        color: var(--text-color-dark);
+    }
     #reset-filters i { margin-right: 5px; }
 
-    .loading-spinner { text-align: center; padding: 30px; } .loading-spinner i { font-size: 2rem; color: var(--primary-color); animation: spin 1s infinite linear; }
+    .loading-spinner { text-align: center; padding: 40px; }
+    .loading-spinner i { font-size: 2.5rem; color: var(--primary-color); animation: spin 1s infinite linear; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; margin-right: 5px; margin-bottom: 3px; line-height: 1.4; }
-    .badge-passenger { background-color: #fff3e0; color: #e67c00; }
-    .action-col { display: flex; gap: 6px; justify-content: center; white-space: nowrap; }
-    
-    .btn-edit, .btn-delete { 
-        padding: 6px 12px; 
-        border: none; 
-        border-radius: var(--border-radius-pill); 
-        cursor: pointer; 
-        font-size: 0.8rem; 
-        transition: background-color 0.2s, opacity 0.2s; 
-        line-height: 1; 
-        font-weight: 500;
-        font-family: inherit;
-    }
-    .btn-edit i, .btn-delete i { vertical-align: middle; }
-    .btn-edit { 
-        background-color: var(--md-sys-color-tertiary-container); 
-        color: var(--md-sys-color-on-tertiary-container); 
-    } 
-    .btn-delete { 
-        background-color: var(--md-sys-color-error-container); 
-        color: var(--md-sys-color-on-error-container); 
-    }
-    .btn-edit:hover:not(:disabled) { 
-        background-color: color-mix(in srgb, var(--md-sys-color-tertiary-container), black 10%);
-    } 
-    .btn-delete:hover:not(:disabled) { 
-        background-color: color-mix(in srgb, var(--md-sys-color-error-container), black 10%);
-    }
 
-    .notification { 
-        position: fixed; 
-        /* Default to top-right for desktop, will be overridden for mobile */
-        top: 20px; 
-        right: 20px; 
-        background-color: var(--md-sys-color-inverse-surface); 
-        color: var(--md-sys-color-on-inverse-surface); 
-        padding: 10px 16px; /* Updated padding */
-        border-radius: var(--border-radius-medium); /* Updated border-radius */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Updated shadow */
-        z-index: 1050; 
-        transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out; 
-        transform: translateY(-150%); /* Default off-screen for top position */
-        opacity: 0; 
-        min-width: 250px; /* Keep for desktop, will be overridden for mobile */
-        text-align: left; /* Updated text-align */
-        font-weight: 400; /* Updated font-weight */
-        font-size: 0.9rem; /* Updated font-size */
-    }
-    .notification.show { 
-        transform: translateY(0); /* Default show for top position */
-        opacity: 1; 
-    } 
-    .notification.error { 
-        background-color: var(--md-sys-color-error-container); 
-        color: var(--md-sys-color-on-error-container); 
-    }
-
-    /* === CALENDAR STYLES === */
-    .calendar-controls { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        margin-bottom: 16px; /* Increased margin */
-        padding-bottom: 12px; /* Increased padding */
-        border-bottom: 1px solid var(--md-sys-color-outline); 
-    }
-    .calendar-controls button { 
-        background: none; 
-        border: none; 
-        cursor: pointer; 
-        font-size: 1.5rem; /* Larger icon for easier tap */
-        color: var(--md-sys-color-primary); 
-        padding: 8px 12px; /* Sufficient padding */
-        transition: color 0.2s, background-color 0.2s; 
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
         border-radius: var(--border-radius-pill);
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin: 2px;
+        line-height: 1.4;
     }
-    .calendar-controls button:hover { 
-        color: var(--md-sys-color-on-primary-container); 
-        background-color: var(--md-sys-color-primary-container);
-    } 
-    .calendar-controls h3 { /* #current-month-year */
-        margin: 0; 
-        font-size: 1.2rem; /* Adjusted font size */
-        color: var(--md-sys-color-on-surface); 
-        text-align: center; 
-        flex-grow: 1; 
-        font-weight: 500;
+    .badge-passenger {
+        background-color: var(--primary-color-light-transparent);
+        color: var(--primary-color-dark);
     }
-
-    .calendar-grid { 
-        display: grid; 
-        grid-template-columns: repeat(7, 1fr); 
-        gap: 4px; /* Maintained gap */
-        border: none; /* Removed grid border */
-        padding: 0; /* Removed grid padding, day cells will handle spacing */
-        background-color: var(--md-sys-color-surface-variant); 
-        border-radius: var(--border-radius-large); /* Updated border-radius */
-        overflow: hidden; /* To ensure child border-radius is clipped */
+    .action-col {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-start;
+        align-items: center;
+        white-space: nowrap;
     }
-
-    .calendar-day { 
-        border: 1px solid var(--md-sys-color-surface-variant); /* Subtle border between days */
-        padding: 4px; /* Reduced padding, rely on min-height and content alignment */
-        padding-top: 20px; /* Existing padding-top for day number */
-        min-height: 70px; /* Adjusted min-height for mobile */
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: flex-start; 
-        cursor: pointer; 
-        transition: background-color 0.2s, border-color 0.2s; 
-        position: relative; 
-        background-color: var(--md-sys-color-surface); 
-        font-size: 0.8rem; 
-        overflow: hidden; 
-        border-radius: var(--border-radius-medium); /* Updated border-radius */
-    }
-    .calendar-day.selected { 
-        background-color: var(--md-sys-color-primary-container);
-        border-color: var(--md-sys-color-primary); /* Use border-color for selected */
-        box-shadow: none; /* Removed inset shadow */
-    }
-    .calendar-day.selected .day-number,
-    .calendar-day.selected .trip-summary {
-        color: var(--md-sys-color-on-primary-container);
-    }
-
-    .calendar-day.driver-1 { background-color: var(--driver-color-1-bg); } 
-    .calendar-day.driver-1:hover:not(.empty):not(.weekday-header):not(.selected) { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 8%); }
-    .calendar-day.driver-2 { background-color: var(--driver-color-2-bg); } 
-    .calendar-day.driver-2:hover:not(.empty):not(.weekday-header):not(.selected) { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 8%); }
-    .calendar-day.driver-3 { background-color: var(--driver-color-3-bg); } 
-    .calendar-day.driver-3:hover:not(.empty):not(.weekday-header):not(.selected) { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 8%); }
-    
-    .calendar-day:hover:not(.empty):not(.weekday-header):not(.selected) { 
-        background-color: color-mix(in srgb, var(--md-sys-color-surface), black 5%); 
-    }
-    .calendar-day.today { 
-        border: 2px solid var(--md-sys-color-primary); 
-        font-weight: bold; 
-        padding: 3px; /* Adjust padding to account for border */
-        padding-top: 19px;
-    } 
-    .calendar-day.today .day-number { 
-        color: var(--md-sys-color-primary); 
-        font-weight: 700; 
-    }
-    .calendar-day .day-number { 
-        font-size: 0.7rem; 
-        font-weight: 500; 
-        color: var(--md-sys-color-on-surface-variant); 
-        position: absolute; 
-        top: 5px; 
-        right: 7px; 
-        padding: 2px 4px; 
-        z-index: 1; 
-        background-color: transparent; /* Removed background for cleaner look */
-        border-radius: 3px; 
-    }
-    .calendar-day.today .day-number { 
-        background-color: transparent; 
-        box-shadow: none; 
-    }
-    .calendar-day .trip-summary { 
-        font-size: 0.65rem; /* Slightly increased */
-        line-height: 1.3; 
-        padding: 2px 5px; /* Adjusted padding */
-        border-radius: var(--border-radius-small); 
-        margin-top: 4px; 
-        display: inline-block; 
-        max-width: 98%; 
-        text-align: center; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        font-weight: 500; 
-        background-color: transparent; 
-        color: var(--md-sys-color-on-surface-variant); 
-    }
-    .calendar-day.driver-1 .trip-summary { color: var(--driver-color-1-text); } 
-    .calendar-day.driver-2 .trip-summary { color: var(--driver-color-2-text); } 
-    .calendar-day.driver-3 .trip-summary { color: var(--driver-color-3-text); }
-    
-    .calendar-day.empty { 
-        background-color: var(--md-sys-color-surface-variant); 
-        cursor: default; 
+    .btn-edit, .btn-delete {
+        padding: 6px 12px;
         border: none;
-    } 
-    .calendar-day.empty:hover { background-color: var(--md-sys-color-surface-variant); }
-    
-    .calendar-day.weekday-header { 
-        font-weight: 500; /* Adjusted weight */
-        text-align: center; 
-        padding: 8px 5px; 
-        background-color: transparent; 
-        border: none; 
-        min-height: auto; 
-        cursor: default; 
-        color: var(--md-sys-color-on-surface-variant); 
-        font-size: 0.7rem; 
-        position: relative; 
-        padding-top: 8px; 
-        border-radius: 0; 
-    }
-    .calendar-day.weekday-header:hover { background-color: transparent; }
-
-    #trips-for-day { 
-        background-color: var(--md-sys-color-surface-variant); 
-        padding: var(--border-radius-large); /* Consistent padding */
-        border-radius: var(--border-radius-large); 
-        box-shadow: none; /* Removed inset shadow */
-        margin-top: 20px; 
-        border: none; /* Removed border */
-        min-height: 100px; 
-    }
-    #trips-for-day h4 { 
-        color: var(--md-sys-color-on-surface-variant); 
-        margin: 0 0 12px 0; /* Updated margin */
-        padding-bottom: 8px; /* Existing */
-        border-bottom: 1px solid var(--md-sys-color-outline); /* Updated color */
-        font-size: 1.1rem; /* Existing */
-        font-weight: 500; /* Existing */
-    }
-    #trips-for-day ul { list-style: none; padding: 0; }
-    #trips-for-day li { 
-        background-color: var(--md-sys-color-surface);
-        border-radius: var(--border-radius-medium);
-        padding: 10px 12px;
-        margin-bottom: 8px;
-        border: none; /* Removed old borders */
-        font-size: 0.9rem; 
-        line-height: 1.5; 
-        position: relative;
-        padding-left: 24px; /* Space for the dot */
-    }
-    #trips-for-day li::before { /* Driver color dot */
-        content: '';
-        position: absolute;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: var(--md-sys-color-outline); /* Default dot color */
-    }
-    #trips-for-day li.driver-1::before { background-color: var(--driver-color-1-text); } 
-    #trips-for-day li.driver-2::before { background-color: var(--driver-color-2-text); } 
-    #trips-for-day li.driver-3::before { background-color: var(--driver-color-3-text); } 
-
-    #trips-for-day li div { margin-bottom: 3px; } 
-    #trips-for-day li strong { 
-        color: var(--md-sys-color-on-surface-variant); 
-        display: inline-block; 
-        min-width: auto; /* Removed fixed min-width */
-        margin-right: 8px; 
-        font-weight: 500; 
-    }
-    #trips-for-day li .driver-name { /* Keep specific driver name styling if needed */
-        font-weight: 500;
-    }
-    #trips-for-day li .driver-name.driver-1 { color: var(--driver-color-1-text); }
-    #trips-for-day li .driver-name.driver-2 { color: var(--driver-color-2-text); }
-    #trips-for-day li .driver-name.driver-3 { color: var(--driver-color-3-text); }
-
-    #trips-for-day li:last-child { margin-bottom: 0; }  /* Removed border-bottom: none; */
-    #trips-for-day p { 
-        color: var(--md-sys-color-on-surface-variant); 
-        font-style: italic; 
-        text-align: center; 
-        padding: 20px 0; 
-    }
-    /* === END CALENDAR STYLES === */
-
-    .tab-bar { 
-        display: flex; 
-        background-color: var(--md-sys-color-surface-variant); /* Updated background */
-        border-top: 1px solid var(--md-sys-color-outline); /* Material You border */
-        width: 100%; 
-        z-index: 999; 
-        box-shadow: 0 -1px 3px var(--shadow-color); /* Subtle top shadow */
-        position: fixed; 
-        bottom: 0; left: 0; right: 0; 
-        padding: 0 8px; /* Added horizontal padding */
-        overflow-x: auto; 
-        -webkit-overflow-scrolling: touch; 
-        scrollbar-width: none; 
-        -ms-overflow-style: none; 
-    }
-    .tab-bar::-webkit-scrollbar { display: none; }
-
-    .tab-button { 
-        flex: 1 1 auto; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; 
-        padding: 8px 5px; /* Adjusted padding */
-        background: none; 
-        border: none; 
-        cursor: pointer; 
-        font-family: inherit; 
-        font-size: 0.75rem; /* Adjusted text font-size */
-        color: var(--md-sys-color-on-surface-variant); /* Inactive color */
-        transition: color 0.2s, background-color 0.2s;
-        min-width: 80px; /* Adjusted min-width */
-        text-align: center; 
-        gap: 4px; 
-        position: relative;
-        border-radius: var(--border-radius-pill); /* Prepare for active state background */
-        font-weight: 400; /* Default font weight for text */
-    }
-    .tab-button i { 
-        font-size: 1.4rem; /* Adjusted icon font-size */
-        margin-bottom: 0; /* Ensure icon and text are properly gapped by parent */
-    } 
-    .tab-button:hover:not(.active) { 
-        color: var(--md-sys-color-on-surface); 
-        background-color: rgba(0,0,0,0.04); /* Subtle hover background */
-    }
-    .tab-button.active { 
-        color: var(--md-sys-color-on-secondary-container); /* Active text/icon color */
-        background-color: var(--md-sys-color-secondary-container); /* Pill background */
-        font-weight: 500; /* Active font weight */
-    }
-    .tab-button.active::after { 
-        content: none; /* Removed underline indicator */
-    }
-
-    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
-    .calendar-controls button { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--primary-color); padding: 5px 10px; transition: color 0.2s; }
-    .calendar-controls button:hover { color: var(--primary-dark); } .calendar-controls h3 { margin: 0; font-size: 1.3rem; color: var(--text-color-dark); text-align: center; flex-grow: 1; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; border: 1px solid var(--border-color); padding: 4px; background-color: var(--background-color); border-radius: var(--border-radius); }
-    .calendar-day { border: 1px solid #eee; padding: 5px; padding-top: 25px; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; position: relative; background-color: var(--surface-color); font-size: 0.8rem; overflow: hidden; border-radius: 4px; }
-    .calendar-day.selected { border-color: var(--primary-color); box-shadow: 0 0 0 2px var(--primary-color) inset; }
-    .calendar-day.driver-1 { background-color: var(--driver-color-1-bg); } .calendar-day.driver-1:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 5%); }
-    .calendar-day.driver-2 { background-color: var(--driver-color-2-bg); } .calendar-day.driver-2:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 5%); }
-    .calendar-day.driver-3 { background-color: var(--driver-color-3-bg); } .calendar-day.driver-3:hover:not(.empty):not(.weekday-header) { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 5%); }
-    .calendar-day:hover:not(.empty):not(.weekday-header) { background-color: #f0f0f0; }
-    .calendar-day.today { border: 2px solid var(--primary-color); font-weight: bold; } .calendar-day.today .day-number { color: var(--primary-color); font-weight: 700; }
-    .calendar-day .day-number { font-size: 0.7rem; font-weight: 500; color: var(--text-color-medium); position: absolute; top: 5px; right: 7px; padding: 2px 4px; z-index: 1; background-color: rgba(255,255,255,0.8); border-radius: 3px; }
-    .calendar-day.today .day-number { background-color: rgba(255,255,255,0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .calendar-day .trip-summary { font-size: 0.65rem; line-height: 1.3; padding: 1px 4px; border-radius: 4px; margin-top: 4px; display: inline-block; max-width: 98%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; background-color: transparent; color: var(--text-color-medium); }
-    .calendar-day.driver-1 .trip-summary { color: var(--driver-color-1-text); } .calendar-day.driver-2 .trip-summary { color: var(--driver-color-2-text); } .calendar-day.driver-3 .trip-summary { color: var(--driver-color-3-text); }
-    .calendar-day.empty { background-color: #fcfcfc; cursor: default; border-color: #f5f5f5; } .calendar-day.empty:hover { background-color: #fcfcfc; }
-    .calendar-day.weekday-header { font-weight: bold; text-align: center; padding: 8px 5px; background-color: #e8e8e8; border: none; border-bottom: 1px solid var(--border-color); min-height: auto; cursor: default; color: var(--text-color-dark); font-size: 0.7rem; position: relative; padding-top: 8px; border-radius: 0; }
-    .calendar-day.weekday-header:hover { background-color: #e8e8e8; }
-
-    #trips-for-day { background-color: #f1f3f4; padding: 15px; border-radius: var(--border-radius); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); margin-top: 20px; border: 1px solid var(--border-color); min-height: 100px; }
-    #trips-for-day ul { list-style: none; padding: 0; }
-    #trips-for-day li { padding: 10px 5px; border-bottom: 1px solid #e0e0e0; font-size: 0.9rem; line-height: 1.5; padding-left: 15px; border-left: 5px solid transparent; transition: border-left-color 0.2s ease; }
-    #trips-for-day li div { margin-bottom: 3px; } #trips-for-day li strong { color: var(--text-color-dark); display: inline-block; min-width: 80px; margin-right: 10px; font-weight: 500; }
-    #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); } #trips-for-day li .driver-name.driver-1 { color: var(--driver-color-1-text); font-weight: 700;}
-    #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); } #trips-for-day li .driver-name.driver-2 { color: var(--driver-color-2-text); font-weight: 700;}
-    #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); } #trips-for-day li .driver-name.driver-3 { color: var(--driver-color-3-text); font-weight: 700;}
-    #trips-for-day li:last-child { border-bottom: none; } #trips-for-day p { color: var(--text-color-medium); font-style: italic; text-align: center; padding: 20px 0; }
-
-    /* Styles for Scenario-based Suggestions */
-    .scenario-cards-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-    }
-    .scenario-card {
-        background-color: var(--md-sys-color-surface);
-        border: 1px solid var(--md-sys-color-outline);
-        border-radius: var(--border-radius-large);
-        padding: 15px;
-        box-shadow: var(--card-shadow);
-    }
-    .scenario-card .scenario-header {
-        font-size: 1rem;
-        font-weight: 500;
-        color: var(--md-sys-color-on-surface-variant);
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--md-sys-color-surface-variant);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .scenario-card .scenario-header i {
-        color: var(--md-sys-color-secondary);
-    }
-    .scenario-card .suggestion-body {
-        text-align: center;
-        padding: 10px 0;
-    }
-    .scenario-card .suggestion-label {
+        border-radius: var(--border-radius-pill);
+        cursor: pointer;
         font-size: 0.85rem;
-        color: var(--md-sys-color-on-surface-variant);
-        margin-bottom: 4px;
-    }
-    .scenario-card .suggested-driver {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--md-sys-color-primary);
-        display: flex;
+        font-weight: 600;
+        transition: all 0.2s;
+        line-height: 1;
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-bottom: 10px;
+        gap: 4px;
     }
-    .scenario-card .suggested-driver i {
-        font-size: 1.2rem;
-        color: var(--md-sys-color-tertiary);
+    .btn-edit {
+        background-color: var(--primary-color-light-transparent);
+        color: var(--primary-color);
     }
-    .scenario-card .suggestion-reason {
-        font-size: 0.8rem;
-        color: var(--md-sys-color-on-surface-variant);
-        font-style: italic;
+    .btn-edit:hover:not(:disabled) {
+        background-color: var(--primary-color);
+        color: var(--on-primary-color);
     }
-    .scenario-card .no-history {
-        font-style: italic;
-        color: var(--md-sys-color-on-surface-variant);
-        text-align: center;
-        padding: 20px 0;
+    .btn-delete {
+        background-color: var(--danger-color-light);
+        color: var(--danger-color);
+    }
+    .btn-delete:hover:not(:disabled) {
+        background-color: var(--danger-color);
+        color: var(--on-danger-color);
+    }
+
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: var(--surface-color);
+        color: var(--text-color-dark);
+        padding: 12px 20px;
+        border-radius: var(--border-radius-medium);
+        box-shadow: var(--card-shadow);
+        z-index: 1050;
+        transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+        transform: translateY(-150%);
+        opacity: 0;
+        min-width: 250px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        border-left: 4px solid var(--primary-color);
+    }
+    .notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    .notification.error {
+        border-left-color: var(--danger-color);
+        color: var(--danger-color);
     }
 
     @media (max-width: 767px) { /* Styles Mobile */
-        body { padding-bottom: 60px; } 
-        header { 
-            padding: 16px; /* Adjusted padding */
-            background-color: var(--md-sys-color-surface); /* Updated background */
-            box-shadow: 0 1px 3px var(--shadow-color); /* Subtle shadow */
-            /* position: sticky; top: 0; z-index: 1000; are already in base style */
-        }
-        .app-title { 
-            font-size: 1.4rem; /* Adjusted font size */
-            color: var(--md-sys-color-primary); /* Updated color */
-            font-weight: 600; /* Adjusted font weight */
-        }
-        .app-logo i {
-            color: var(--md-sys-color-secondary); /* Updated color */
-            font-size: 1.3rem; /* Adjusted font size */
-        }
-        .profile-info { 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 8px; /* Added gap for spacing */
-        }
-        .profile-info > div { 
-            text-align: center; 
-            color: var(--md-sys-color-on-surface-variant); /* Updated text color */
-        }
-        .profile-info img {
-            border: 1px solid var(--md-sys-color-outline); /* Updated border color */
-        }
-        #logout-btn { margin-top: 8px; } /* Adjusted margin */
-        .main-content { padding: 15px; padding-bottom: 100px; } .content > section { padding: 20px; }
-        h2 { font-size: 1.6rem; } h3 { font-size: 1.3rem; } #stats-section h4, #trips-for-day h4 { font-size: 1.1rem; }
+        body { padding-bottom: 80px; } /* Increased padding for larger tab bar */
+        .main-content { padding: 16px; padding-bottom: 100px; }
+        .content > section { padding: 16px; }
+        h2 { font-size: 1.5rem; }
+        h3 { font-size: 1.2rem; }
 
-        #table-section table { border: 0; } #table-section thead { display: none; }
-        #table-section tr { 
-            display: block; 
-            margin-bottom: 15px; 
-            border: 1px solid var(--md-sys-color-outline); /* Updated border */
-            border-radius: var(--border-radius-large); /* Updated radius */
-            padding: 15px; 
-            background-color: var(--md-sys-color-surface); /* Updated background */
-            box-shadow: var(--card-shadow); /* Updated shadow */
+        .form-row { flex-direction: column; gap: 16px; }
+        .action-buttons {
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
         }
-        #table-section tr:nth-child(even) { background-color: var(--md-sys-color-surface); } /* Ensure consistency */
-        #table-section tr:hover { background-color: color-mix(in srgb, var(--md-sys-color-surface), black 4%); } /* Subtle hover */
-        
-        /* Keep driver specific backgrounds, but ensure hover is consistent */
-        .table-container tr.driver-1 { background-color: var(--driver-color-1-bg); } 
-        .table-container tr.driver-1:hover { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 8%); }
-        .table-container tr.driver-2 { background-color: var(--driver-color-2-bg); } 
-        .table-container tr.driver-2:hover { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 8%); }
-        .table-container tr.driver-3 { background-color: var(--driver-color-3-bg); } 
-        .table-container tr.driver-3:hover { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 8%); }
-        
-        #table-section td { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            text-align: right; 
-            font-size: 0.9rem; 
-            border-bottom: 1px dotted var(--md-sys-color-outline); /* Updated dotted line color */
-            padding: 8px 5px; 
-            white-space: normal; 
-            color: var(--md-sys-color-on-surface); /* Default text color for td content */
-        }
-        #table-section td::before { 
-            content: attr(data-label); 
-            font-weight: 500; /* Adjusted weight */
-            color: var(--md-sys-color-on-surface-variant); /* Label color */
-            margin-right: 10px; 
-            text-align: left; 
-            white-space: nowrap; 
-            flex-shrink: 0; 
-        }
-        #table-section td:last-child { border-bottom: 0; } 
-        #table-section td.action-col { justify-content: center; padding-top: 12px; border-bottom: none; } 
-        #table-section td.action-col::before { display: none; }
-        
-        /* Specific text colors for driver names in table cells should use on-surface or driver-specific text */
-        td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 500; } 
-        td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 500; } 
-        td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 500; }
-
-        /* Calendar specific mobile adjustments */
-        .calendar-controls h3 { /* #current-month-year */
-             font-size: 1.1rem; 
-        }
-        .calendar-day { 
-            min-height: 70px; /* Already adjusted in base */
-            padding-top: 20px; /* Already adjusted in base */
-            font-size: 0.75rem; /* Existing */
-        } 
-        .calendar-day .day-number { 
-            font-size: 0.7rem; /* Updated from 0.65rem */
-            top: 4px; /* Slightly adjust */
-            right: 5px; /* Slightly adjust */
-        } 
-        .calendar-day .trip-summary { 
-            font-size: 0.6rem; /* Existing */
-        }
-        #trips-for-day { 
-            padding: 12px; /* Existing */
-            margin-top: 15px; /* Existing */
-        } 
-        #trips-for-day h4 { font-size: 1rem; } /* Adjusted from 1.1rem */
-        #trips-for-day li { 
-            font-size: 0.85rem; /* Existing */
-            padding-left: 24px; /* Ensure space for dot */
+        .action-buttons button {
+             width: 100%;
         }
 
-        .form-row, .form-group { flex: 1 1 100%; min-width: auto; } .action-buttons { justify-content: center; } .action-buttons button { width: 100%; max-width: 300px; }
-        .filters { flex-direction: column; gap: 10px; } .filter-group { flex-direction: column; align-items: flex-start; gap: 5px; } .filter-group select, .filter-group input { width: 100%; } #reset-filters { align-self: stretch; }
-        
-        .notification { 
-            bottom: 80px; /* Position above tab bar */
-            left: 50%; 
-            top: auto; /* Remove top positioning */
-            right: auto; /* Remove right positioning */
-            transform: translateX(-50%) translateY(150%); /* Initial off-screen bottom */
-            width: auto; 
-            min-width: 180px; /* Smaller min-width for mobile */
-            max-width: calc(100% - 40px); /* Prevent touching screen edges */
+        .filters {
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px;
+        }
+        .filter-group {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+        }
+        .filter-group label {
+            text-align: left;
+        }
+
+        .notification {
+            bottom: 85px; /* Position above tab bar */
+            left: 16px;
+            right: 16px;
+            top: auto;
+            transform: translateY(150%);
+            width: auto;
+            max-width: none;
         }
         .notification.show {
-            transform: translateX(-50%) translateY(0); /* Slide in from bottom */
+            transform: translateY(0);
         }
 
-        .driver-overview-table { display: none; } /* Cacher le tableau sur mobile */
-        .driver-cards-container { display: flex; } /* Afficher les cartes sur mobile */
+        .calendar-day { min-height: 70px; }
+        .calendar-day .day-number { font-size: 0.75rem; }
+        .calendar-day .trip-summary { font-size: 0.65rem; }
+
+        #trips-for-day { padding: 16px; }
+        #trips-for-day h4 { font-size: 1.1rem; }
+        #trips-for-day li { font-size: 0.9rem; }
     }
 
     @media (max-width: 480px) { /* Styles Très Petit Mobile */
-        header { 
-            padding: 12px 16px; /* Adjusted padding */
-            /* background-color and box-shadow inherited from 767px or base if needed */
-        } 
-        .app-title { 
-            font-size: 1.2rem; /* Adjusted font size */
-        }
-        /* .app-logo i specific changes if needed, else inherited */
-        /* .profile-info specific changes if needed, else inherited */
-        .main-content { padding: 10px; padding-bottom: 90px; } .content > section { padding: 15px; }
-        h2 { font-size: 1.4rem; } h3 { font-size: 1.2rem; } #stats-section h4, #trips-for-day h4 { font-size: 1rem; }
-        #table-section td, #table-section td::before { font-size: 0.8rem; }
-        
-        /* Calendar specific very small mobile adjustments */
-        .calendar-controls h3 { font-size: 1rem; }
-        .calendar-controls button { font-size: 1.3rem; padding: 6px 10px; }
-        .calendar-day { 
-            min-height: 60px; 
-            padding-top: 18px; 
-        } 
-        .calendar-day .day-number { 
-            font-size: 0.65rem; /* Updated from 0.6rem */
-        } 
-        .calendar-day .trip-summary { 
-            font-size: 0.55rem; /* Existing */
-        }
-        #trips-for-day li { font-size: 0.8rem; }
+        .main-content { padding: 12px; padding-bottom: 90px; }
+        h2 { font-size: 1.4rem; }
+        h3 { font-size: 1.1rem; }
+        #table-section td, #table-section td::before { font-size: 0.85rem; }
 
-
-         .tab-button { 
-            font-size: 0.7rem; /* Slightly smaller text for very small screens */
-            min-width: 60px; /* Revert to smaller min-width */
-            padding: 6px 4px; /* Adjust padding */
+        .tab-button {
+            font-size: 0.7rem;
+            min-width: 70px;
         }
         .tab-button i {
-            font-size: 1.2rem; /* Slightly smaller icon */
+            font-size: 1.3rem;
         }
-        /* Notification positioning inherited from 767px, adjust if needed for very small screens */
-        /* e.g. .notification { bottom: 70px; } */
-        .driver-card .member-name { font-size: 1.1rem; } .driver-card .card-stat { font-size: 0.85rem; } .driver-card .suggestion-icon-card { font-size: 1.3rem; }
+
+        .calendar-day { min-height: 60px; }
+        .calendar-day .day-number { font-size: 0.7rem; }
     }
 
     @media (min-width: 768px) { /* Styles Desktop */
         body { padding: 0; } header { padding: 15px 40px; } .main-content { padding: 30px; } .app-title { font-size: 2rem; }
         .profile-info { flex-direction: row; align-items: center; justify-content: flex-end; gap: 15px; } .profile-info > div { text-align: right; flex-grow: 0; } #logout-btn { margin: 0; }
-        /* Reset tab bar for desktop view - it becomes a static bar */
-        .tab-bar { 
-            position: static; 
-            border-bottom: 1px solid var(--border-color); 
-            box-shadow: none; 
-            margin-bottom: 20px; 
-            border-radius: var(--border-radius-medium); /* Use specific radius */
-            overflow-x: visible; 
-            padding: 0; /* Reset padding for desktop */
-            background-color: var(--surface-color); /* Desktop background */
+        /* Reset tab bar for desktop view */
+        .tab-bar {
+            position: static;
+            box-shadow: none;
+            margin-bottom: 24px;
+            border-radius: 0;
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0;
+            gap: 0;
+            justify-content: flex-start;
         }
-        .tab-button { 
-            flex-direction: row; 
-            min-width: auto; 
-            padding: 12px 20px; 
-            gap: 8px; 
-            font-size: 1rem; 
-            color: var(--text-color-medium); /* Desktop inactive color */
-            background-color: transparent; /* Reset background */
-            border-radius: var(--border-radius-small); /* Standard button radius for desktop tabs */
-            font-weight: 500; /* Desktop font weight */
-        } 
-        .tab-button i { 
-            font-size: 1rem; 
-            margin-bottom: 0;
-        } 
+        .tab-button {
+            flex: 0 1 auto; /* Don't grow, allow shrinking */
+            flex-direction: row;
+            font-size: 0.95rem;
+            color: var(--text-color-medium);
+            background-color: transparent;
+            border-radius: 0;
+            position: relative;
+            padding: 12px 20px;
+            border-bottom: 2px solid transparent; /* Placeholder for active state */
+            margin-bottom: -1px; /* Overlap the container's border */
+        }
+        .tab-button i {
+            font-size: 1.1rem;
+        }
         .tab-button:hover:not(.active) {
-            color: var(--text-color-dark);
-            background-color: rgba(0,0,0,0.05); /* Desktop hover */
+            color: var(--primary-color);
+            background-color: var(--primary-color-light-transparent);
         }
-        .tab-button.active { 
-            color: var(--md-sys-color-primary); /* Desktop active color */
-            background-color: var(--md-sys-color-primary-container); /* Desktop active background */
-            font-weight: 600; /* Desktop active font weight */
+        .tab-button.active {
+            color: var(--primary-color);
+            background-color: transparent;
+            border-bottom-color: var(--primary-color);
         }
-        .tab-button.active::after { 
-            /* Re-introduce underline for desktop if desired, or keep it removed */
-            /* For this task, we keep it removed as per mobile-first priority */
-            /* If needed: content: ''; position: absolute; bottom: -1px; left:0; right:0; height: 2px; background-color: var(--primary-color); */
-             content: none;
+        .tab-button.active::after {
+            content: none;
         }
         #table-section table { display: table; } #table-section thead { display: table-header-group; } #table-section tbody tr { display: table-row; background-color: inherit; border: none; box-shadow: none; padding: 0; }
-        #table-section tbody tr:nth-child(even) { background-color: #fcfcfc; } #table-section td { display: table-cell; text-align: left; padding: 12px 15px; white-space: nowrap; } #table-section td::before { display: none; }
-        td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 600;} td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 600;} td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 600;}
+        #table-section tbody tr:nth-child(even) { background-color: var(--surface-color); }
+        #table-section td { display: table-cell; text-align: left; padding: 12px 15px; white-space: nowrap; } #table-section td::before { display: none; }
+        td[data-label="Conducteur"].driver-1 .driver-name-value { color: var(--driver-color-1-text); }
+        td[data-label="Conducteur"].driver-2 .driver-name-value { color: var(--driver-color-2-text); }
+        td[data-label="Conducteur"].driver-3 .driver-name-value { color: var(--driver-color-3-text); }
         .form-row { flex-direction: row; } .form-group { flex: 1; } .action-buttons { justify-content: flex-end; } .action-buttons button { width: auto; }
         #calendar-section .calendar-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; } #calendar-section .calendar-grid, #trips-for-day { margin-top: 0; }
         #stats-content { display: block; }
@@ -1399,7 +1036,7 @@
             const passengers = t.passagers ?.filter(p => p ?.trim()).map(p => `<span class="badge badge-passenger">${String(p).trim()}</span>`).join(' ') || '<em>Aucun</em>';
             const driverName = t.conducteur?.trim() || '?';
             const driverClass = getDriverClass(driverName);
-            html += `<tr class="${driverClass}"><td data-label="Date">${dateStr}</td><td data-label="Conducteur" class="${driverClass}">${driverName}</td><td data-label="Passagers">${passengers}</td><td data-label="Commentaire">${t.commentaire || '-'}</td><td data-label="Ajouté par">${t.createdByName || t.lastModifiedByName || 'Inconnu'}</td><td data-label="Actions" class="action-col">${actions}</td></tr>`;
+            html += `<tr class="${driverClass}"><td data-label="Date">${dateStr}</td><td data-label="Conducteur" class="${driverClass}"><span class="driver-name-value">${driverName}</span></td><td data-label="Passagers">${passengers}</td><td data-label="Commentaire">${t.commentaire || '-'}</td><td data-label="Ajouté par">${t.createdByName || t.lastModifiedByName || 'Inconnu'}</td><td data-label="Actions" class="action-col">${actions}</td></tr>`;
         });
         html += `</tbody></table>`;
         dom.listeTrajetsDiv.innerHTML = html;
@@ -1852,7 +1489,7 @@
         }
 
         if (loggedIn) {
-            dom.profileInfo.innerHTML = `<div>${user.displayName || user.email}</div><img src="${user.photoURL || 'https://via.placeholder.com/40'}" alt="Avatar" referrerpolicy="no-referrer"><button id="logout-btn" title="Déconnexion">Déconnexion</button>`;
+            dom.profileInfo.innerHTML = `<div>${user.displayName || user.email}</div><img src="${user.photoURL || 'https://via.placeholder.com/40'}" alt="Avatar" referrerpolicy="no-referrer"><button id="logout-btn" title="Déconnexion"><i class="fas fa-sign-out-alt"></i></button>`;
             document.getElementById('logout-btn').addEventListener('click', () => auth.signOut().catch(e => showNotification("Erreur déconnexion.", true)));
             populateYearFilter();
             // updateSuggestionDatalists() is now called in switchView('form') or other tabs if user navigates
