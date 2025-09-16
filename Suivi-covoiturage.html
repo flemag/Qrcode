@@ -700,12 +700,15 @@
     .calendar-day {
         position: relative;
         padding: var(--spacing-xsmall);
+        padding-top: calc(4 * var(--spacing-unit)); /* 32px, to make space for the day number */
         min-height: 110px;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center; /* Center trip summaries */
+        justify-content: flex-start;
         cursor: pointer;
         transition: background-color 0.2s ease-in-out;
+        border-radius: var(--border-radius);
     }
     .calendar-day:not(.empty):not(.weekday-header):hover {
         background-color: rgba(0,0,0,0.04);
@@ -714,11 +717,13 @@
         background-color: var(--primary-color-light) !important;
     }
     .calendar-day .day-number {
-        font-size: 0.875rem;
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: 0.75rem;
         color: var(--text-color-secondary);
-        margin-bottom: var(--spacing-xsmall);
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -774,19 +779,24 @@
     }
     #trips-for-day ul { list-style: none; padding: 0; }
     #trips-for-day li {
+        position: relative;
         display: flex;
         align-items: center;
         padding: var(--spacing-xsmall) 0;
+        padding-left: calc(2 * var(--spacing-unit)); /* 16px */
         border-bottom: 1px solid var(--divider-color);
         font-size: 0.9rem;
     }
     #trips-for-day li:last-child { border-bottom: none; }
     #trips-for-day li::before {
         content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        margin-right: var(--spacing-small);
         flex-shrink: 0;
     }
     #trips-for-day li.driver-1::before { background-color: var(--driver-color-1-text); }
@@ -800,66 +810,69 @@
         padding: var(--spacing-medium) 0;
     }
 
+    #stats-section {
+        background-color: var(--background-color);
+        box-shadow: none;
+    }
     /* Styles for Scenario-based Suggestions */
     .scenario-cards-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
+        gap: var(--spacing-small);
     }
     .scenario-card {
-        background-color: var(--md-sys-color-surface);
-        border: 1px solid var(--md-sys-color-outline);
-        border-radius: var(--border-radius-large);
-        padding: 15px;
-        box-shadow: var(--card-shadow);
+        background-color: var(--surface-color);
+        border: 1px solid var(--divider-color);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-small);
+        box-shadow: var(--shadow-dp1);
+        transition: box-shadow 0.2s ease-in-out;
+    }
+    .scenario-card:hover {
+        box-shadow: var(--shadow-dp3);
     }
     .scenario-card .scenario-header {
-        font-size: 1rem;
         font-weight: 500;
-        color: var(--md-sys-color-on-surface-variant);
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--md-sys-color-surface-variant);
+        color: var(--text-color-secondary);
+        padding-bottom: var(--spacing-xsmall);
+        border-bottom: 1px solid var(--divider-color);
+        margin-bottom: var(--spacing-small);
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--spacing-xsmall);
     }
     .scenario-card .scenario-header i {
-        color: var(--md-sys-color-secondary);
+        color: var(--text-color-secondary);
     }
     .scenario-card .suggestion-body {
         text-align: center;
-        padding: 10px 0;
+        padding: var(--spacing-small) 0;
     }
     .scenario-card .suggestion-label {
-        font-size: 0.85rem;
-        color: var(--md-sys-color-on-surface-variant);
-        margin-bottom: 4px;
+        font-size: 0.8rem;
+        color: var(--text-color-secondary);
+        margin-bottom: var(--spacing-xsmall);
     }
     .scenario-card .suggested-driver {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--md-sys-color-primary);
+        font-size: 1.75rem;
+        font-weight: 500;
+        color: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        margin-bottom: 10px;
+        gap: var(--spacing-xsmall);
+        margin-bottom: var(--spacing-xsmall);
     }
     .scenario-card .suggested-driver i {
-        font-size: 1.2rem;
-        color: var(--md-sys-color-tertiary);
+        color: var(--accent-color);
     }
     .scenario-card .suggestion-reason {
-        font-size: 0.8rem;
-        color: var(--md-sys-color-on-surface-variant);
-        font-style: italic;
+        font-size: 0.9rem;
+        color: var(--text-color-secondary);
     }
     .scenario-card .no-history {
-        font-style: italic;
-        color: var(--md-sys-color-on-surface-variant);
-        text-align: center;
-        padding: 20px 0;
+        color: var(--text-color-secondary);
+        padding: var(--spacing-medium) 0;
     }
 
     @media (max-width: 767px) { /* --- MOBILE STYLES --- */
