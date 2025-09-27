@@ -52,9 +52,9 @@
         --shadow-dp3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 
         /* Couleurs Conducteurs (Adaptées à la nouvelle palette) */
-        --driver-color-1-bg: #E8EAF6; --driver-color-1-text: #303F9F; /* Steve - Indigo */
-        --driver-color-2-bg: #E3F2FD; --driver-color-2-text: #1976D2; /* Marc - Blue */
-        --driver-color-3-bg: #E0F2F1; --driver-color-3-text: #00796B; /* Julien - Teal */
+        --driver-color-1-bg: #E8F5E9; --driver-color-1-text: #2E7D32; /* Steve - Green */
+        --driver-color-2-bg: #FFF3E0; --driver-color-2-text: #EF6C00; /* Marc - Orange */
+        --driver-color-3-bg: #F3E5F5; --driver-color-3-text: #6A1B9A; /* Julien - Purple */
         --driver-color-default-bg: #FAFAFA; --driver-color-default-text: var(--text-color-secondary);
     }
 
@@ -126,19 +126,19 @@
     }
     #logout-btn {
         background: none;
-        border: none;
+        border: 1px solid var(--divider-color);
         color: var(--text-color-secondary);
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        border-radius: 16px;
+        padding: 6px 12px;
         cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s ease-in-out;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease-in-out, border-color 0.2s;
     }
     #logout-btn:hover {
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0,0,0,0.04);
+        border-color: var(--text-color-secondary);
     }
     .auth-message {
         margin-bottom: var(--spacing-medium);
@@ -584,38 +584,24 @@
     }
     #trips-for-day ul { list-style: none; padding: 0; }
     #trips-for-day li {
-        background-color: var(--md-sys-color-surface);
-        border-radius: var(--border-radius-medium);
-        padding: 10px 12px;
-        margin-bottom: 8px;
-        border: none; /* Removed old borders */
+        background-color: var(--surface-color);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-small);
+        margin-bottom: var(--spacing-small);
+        border-left: 4px solid var(--divider-color);
         font-size: 0.9rem;
         line-height: 1.5;
-        position: relative;
-        padding-left: 24px; /* Space for the dot */
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: var(--spacing-xsmall) var(--spacing-small);
+        align-items: center;
     }
-    #trips-for-day li::before { /* Driver color dot */
-        content: '';
-        position: absolute;
-        left: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: var(--md-sys-color-outline); /* Default dot color */
-    }
-    #trips-for-day li.driver-1::before { background-color: var(--driver-color-1-text); }
-    #trips-for-day li.driver-2::before { background-color: var(--driver-color-2-text); }
-    #trips-for-day li.driver-3::before { background-color: var(--driver-color-3-text); }
-
-    #trips-for-day li div { margin-bottom: 3px; }
+    #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); }
+    #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); }
+    #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); }
     #trips-for-day li strong {
-        color: var(--md-sys-color-on-surface-variant);
-        display: inline-block;
-        min-width: auto; /* Removed fixed min-width */
-        margin-right: 8px;
         font-weight: 500;
+        color: var(--text-color-secondary);
     }
     #trips-for-day li .driver-name { /* Keep specific driver name styling if needed */
         font-weight: 500;
@@ -1501,12 +1487,12 @@
         if (trips.length > 0) {
             detailsHTML += '<ul>';
             trips.forEach(t => {
-                const passengersStr = t.passagers?.filter(p => p?.trim()).join(', ') || 'Aucun passager';
+                const passengersStr = t.passagers?.filter(p => p?.trim()).join(', ') || '<em>Aucun</em>';
                 const driverName = t.conducteur?.trim() || '?';
                 const driverClass = getDriverClass(driverName);
                 detailsHTML += `<li class="${driverClass}">
-                    <span class="driver-name">${driverName}</span>
-                    <span class="passengers-info">${passengersStr}</span>
+                    <strong>Conducteur:</strong><span class="driver-name ${driverClass}">${driverName}</span>
+                    <strong>Passagers:</strong><span>${passengersStr}</span>
                 </li>`;
             });
             detailsHTML += '</ul>';
