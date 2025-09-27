@@ -595,11 +595,17 @@
     #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); }
     #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); }
     #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); }
-    #trips-for-day li div { margin-bottom: 4px; }
+    #trips-for-day li div {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 4px;
+    }
     #trips-for-day li div:last-child { margin-bottom: 0; }
     #trips-for-day li strong {
         font-weight: 500;
         color: var(--text-color-secondary);
+        flex-basis: 90px;
+        flex-shrink: 0;
     }
     #trips-for-day li .driver-name { /* Keep specific driver name styling if needed */
         font-weight: 500;
