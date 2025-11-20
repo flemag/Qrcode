@@ -2,1947 +2,619 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Co-Pilot - Covoiturage</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#F2F6FF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Co-Pilot Ultimate</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-    :root {
-        /* 1. Google Material Design Foundation */
-
-        /* Couleurs (Palette Indigo / Pink) */
-        --primary-color: #3F51B5; /* Indigo */
-        --primary-color-dark: #303F9F;
-        --primary-color-light: #C5CAE9;
-        --on-primary-color: #FFFFFF;
-
-        --accent-color: #E91E63; /* Pink */
-        --on-accent-color: #FFFFFF;
-
-        /* Couleurs de Texte Standard */
-        --text-color-primary: rgba(0, 0, 0, 0.87); /* Texte principal */
-        --text-color-secondary: rgba(0, 0, 0, 0.60); /* Texte secondaire */
-        --text-color-hint: rgba(0, 0, 0, 0.38); /* Texte d'aide, désactivé */
-
-        /* Autres couleurs */
-        --danger-color: #F44336;
-        --success-color: #4CAF50;
-        --border-color: rgba(0, 0, 0, 0.12);
-
-        /* Fonds et Surfaces */
-        --background-color: #F5F5F5; /* Gris très clair */
-        --surface-color: #FFFFFF; /* Blanc pur pour les cartes */
-
-        /* 2. Spacing & Sizing (Grille de 8dp) */
-        --spacing-unit: 8px;
-        --spacing-xsmall: var(--spacing-unit);    /* 8px */
-        --spacing-small: calc(2 * var(--spacing-unit));  /* 16px */
-        --spacing-medium: calc(3 * var(--spacing-unit)); /* 24px */
-        --spacing-large: calc(4 * var(--spacing-unit));  /* 32px */
-        --spacing-xlarge: calc(6 * var(--spacing-unit)); /* 48px */
-
-        /* 3. Borders & Shadows */
-        --border-radius: 4px;
-        --divider-color: rgba(0, 0, 0, 0.12);
-
-        /* Ombres d'élévation Material Design */
-        --shadow-dp1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-        --shadow-dp2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        --shadow-dp3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-
-        /* Couleurs Conducteurs (Adaptées à la nouvelle palette) */
-        --driver-color-1-bg: #E8F5E9; --driver-color-1-text: #2E7D32; /* Steve - Green */
-        --driver-color-2-bg: #FFF3E0; --driver-color-2-text: #EF6C00; /* Marc - Orange */
-        --driver-color-3-bg: #F3E5F5; --driver-color-3-text: #6A1B9A; /* Julien - Purple */
-        --driver-color-default-bg: #FAFAFA; --driver-color-default-text: var(--text-color-secondary);
-    }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-        font-family: 'Roboto', sans-serif;
-        line-height: 1.5;
-        color: var(--text-color-primary);
-        background-color: var(--background-color);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-
-    header {
-        background-color: var(--surface-color);
-        box-shadow: var(--shadow-dp1);
-        padding: 0 var(--spacing-small);
-        height: calc(7 * var(--spacing-unit)); /* 56px */
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
-    .app-title {
-        font-size: 1.25rem;
-        font-weight: 500;
-        color: var(--text-color-primary);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-small);
-    }
-    .app-logo i {
-        font-size: 1.5rem;
-        color: var(--primary-color);
-    }
-
-    .auth-container {
-        text-align: center;
-        padding: var(--spacing-large);
-        background-color: var(--surface-color);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow-dp1);
-        margin: var(--spacing-large) auto;
-        max-width: 400px;
-        width: 90%;
-    }
-    .profile-info {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-small);
-    }
-    .profile-info > div {
-        font-weight: 500;
-        color: var(--text-color-secondary);
-        font-size: 0.9rem;
-        text-align: right;
-    }
-    .profile-info img {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    #logout-btn {
-        background: none;
-        border: 1px solid var(--divider-color);
-        color: var(--text-color-secondary);
-        border-radius: 16px;
-        padding: 6px 12px;
-        cursor: pointer;
-        font-family: inherit;
-        font-size: 0.8rem;
-        font-weight: 500;
-        transition: background-color 0.2s ease-in-out, border-color 0.2s;
-    }
-    #logout-btn:hover {
-        background-color: rgba(0,0,0,0.04);
-        border-color: var(--text-color-secondary);
-    }
-    .auth-message {
-        margin-bottom: var(--spacing-medium);
-        font-size: 1.1rem;
-        color: var(--text-color-secondary);
-    }
-    #login-btn {
-        background-color: var(--primary-color);
-        color: var(--on-primary-color);
-        border: none;
-        border-radius: 24px;
-        padding: var(--spacing-xsmall) var(--spacing-medium);
-        display: inline-flex;
-        align-items: center;
-        gap: var(--spacing-xsmall);
-        cursor: pointer;
-        font-family: inherit;
-        font-weight: 500;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        transition: box-shadow 0.2s ease-in-out;
-    }
-    #login-btn:hover {
-        box-shadow: var(--shadow-dp2);
-    }
-    #login-btn img {
-        width: 18px;
-        height: 18px;
-    }
-
-    .main-content {
-        flex-grow: 1;
-        width: 100%;
-    }
-    .content > section {
-        background-color: var(--surface-color);
-        padding: var(--spacing-medium);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow-dp1);
-        margin: var(--spacing-small);
-        display: none;
-    }
-    .content > section.active {
-        display: block;
-    }
-
-    h2 {
-        font-size: 1.25rem;
-        font-weight: 500;
-        color: var(--text-color-primary);
-        margin: 0 0 var(--spacing-small) 0;
-        padding-bottom: var(--spacing-small);
-        border-bottom: 1px solid var(--divider-color);
-    }
-    h3 {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: var(--text-color-secondary);
-        margin: var(--spacing-medium) 0 var(--spacing-small) 0;
-    }
-
-    .form-row { display: flex; flex-wrap: wrap; gap: var(--spacing-small); margin-bottom: var(--spacing-small); }
-    .form-group { flex: 1 1 250px; }
-    label {
-        display: block;
-        margin-bottom: var(--spacing-xsmall);
-        font-weight: 500;
-        color: var(--text-color-secondary);
-        font-size: 0.9rem;
-    }
-    .required-label::after { content: " *"; color: var(--danger-color); }
-    input, textarea, select {
-        width: 100%;
-        padding: var(--spacing-small);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        font-family: inherit;
-        font-size: 1rem;
-        color: var(--text-color-primary);
-        background-color: var(--background-color);
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    input:focus, textarea:focus, select:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 1px var(--primary-color);
-    }
-    textarea { resize: vertical; }
-    .passenger-container { display: flex; flex-direction: column; gap: var(--spacing-small); margin-bottom: var(--spacing-medium); }
-    .passenger-row { display: flex; gap: var(--spacing-small); align-items: center; }
-    .passenger-row input { flex-grow: 1; }
-
-    /* Boutons d'action génériques */
-    .action-button {
-        padding: var(--spacing-xsmall) var(--spacing-small);
-        border-radius: 18px;
-        border: none;
-        cursor: pointer;
-        font-weight: 500;
-        text-transform: uppercase;
-        font-size: 0.875rem;
-        transition: box-shadow 0.2s ease-in-out, background-color 0.2s;
-    }
-    .action-button.primary {
-        background-color: var(--primary-color);
-        color: var(--on-primary-color);
-        box-shadow: var(--shadow-dp1);
-    }
-    .action-button.primary:hover {
-        box-shadow: var(--shadow-dp2);
-    }
-    .action-button.secondary {
-        background-color: transparent;
-        color: var(--text-color-secondary);
-        border: 1px solid var(--border-color);
-    }
-    .action-button.secondary:hover {
-        background-color: rgba(0,0,0,0.04);
-    }
-
-    .action-buttons { display: flex; gap: var(--spacing-small); justify-content: flex-end; margin-top: var(--spacing-medium); flex-wrap: wrap; }
-    .add-passenger-btn, .remove-passenger-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        color: var(--on-primary-color);
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-        border: none;
-        cursor: pointer;
-        transition: filter 0.2s;
-    }
-    .add-passenger-btn:hover, .remove-passenger-btn:hover {
-        filter: brightness(0.9);
-    }
-    .add-passenger-btn { background-color: var(--success-color); }
-    .remove-passenger-btn { background-color: var(--danger-color); }
-
-    /* --- Table & Data Display --- */
-    .table-container { overflow-x: auto; }
-    #table-section table { width: 100%; border-collapse: collapse; }
-    thead th {
-        padding: var(--spacing-small);
-        text-align: left;
-        color: var(--text-color-secondary);
-        font-weight: 500;
-        font-size: 0.9rem;
-        border-bottom: 1px solid var(--divider-color);
-        white-space: nowrap;
-    }
-    tbody td {
-        padding: var(--spacing-small);
-        text-align: left;
-        border-bottom: 1px solid var(--divider-color);
-        vertical-align: middle;
-    }
-    td[data-label="Passagers"], td[data-label="Commentaire"] {
-        white-space: normal;
-        min-width: 200px;
-    }
-    tbody tr:hover { background-color: rgba(0,0,0,0.04); }
-    .empty-message { text-align: center; padding: 30px; color: var(--text-color-medium); font-style: italic; } .empty-message i { margin-right: 8px; }
-    .error-message { color: var(--danger-color); font-weight: bold; }
-
-    .filters { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; padding: 15px; background-color: #e8e8e8; border-radius: var(--border-radius); }
-    .filter-group { display: flex; align-items: center; gap: 10px; flex: 1 1 20px; }
-    .filter-group label { margin-bottom: 0; white-space: nowrap; font-weight: 100; color: var(--text-color-dark); }
-    .filter-group select, .filter-group input {
-        margin-bottom: 0;
-        padding: 10px 12px; /* Updated padding for filter inputs */
-        flex-grow: 1;
-        min-width: 100px;
-        border: none; /* Removed all borders initially */
-        border-bottom: 1px solid var(--md-sys-color-outline); /* Standard underline */
-        border-radius: var(--border-radius-small) var(--border-radius-small) 0 0; /* Rounded top corners */
-        background-color: var(--md-sys-color-surface-variant); /* Light fill color for filter inputs */
-        font-family: inherit;
-        font-size: 0.95rem; /* Slightly smaller for filters */
-        color: var(--md-sys-color-on-surface);
-    }
-    .filter-group select:focus, .filter-group input:focus {
-        border-bottom: 2px solid var(--md-sys-color-primary);
-        box-shadow: none; /* Removed old input-focus-shadow */
-        background-color: var(--md-sys-color-surface);
-        padding-bottom: 9px; /* Adjust for border */
-    }
-    #reset-filters {
-        background-color: transparent;
-        color: var(--md-sys-color-primary);
-        border: 1px solid var(--md-sys-color-outline);
-        padding: 8px 16px;
-        border-radius: var(--border-radius-pill);
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: background-color 0.2s, border-color 0.2s;
-        white-space: nowrap;
-        font-weight: 500;
-        font-family: inherit;
-    }
-    #reset-filters:hover:not(:disabled) {
-        background-color: var(--primary-color-light-transparent);
-        border-color: var(--md-sys-color-primary);
-    }
-    #reset-filters i { margin-right: 5px; }
-
-    .loading-spinner { text-align: center; padding: 30px; } .loading-spinner i { font-size: 2rem; color: var(--primary-color); animation: spin 1s infinite linear; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 16px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        margin: 2px;
-        line-height: 1.4;
-    }
-    .badge-passenger {
-        background-color: var(--primary-color-light);
-        color: var(--primary-color-dark);
-    }
-    .action-col { display: flex; gap: 6px; justify-content: center; white-space: nowrap; }
-
-    .btn-edit, .btn-delete {
-        padding: 6px 12px;
-        border: none;
-        border-radius: var(--border-radius-pill);
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: background-color 0.2s, opacity 0.2s;
-        line-height: 1;
-        font-weight: 500;
-        font-family: inherit;
-    }
-    .btn-edit i, .btn-delete i { vertical-align: middle; }
-    .btn-edit {
-        background-color: var(--md-sys-color-tertiary-container);
-        color: var(--md-sys-color-on-tertiary-container);
-    }
-    .btn-delete {
-        background-color: var(--md-sys-color-error-container);
-        color: var(--md-sys-color-on-error-container);
-    }
-    .btn-edit:hover:not(:disabled) {
-        background-color: color-mix(in srgb, var(--md-sys-color-tertiary-container), black 10%);
-    }
-    .btn-delete:hover:not(:disabled) {
-        background-color: color-mix(in srgb, var(--md-sys-color-error-container), black 10%);
-    }
-
-    .notification {
-        position: fixed;
-        /* Default to top-right for desktop, will be overridden for mobile */
-        top: 20px;
-        right: 20px;
-        background-color: var(--md-sys-color-inverse-surface);
-        color: var(--md-sys-color-on-inverse-surface);
-        padding: 10px 16px; /* Updated padding */
-        border-radius: var(--border-radius-medium); /* Updated border-radius */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Updated shadow */
-        z-index: 1050;
-        transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
-        transform: translateY(-150%); /* Default off-screen for top position */
-        opacity: 0;
-        min-width: 250px; /* Keep for desktop, will be overridden for mobile */
-        text-align: left; /* Updated text-align */
-        font-weight: 400; /* Updated font-weight */
-        font-size: 0.9rem; /* Updated font-size */
-    }
-    .notification.show {
-        transform: translateY(0); /* Default show for top position */
-        opacity: 1;
-    }
-    .notification.error {
-        background-color: var(--md-sys-color-error-container);
-        color: var(--md-sys-color-on-error-container);
-    }
-
-    /* === CALENDAR STYLES === */
-    .calendar-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px; /* Increased margin */
-        padding-bottom: 12px; /* Increased padding */
-        border-bottom: 1px solid var(--md-sys-color-outline);
-    }
-    .calendar-controls button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.5rem; /* Larger icon for easier tap */
-        color: var(--md-sys-color-primary);
-        padding: 8px 12px; /* Sufficient padding */
-        transition: color 0.2s, background-color 0.2s;
-        border-radius: var(--border-radius-pill);
-    }
-    .calendar-controls button:hover {
-        color: var(--md-sys-color-on-primary-container);
-        background-color: var(--md-sys-color-primary-container);
-    }
-    .calendar-controls h3 { /* #current-month-year */
-        margin: 0;
-        font-size: 1.2rem; /* Adjusted font size */
-        color: var(--md-sys-color-on-surface);
-        text-align: center;
-        flex-grow: 1;
-        font-weight: 500;
-    }
-
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 4px; /* Maintained gap */
-        border: none; /* Removed grid border */
-        padding: 0; /* Removed grid padding, day cells will handle spacing */
-        background-color: var(--md-sys-color-surface-variant);
-        border-radius: var(--border-radius-large); /* Updated border-radius */
-        overflow: hidden; /* To ensure child border-radius is clipped */
-    }
-
-    .calendar-day {
-        border: 1px solid var(--md-sys-color-surface-variant); /* Subtle border between days */
-        padding: 4px; /* Reduced padding, rely on min-height and content alignment */
-        padding-top: 20px; /* Existing padding-top for day number */
-        min-height: 70px; /* Adjusted min-height for mobile */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        cursor: pointer;
-        transition: background-color 0.2s, border-color 0.2s;
-        position: relative;
-        background-color: var(--md-sys-color-surface);
-        font-size: 0.8rem;
-        overflow: hidden;
-        border-radius: var(--border-radius-medium); /* Updated border-radius */
-    }
-    .calendar-day.selected {
-        background-color: var(--md-sys-color-primary-container);
-        border-color: var(--md-sys-color-primary); /* Use border-color for selected */
-        box-shadow: none; /* Removed inset shadow */
-    }
-    .calendar-day.selected .day-number,
-    .calendar-day.selected .trip-summary {
-        color: var(--md-sys-color-on-primary-container);
-    }
-
-    .calendar-day.driver-1 { background-color: var(--driver-color-1-bg); }
-    .calendar-day.driver-1:hover:not(.empty):not(.weekday-header):not(.selected) { background-color: color-mix(in srgb, var(--driver-color-1-bg), black 8%); }
-    .calendar-day.driver-2 { background-color: var(--driver-color-2-bg); }
-    .calendar-day.driver-2:hover:not(.empty):not(.weekday-header):not(.selected) { background-color: color-mix(in srgb, var(--driver-color-2-bg), black 8%); }
-    .calendar-day.driver-3 { background-color: var(--driver-color-3-bg); }
-    .calendar-day.driver-3:hover:not(.empty):not(.weekday-header):not(.selected) { background-color: color-mix(in srgb, var(--driver-color-3-bg), black 8%); }
-
-    .calendar-day:hover:not(.empty):not(.weekday-header):not(.selected) {
-        background-color: color-mix(in srgb, var(--md-sys-color-surface), black 5%);
-    }
-    .calendar-day.today {
-        border: 2px solid var(--md-sys-color-primary);
-        font-weight: bold;
-        padding: 3px; /* Adjust padding to account for border */
-        padding-top: 19px;
-    }
-    .calendar-day.today .day-number {
-        color: var(--md-sys-color-primary);
-        font-weight: 700;
-    }
-    .calendar-day .day-number {
-        font-size: 0.7rem;
-        font-weight: 500;
-        color: var(--md-sys-color-on-surface-variant);
-        position: absolute;
-        top: 5px;
-        right: 7px;
-        padding: 2px 4px;
-        z-index: 1;
-        background-color: transparent; /* Removed background for cleaner look */
-        border-radius: 3px;
-    }
-    .calendar-day.today .day-number {
-        background-color: transparent;
-        box-shadow: none;
-    }
-    .calendar-day .trip-summary {
-        font-size: 0.65rem; /* Slightly increased */
-        line-height: 1.3;
-        padding: 2px 5px; /* Adjusted padding */
-        border-radius: var(--border-radius-small);
-        margin-top: 4px;
-        display: inline-block;
-        max-width: 98%;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: 500;
-        background-color: transparent;
-        color: var(--md-sys-color-on-surface-variant);
-    }
-    .calendar-day.driver-1 .trip-summary { color: var(--driver-color-1-text); }
-    .calendar-day.driver-2 .trip-summary { color: var(--driver-color-2-text); }
-    .calendar-day.driver-3 .trip-summary { color: var(--driver-color-3-text); }
-
-    .calendar-day.empty {
-        background-color: var(--md-sys-color-surface-variant);
-        cursor: default;
-        border: none;
-    }
-    .calendar-day.empty:hover { background-color: var(--md-sys-color-surface-variant); }
-
-    .calendar-day.weekday-header {
-        font-weight: 500; /* Adjusted weight */
-        text-align: center;
-        padding: 8px 5px;
-        background-color: transparent;
-        border: none;
-        min-height: auto;
-        cursor: default;
-        color: var(--md-sys-color-on-surface-variant);
-        font-size: 0.7rem;
-        position: relative;
-        padding-top: 8px;
-        border-radius: 0;
-    }
-    .calendar-day.weekday-header:hover { background-color: transparent; }
-
-    #trips-for-day {
-        background-color: var(--md-sys-color-surface-variant);
-        padding: var(--border-radius-large); /* Consistent padding */
-        border-radius: var(--border-radius-large);
-        box-shadow: none; /* Removed inset shadow */
-        margin-top: 20px;
-        border: none; /* Removed border */
-        min-height: 100px;
-    }
-    #trips-for-day h4 {
-        color: var(--md-sys-color-on-surface-variant);
-        margin: 0 0 12px 0; /* Updated margin */
-        padding-bottom: 8px; /* Existing */
-        border-bottom: 1px solid var(--md-sys-color-outline); /* Updated color */
-        font-size: 1.1rem; /* Existing */
-        font-weight: 500; /* Existing */
-    }
-    #trips-for-day ul { list-style: none; padding: 0; }
-    #trips-for-day li {
-        background-color: var(--surface-color);
-        border-radius: var(--border-radius);
-        padding: var(--spacing-small);
-        margin-bottom: var(--spacing-small);
-        border-left: 4px solid var(--divider-color);
-        font-size: 0.9rem;
-        line-height: 1.5;
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: var(--spacing-xsmall) var(--spacing-small);
-        align-items: center;
-    }
-    #trips-for-day li.driver-1 { border-left-color: var(--driver-color-1-text); }
-    #trips-for-day li.driver-2 { border-left-color: var(--driver-color-2-text); }
-    #trips-for-day li.driver-3 { border-left-color: var(--driver-color-3-text); }
-    #trips-for-day li strong {
-        font-weight: 500;
-        color: var(--text-color-secondary);
-    }
-    #trips-for-day li .driver-name { /* Keep specific driver name styling if needed */
-        font-weight: 500;
-    }
-    #trips-for-day li .driver-name.driver-1 { color: var(--driver-color-1-text); }
-    #trips-for-day li .driver-name.driver-2 { color: var(--driver-color-2-text); }
-    #trips-for-day li .driver-name.driver-3 { color: var(--driver-color-3-text); }
-
-    #trips-for-day li:last-child { margin-bottom: 0; }  /* Removed border-bottom: none; */
-    #trips-for-day p {
-        color: var(--md-sys-color-on-surface-variant);
-        font-style: italic;
-        text-align: center;
-        padding: 20px 0;
-    }
-    /* === END CALENDAR STYLES === */
-
-    .tab-bar {
-        display: none; /* Hidden by default, shown in mobile media query */
-    }
-    .tab-bar::-webkit-scrollbar { display: none; }
-
-    .tab-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-family: inherit;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-        padding: var(--spacing-xsmall) 0;
-        gap: 4px;
-        color: var(--text-color-secondary);
-        transition: color 0.2s ease-in-out;
-    }
-    .tab-button i {
-        font-size: 1.5rem; /* 24px */
-    }
-    .tab-button span {
-        font-size: 0.75rem; /* 12px */
-        font-weight: 500;
-    }
-    .tab-button.active {
-        color: var(--primary-color);
-    }
-
-    .calendar-controls {
-        display: flex;
-        align-items: center;
-        margin-bottom: var(--spacing-small);
-    }
-    .calendar-controls button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--text-color-secondary);
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s ease-in-out;
-    }
-    .calendar-controls button:hover {
-        background-color: rgba(0,0,0,0.05);
-    }
-    .calendar-controls h3 {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 500;
-        text-align: center;
-        flex-grow: 1;
-    }
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 2px;
-    }
-    .calendar-day {
-        position: relative;
-        padding: var(--spacing-xsmall);
-        padding-top: calc(4 * var(--spacing-unit)); /* 32px, to make space for the day number */
-        min-height: 90px; /* Reduced height as per user request */
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* Center trip summaries */
-        justify-content: flex-start;
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
-        border-radius: var(--border-radius);
-    }
-    .calendar-day:not(.empty):not(.weekday-header):hover {
-        background-color: rgba(0,0,0,0.04);
-    }
-    .calendar-day.selected {
-        background-color: var(--primary-color-light) !important;
-    }
-    .calendar-day .day-number {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        font-size: 0.75rem;
-        color: var(--text-color-secondary);
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-    }
-    .calendar-day.today .day-number {
-        background-color: var(--primary-color);
-        color: var(--on-primary-color);
-        font-weight: 500;
-    }
-    .calendar-day.selected .day-number {
-        color: var(--primary-color-dark);
-    }
-
-    .calendar-day.weekday-header {
-        min-height: auto;
-        justify-content: center;
-        align-items: center;
-        color: var(--text-color-secondary);
-        font-weight: 500;
-        font-size: 0.8rem;
-        padding-bottom: 0;
-        cursor: default;
-    }
-    .calendar-day.empty {
-        background-color: #fafafa;
-        cursor: default;
-    }
-    .calendar-day .trip-summary {
-        font-size: 0.75rem;
-        line-height: 1.4;
-        padding: 2px 8px;
-        border-radius: 12px;
-        margin-top: 4px;
-        display: inline-block;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: 500;
-    }
-    .calendar-day.driver-1 .trip-summary { background-color: var(--driver-color-1-bg); color: var(--driver-color-1-text); }
-    .calendar-day.driver-2 .trip-summary { background-color: var(--driver-color-2-bg); color: var(--driver-color-2-text); }
-    .calendar-day.driver-3 .trip-summary { background-color: var(--driver-color-3-bg); color: var(--driver-color-3-text); }
-
-    #trips-for-day {
-        padding: var(--spacing-small);
-    }
-    #trips-for-day h4 {
-        font-size: 1.1rem;
-        font-weight: 500;
-        margin-bottom: var(--spacing-small);
-    }
-    #trips-for-day ul { list-style: none; padding: 0; }
-    #trips-for-day li {
-        position: relative;
-        display: flex;
-        align-items: center;
-        padding: var(--spacing-xsmall) 0;
-        padding-left: calc(2 * var(--spacing-unit)); /* 16px */
-        border-bottom: 1px solid var(--divider-color);
-        font-size: 0.9rem;
-    }
-    #trips-for-day li:last-child { border-bottom: none; }
-    #trips-for-day li::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        flex-shrink: 0;
-    }
-    #trips-for-day li.driver-1::before { background-color: var(--driver-color-1-text); }
-    #trips-for-day li.driver-2::before { background-color: var(--driver-color-2-text); }
-    #trips-for-day li.driver-3::before { background-color: var(--driver-color-3-text); }
-    #trips-for-day li .driver-name { font-weight: 500; }
-    #trips-for-day li .passengers-info { margin-left: auto; color: var(--text-color-secondary); }
-    #trips-for-day p {
-        color: var(--text-color-secondary);
-        text-align: center;
-        padding: var(--spacing-medium) 0;
-    }
-
-    #stats-section {
-        background-color: var(--background-color);
-        box-shadow: none;
-    }
-    /* Styles for Scenario-based Suggestions */
-    .scenario-cards-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--spacing-small);
-    }
-    .scenario-card {
-        background-color: var(--surface-color);
-        border: 1px solid var(--divider-color);
-        border-radius: var(--border-radius);
-        padding: var(--spacing-small);
-        box-shadow: var(--shadow-dp1);
-        transition: box-shadow 0.2s ease-in-out;
-    }
-    .scenario-card:hover {
-        box-shadow: var(--shadow-dp3);
-    }
-    .scenario-card .scenario-header {
-        font-weight: 500;
-        color: var(--text-color-secondary);
-        padding-bottom: var(--spacing-xsmall);
-        border-bottom: 1px solid var(--divider-color);
-        margin-bottom: var(--spacing-small);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-xsmall);
-    }
-    .scenario-card .scenario-header i {
-        color: var(--text-color-secondary);
-    }
-    .scenario-card .suggestion-body {
-        text-align: center;
-        padding: var(--spacing-small) 0;
-    }
-    .scenario-card .suggestion-label {
-        font-size: 0.8rem;
-        color: var(--text-color-secondary);
-        margin-bottom: var(--spacing-xsmall);
-    }
-    .scenario-card .suggested-driver {
-        font-size: 1.75rem;
-        font-weight: 500;
-        color: var(--primary-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--spacing-xsmall);
-        margin-bottom: var(--spacing-xsmall);
-    }
-    .scenario-card .suggested-driver i {
-        color: var(--accent-color);
-    }
-    .scenario-card .suggestion-reason {
-        font-size: 0.9rem;
-        color: var(--text-color-secondary);
-    }
-    .scenario-card .no-history {
-        color: var(--text-color-secondary);
-        padding: var(--spacing-medium) 0;
-    }
-
-    @media (max-width: 767px) { /* --- MOBILE STYLES --- */
-        body {
-            /* Add padding to the bottom to make space for the fixed tab bar */
-            /* 56px is the standard Material Design height for bottom navigation */
-            padding-bottom: calc(7 * var(--spacing-unit));
+    <style>
+        :root {
+            /* Palette Premium */
+            --primary: #4F46E5; /* Indigo vibrant */
+            --primary-soft: #E0E7FF;
+            --surface: #F2F6FF; /* Gris bleuté très clair */
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            
+            /* Couleurs Conducteurs (Plus douces) */
+            --c-steve: #DCFCE7; --t-steve: #166534; /* Vert Émeraude */
+            --c-marc: #FFEDD5; --t-marc: #9A3412;  /* Orange Brûlé */
+            --c-julien: #F3E8FF; --t-julien: #6B21A8; /* Violet Royal */
+            
+            --radius: 20px;
+            --nav-h: 85px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+            --shadow-float: 0 12px 30px rgba(79, 70, 229, 0.15);
         }
 
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            background-color: var(--surface-color);
-            border-top: 1px solid var(--divider-color);
-            z-index: 1000;
-            box-shadow: var(--shadow-dp1);
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--surface); color: var(--text-main); margin: 0; padding-bottom: 110px; overflow-x: hidden; }
+        .hidden { display: none !important; }
+
+        /* --- HEADER GLASSED --- */
+        header {
+            padding: 15px 24px; position: sticky; top: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(242, 246, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+        .brand { font-weight: 800; color: var(--primary); font-size: 1.4rem; display: flex; align-items: center; gap: 8px; }
+        .brand i { font-size: 1.1rem; background: var(--primary); color: white; padding: 6px; border-radius: 10px; }
+        
+        .user-pill { 
+            background: white; padding: 4px 4px 4px 12px; border-radius: 30px; 
+            font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 10px;
+            box-shadow: var(--shadow-sm); color: var(--text-main);
+        }
+        .user-pill img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .logout-btn { color: #EF4444; background: #FEE2E2; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; font-size: 0.8rem; }
+
+        /* --- AUTH SCREEN --- */
+        .auth-container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: white; }
+        .hero-icon { font-size: 4rem; color: var(--primary); margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(79, 70, 229, 0.3)); }
+        .auth-btn { 
+            background: #1E1E1E; color: white; border: none; padding: 16px 32px; 
+            border-radius: 50px; font-weight: 600; font-size: 1rem; 
+            display: flex; align-items: center; gap: 12px; cursor: pointer; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: transform 0.2s;
+        }
+        .auth-btn:active { transform: scale(0.95); }
+
+        /* --- SECTIONS & ANIMATIONS --- */
+        .section { display: none; padding: 20px 20px; max-width: 600px; margin: 0 auto; }
+        .section.active { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { font-size: 1.5rem; font-weight: 800; margin: 10px 0 20px 0; color: var(--text-main); letter-spacing: -0.5px; }
+
+        /* --- CARDS --- */
+        .card { 
+            background: var(--card-bg); padding: 20px; border-radius: 24px; margin-bottom: 16px; 
+            box-shadow: var(--shadow-sm); position: relative; overflow: hidden; transition: transform 0.2s;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        .card:active { transform: scale(0.98); }
+        /* Indicateur latéral coloré */
+        .card::before { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
+        .card.steve::before { background: var(--t-steve); }
+        .card.marc::before { background: var(--t-marc); }
+        .card.julien::before { background: var(--t-julien); }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .date-text { font-weight: 700; font-size: 1.05rem; }
+        .relative-time { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-left: 8px; }
+        
+        .driver-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .steve .driver-badge { background: var(--c-steve); color: var(--t-steve); }
+        .marc .driver-badge { background: var(--c-marc); color: var(--t-marc); }
+        .julien .driver-badge { background: var(--c-julien); color: var(--t-julien); }
+
+        .passengers-row { display: flex; gap: 8px; align-items: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; }
+        .p-icon { color: #CBD5E1; }
+        
+        .actions-row { 
+            display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; padding-top: 12px; 
+            border-top: 1px dashed #F1F5F9; 
+        }
+        .act-btn { color: var(--text-muted); background: #F8FAFC; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .act-btn:hover { background: var(--primary-soft); color: var(--primary); }
+        .act-btn.del:hover { background: #FEE2E2; color: #EF4444; }
+
+        /* --- ROTATION UI --- */
+        .presence-panel { 
+            background: white; padding: 24px; border-radius: 28px; text-align: center; 
+            box-shadow: var(--shadow-md); margin-bottom: 24px;
+        }
+        .label-sm { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; display: block; }
+        
+        .avatars-grid { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .avatar-toggle { 
+            width: 60px; height: 60px; border-radius: 50%; background: #F8FAFC; 
+            border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; color: var(--text-muted);
+        }
+        .avatar-toggle span { font-size: 0.7rem; font-weight: 700; margin-top: 2px; }
+        .avatar-toggle i { font-size: 1.2rem; }
+        
+        /* Active States */
+        .avatar-toggle.active { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); color: white; border:none; }
+        .avatar-toggle[data-name="Steve"].active { background: #10B981; }
+        .avatar-toggle[data-name="Marc"].active { background: #F97316; }
+        .avatar-toggle[data-name="Julien"].active { background: #8B5CF6; }
+        
+        /* Checkmark badge */
+        .avatar-toggle.active::after {
+            content: '✓'; position: absolute; top: -2px; right: -2px; background: white; color: black;
+            width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .main-content {
-            padding: var(--spacing-small);
+        .winner-card {
+            background: linear-gradient(135deg, #4F46E5, #818CF8); color: white;
+            padding: 24px; border-radius: 24px; text-align: center; margin-top: 20px;
+            box-shadow: var(--shadow-float); animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; overflow: hidden;
+        }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        .winner-bg-icon { position: absolute; top: -20px; right: -20px; font-size: 8rem; opacity: 0.1; transform: rotate(15deg); }
+        .winner-name { font-size: 2.2rem; font-weight: 800; margin: 10px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .winner-sub { font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px; }
+        .copy-btn {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;
+            padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+        }
+        .copy-btn:active { background: rgba(255,255,255,0.4); }
+
+        .loser-row {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;
+            background: white; margin-top: 8px; border-radius: 16px; font-size: 0.9rem; color: var(--text-muted);
         }
 
-        .content > section {
-             padding: var(--spacing-small);
-        }
+        /* --- FORMS --- */
+        .form-group { margin-bottom: 20px; }
+        .input-wrap { position: relative; background: white; border-radius: 16px; border: 1px solid #E2E8F0; transition: 0.2s; }
+        .input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+        .input-field { width: 100%; padding: 16px; border: none; background: transparent; font-size: 1rem; outline: none; border-radius: 16px; }
+        .input-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; }
 
-        /* Hide desktop-only elements */
-        #table-section thead {
-            display: none;
-        }
+        .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .chip { background: var(--primary-soft); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; animation: fadeIn 0.2s; }
+        .chip i { cursor: pointer; opacity: 0.6; } .chip i:hover { opacity: 1; }
 
-        /* Mobile card layout for table rows */
-        #table-section tr {
-            display: block;
-            margin-bottom: var(--spacing-small);
-            border: 1px solid var(--divider-color);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-small);
-            background-color: var(--surface-color);
+        .btn-primary {
+            width: 100%; padding: 18px; background: var(--primary); color: white; border: none;
+            border-radius: 20px; font-weight: 700; font-size: 1rem; margin-top: 10px;
+            box-shadow: var(--shadow-float); cursor: pointer; transition: transform 0.2s;
         }
+        .btn-primary:active { transform: scale(0.98); }
 
-        #table-section td {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-align: right;
-            padding: var(--spacing-xsmall) 0;
-            border-bottom: 1px solid var(--divider-color);
+        /* --- NAV --- */
+        .bottom-nav {
+            position: fixed; bottom: 20px; left: 20px; right: 20px; height: 70px;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex; justify-content: space-around; align-items: center; z-index: 900; border: 1px solid rgba(255,255,255,0.5);
         }
-        #table-section td:last-child {
-            border-bottom: none;
+        .nav-item {
+            border: none; background: none; color: #94A3B8; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; width: 60px; height: 60px; border-radius: 50%; transition: 0.3s; cursor: pointer;
         }
+        .nav-item i { font-size: 1.3rem; transition: 0.3s; }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); transform: translateY(-5px); }
 
-        #table-section td::before {
-            content: attr(data-label);
-            font-weight: 500;
-            color: var(--text-color-secondary);
-            text-align: left;
-        }
+        /* --- CALENDAR --- */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
+        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; font-size: 0.85rem; background: white; color: var(--text-muted); border: 1px solid transparent; }
+        .day-cell.today { border-color: var(--primary); color: var(--primary); font-weight: 800; }
+        
+        .dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
+        .dot.steve { background: #10B981; } .dot.marc { background: #F97316; } .dot.julien { background: #8B5CF6; }
 
-        /* Adjustments for smaller text on mobile */
-        h2 { font-size: 1.75rem; }
-        h3 { font-size: 1.25rem; }
-    }
+        /* Toast */
+        #toast { 
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #1E293B; color: white; padding: 12px 24px; border-radius: 50px;
+            font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
 
-    @media (min-width: 768px) { /* --- DESKTOP STYLES --- */
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: var(--spacing-large);
-        }
-
-        /* Desktop uses a tab bar under the header */
-        .tab-bar {
-            display: flex;
-            border-bottom: 1px solid var(--divider-color);
-            margin-bottom: var(--spacing-medium);
-        }
-
-        .tab-button {
-            flex-direction: row;
-            flex: 0 1 auto; /* Let them size to content */
-            padding: 0 var(--spacing-small);
-            height: calc(6 * var(--spacing-unit)); /* 48px */
-            min-width: 90px;
-            color: var(--text-color-secondary);
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s ease-in-out;
-        }
-        .tab-button:hover {
-            color: var(--primary-color);
-        }
-        .tab-button.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-        .tab-button i {
-            font-size: 1.25rem;
-            margin-right: var(--spacing-xsmall);
-        }
-        #table-section table { display: table; } #table-section thead { display: table-header-group; } #table-section tbody tr { display: table-row; background-color: inherit; border: none; box-shadow: none; padding: 0; }
-        #table-section tbody tr:nth-child(even) { background-color: #fcfcfc; } #table-section td { display: table-cell; text-align: left; padding: 12px 15px; white-space: nowrap; } #table-section td::before { display: none; }
-        td[data-label="Conducteur"].driver-1 { color: var(--driver-color-1-text); font-weight: 600;} td[data-label="Conducteur"].driver-2 { color: var(--driver-color-2-text); font-weight: 600;} td[data-label="Conducteur"].driver-3 { color: var(--driver-color-3-text); font-weight: 600;}
-        .form-row { flex-direction: row; } .form-group { flex: 1; } .action-buttons { justify-content: flex-end; } .action-buttons button { width: auto; }
-        #calendar-section .calendar-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; } #calendar-section .calendar-grid, #trips-for-day { margin-top: 0; }
-        #stats-content { display: block; }
-        .driver-cards-container { display: none; } /* Cacher les cartes sur desktop */
-        .driver-overview-table { display: table; } /* Afficher le tableau sur desktop */
-    }
-</style>
+    </style>
 </head>
 <body>
-    <header>
-        <div class="app-title"><span class="app-logo"><i class="fas fa-car"></i></span>Co-Pilot</div>
-        <div class="profile-info" id="profile-info"></div>
-    </header>
 
-    <div class="auth-container" id="auth-container">
-        <div class="auth-message">Veuillez vous connecter pour accéder à l'application</div>
-        <button id="login-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">Se connecter avec Google</button>
+    <div id="toast"><i class="fas fa-check-circle" style="color:#4ADE80"></i> <span>Notification</span></div>
+
+    <div id="view-auth" class="auth-container">
+        <div class="hero-icon"><i class="fas fa-rocket"></i></div>
+        <h1 style="margin:0; font-size:2rem; font-weight:800; color:#1E293B;">Co-Pilot</h1>
+        <p style="color:#64748B; margin: 10px 0 40px 0;">L'assistant de covoiturage intelligent.</p>
+        <button id="btn-login" class="auth-btn"><i class="fab fa-google"></i> Connexion Google</button>
     </div>
 
-    <div class="main-content">
-        <div class="content" id="content" style="display: none;">
+    <div id="view-app" class="hidden">
+        <header>
+            <div class="brand"><i class="fas fa-car"></i> Co-Pilot</div>
+            <div id="user-pill" class="user-pill"></div>
+        </header>
 
-            <section id="form-section">
-                <h2 id="form-title">Ajouter un Trajet</h2>
-                <form id="ajout-trajet-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="date" class="required-label">Date du trajet</label>
-                            <input type="date" id="date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="conducteur" class="required-label">Conducteur</label>
-                            <input type="text" id="conducteur" list="conducteur-list" placeholder="Nom du conducteur" required>
-                            <datalist id="conducteur-list"></datalist>
-                        </div>
-                    </div>
-                    <label>Passagers</label>
-                    <div class="passenger-container" id="passenger-container">
-                        <div class="passenger-row">
-                            <input type="text" class="passenger-input" list="passager-list" placeholder="Nom du passager (optionnel)">
-                            <button type="button" class="add-passenger-btn" id="add-passenger-btn" title="Ajouter un passager"><i class="fas fa-plus"></i></button>
-                        </div>
-                    </div>
-                    <datalist id="passager-list"></datalist>
-                    <div class="form-group">
-                        <label for="commentaire">Commentaire (optionnel)</label>
-                        <textarea id="commentaire" rows="3" placeholder="Informations complémentaires..."></textarea>
-                    </div>
-                    <input type="hidden" id="edit-id" value="">
-                    <div class="action-buttons">
-                        <button type="button" id="cancel-edit">Annuler Modification</button>
-                        <button type="reset">Réinitialiser</button>
-                        <button type="submit" id="submit-btn">Enregistrer</button>
-                    </div>
-                </form>
-            </section>
-
-            <section id="table-section">
-                <h2 id="table-title">Mes Trajets</h2>
-                <div class="filters">
-                    <div class="filter-group"><label for="filter-month">Mois:</label><select id="filter-month"><option value="">Tous</option><option value="01">Jan</option><option value="02">Fév</option><option value="03">Mar</option><option value="04">Avr</option><option value="05">Mai</option><option value="06">Juin</option><option value="07">Juil</option><option value="08">Août</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Déc</option></select></div>
-                    <div class="filter-group"><label for="filter-year">Année:</label><select id="filter-year"><option value="">Toutes</option></select></div>
-                    <div class="filter-group"><label for="filter-person">Personne:</label><input type="text" id="filter-person" placeholder="Nom..."></div>
-                    <div class="filter-group"><button id="reset-filters"><i class="fas fa-sync-alt"></i> Reset</button></div>
+        <section id="tab-list" class="section active">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <h2>Historique</h2>
+                <select id="filter-year" style="border:none; background:transparent; font-weight:700; color:var(--primary); font-size:1rem; outline:none; cursor:pointer; margin-bottom:20px;"></select>
+            </div>
+            <div id="list-content">
+                <div style="text-align:center; padding:40px;">
+                    <i class="fas fa-circle-notch fa-spin" style="color:var(--primary); font-size:2rem;"></i>
                 </div>
-                <div id="liste-trajets" class="table-container"><div class="loading-spinner"><i class="fas fa-spinner"></i></div></div>
-            </section>
+            </div>
+        </section>
 
-            <section id="calendar-section">
-                <h2>Calendrier des Trajets</h2>
-                <div class="calendar-container">
-                    <div>
-                        <div class="calendar-controls">
-                            <button id="prev-month-btn" title="Mois précédent"><i class="fas fa-chevron-left"></i></button>
-                            <h3 id="current-month-year"></h3>
-                            <button id="next-month-btn" title="Mois suivant"><i class="fas fa-chevron-right"></i></button>
-                        </div>
-                        <div class="calendar-grid" id="calendar-grid"></div>
+        <section id="tab-add" class="section">
+            <h2>Nouveau Trajet</h2>
+            <form id="form-trip">
+                <input type="hidden" id="inp-id">
+                
+                <div class="form-group">
+                    <div class="input-wrap">
+                        <input type="date" id="inp-date" class="input-field" required>
                     </div>
-                    <div id="trips-for-day"><p>Cliquez sur un jour pour voir les détails.</p></div>
-                 </div>
-            </section>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-wrap">
+                        <input type="text" id="inp-driver" class="input-field" list="dl-drivers" placeholder="Conducteur" required autocomplete="off">
+                        <i class="fas fa-steering-wheel input-icon"></i>
+                    </div>
+                    <datalist id="dl-drivers"></datalist>
+                </div>
 
-            <section id="stats-section">
-                <h2 id="stats-title">Suggestions par Scénario</h2>
-                <div id="stats-content"><div class="loading-spinner"><i class="fas fa-spinner"></i></div></div>
-            </section>
-        </div>
+                <div class="form-group">
+                    <div class="input-wrap">
+                        <input type="text" id="inp-pass" class="input-field" list="dl-pass" placeholder="Ajouter un passager..." autocomplete="off">
+                        <button type="button" id="btn-plus" style="position:absolute; right:8px; top:8px; bottom:8px; border:none; background:var(--primary); color:white; width:40px; border-radius:12px; cursor:pointer;"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div id="chips" class="chips-container"></div>
+                    <datalist id="dl-pass"></datalist>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrap">
+                        <input type="text" id="inp-note" class="input-field" placeholder="Petite note (optionnel)">
+                        <i class="fas fa-comment-alt input-icon"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Enregistrer le trajet</button>
+                <button type="button" id="btn-cancel" style="width:100%; padding:15px; background:none; border:none; color:#94A3B8; font-weight:600; display:none;">Annuler modification</button>
+            </form>
+        </section>
+
+        <section id="tab-cal" class="section">
+            <div style="background:white; padding:20px; border-radius:24px; box-shadow:var(--shadow-sm);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <button id="prev-m" style="background:var(--surface); border:none; width:36px; height:36px; border-radius:50%; color:var(--text-main); cursor:pointer;"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="cal-title" style="margin:0; font-size:1.1rem;"></h3>
+                    <button id="next-m" style="background:var(--surface); border:none; width:36px; height:36px; border-radius:50%; color:var(--text-main); cursor:pointer;"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem; color:var(--text-muted); font-weight:700; margin-bottom:5px;">
+                    <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>
+                </div>
+                <div id="cal-grid" class="cal-grid"></div>
+            </div>
+            <div id="cal-detail" style="margin-top:20px; animation:fadeIn 0.3s;"></div>
+        </section>
+
+        <section id="tab-stats" class="section">
+            <h2>C'est à qui ?</h2>
+            
+            <div class="presence-panel">
+                <span class="label-sm">Qui est présent ?</span>
+                <div class="avatars-grid">
+                    <div class="avatar-toggle active" data-name="Steve" onclick="toggle('Steve')">
+                        <img src="https://ui-avatars.com/api/?name=Steve&background=random&color=fff" style="width:100%; height:100%; border-radius:50%; opacity:0.8;">
+                    </div>
+                    <div class="avatar-toggle active" data-name="Marc" onclick="toggle('Marc')">
+                        <img src="https://ui-avatars.com/api/?name=Marc&background=random&color=fff" style="width:100%; height:100%; border-radius:50%; opacity:0.8;">
+                    </div>
+                    <div class="avatar-toggle active" data-name="Julien" onclick="toggle('Julien')">
+                        <img src="https://ui-avatars.com/api/?name=Julien&background=random&color=fff" style="width:100%; height:100%; border-radius:50%; opacity:0.8;">
+                    </div>
+                </div>
+            </div>
+
+            <div id="rotation-out"></div>
+            
+            <div style="margin-top:30px; text-align:center; opacity:0.5;">
+                <img src="https://cdn-icons-png.flaticon.com/512/748/748137.png" width="40" style="filter:grayscale(100%);">
+                <p style="font-size:0.75rem; margin-top:5px;">Calcul basé sur l'historique exact du groupe.</p>
+            </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="nav('tab-list')"><i class="fas fa-stream"></i></button>
+            <button class="nav-item" onclick="nav('tab-add')"><i class="fas fa-plus"></i></button>
+            <button class="nav-item" onclick="nav('tab-cal')"><i class="fas fa-calendar-alt"></i></button>
+            <button class="nav-item" onclick="nav('tab-stats')"><i class="fas fa-sync-alt"></i></button>
+        </nav>
     </div>
-
-    <div class="tab-bar" id="tab-bar">
-        <button class="tab-button" data-view="form" id="tab-form"><i class="fas fa-plus-circle"></i><span>Ajouter</span></button>
-        <button class="tab-button active" data-view="my-trips" id="tab-my-trips"><i class="fas fa-user"></i><span>Mes Trajets</span></button>
-        <button class="tab-button" data-view="all-trips" id="tab-all-trips"><i class="fas fa-car-side"></i><span>Tous Trajets</span></button>
-        <button class="tab-button" data-view="calendar" id="tab-calendar"><i class="fas fa-calendar-alt"></i><span>Calendrier</span></button>
-        <button class="tab-button" data-view="stats" id="tab-stats"><i class="fas fa-tachometer-alt"></i><span>Aperçu</span></button>
-    </div>
-
-    <div id="notification" class="notification"></div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBvBspabP-KImQ-Jb7cQsqRpYB-YN5Gr8A", // Remplacer par votre clé API
-            authDomain: "suivi-covoiturage.firebaseapp.com", projectId: "suivi-covoiturage",
-            storageBucket: "suivi-covoiturage.firebasestorage.app", messagingSenderId: "975520826037",
-            appId: "1:975520826037:web:13295fd2bf3a1835e734fc", measurementId: "G-NNKVVTNV4D"
+        // --- CONFIGURATION ---
+        const cfg = {
+            apiKey: "AIzaSyBvBspabP-KImQ-Jb7cQsqRpYB-YN5Gr8A", 
+            authDomain: "suivi-covoiturage.firebaseapp.com", 
+            projectId: "suivi-covoiturage", 
+            storageBucket: "suivi-covoiturage.firebasestorage.app", 
+            messagingSenderId: "975520826037", 
+            appId: "1:975520826037:web:13295fd2bf3a1835e734fc"
         };
-
-        try { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); }
-        catch (e) { console.error("Firebase init error:", e); }
+        if(!firebase.apps.length) firebase.initializeApp(cfg);
         const db = firebase.firestore();
         const auth = firebase.auth();
+        const COL = 'trajets';
 
-        const COLLECTION_TRAJETS = 'trajets';
-        const EDITOR_EMAIL = 'steve.duquesne@gmail.com';
-
-        const GROUP_MEMBERS = ["Steve", "Marc", "Julien"]; // <= CONFIGUREZ CECI
-
-        const driverColorClasses = {
-             [GROUP_MEMBERS[0]]: "driver-1",
-             [GROUP_MEMBERS[1]]: "driver-2",
-             [GROUP_MEMBERS[2]]: "driver-3",
-        };
-        function getDriverClass(driverName) {
-            const cleanName = driverName?.trim();
-            return cleanName && driverColorClasses[cleanName] ? driverColorClasses[cleanName] : '';
-        }
-
-        const dom = { /* ... (Références DOM identiques à la version précédente) ... */
-            authContainer: document.getElementById('auth-container'), contentContainer: document.getElementById('content'),
-            profileInfo: document.getElementById('profile-info'), loginBtn: document.getElementById('login-btn'),
-            formSection: document.getElementById('form-section'), formTitle: document.getElementById('form-title'),
-            form: document.getElementById('ajout-trajet-form'), dateInput: document.getElementById('date'),
-            conducteurInput: document.getElementById('conducteur'), conducteurList: document.getElementById('conducteur-list'),
-            passengerContainer: document.getElementById('passenger-container'), passagerList: document.getElementById('passager-list'),
-            addPassengerBtn: document.getElementById('add-passenger-btn'), commentaireInput: document.getElementById('commentaire'),
-            editIdInput: document.getElementById('edit-id'), cancelEditBtn: document.getElementById('cancel-edit'),
-            submitBtn: document.getElementById('submit-btn'), listeTrajetsDiv: document.getElementById('liste-trajets'),
-            filterMonth: document.getElementById('filter-month'), filterYear: document.getElementById('filter-year'),
-            filterPerson: document.getElementById('filter-person'), resetFiltersBtn: document.getElementById('reset-filters'),
-            tabBar: document.getElementById('tab-bar'), tabButtons: document.querySelectorAll('.tab-button'),
-            tableSection: document.getElementById('table-section'), tableTitle: document.getElementById('table-title'),
-            calendarSection: document.getElementById('calendar-section'), prevMonthBtn: document.getElementById('prev-month-btn'),
-            currentMonthYear: document.getElementById('current-month-year'), nextMonthBtn: document.getElementById('next-month-btn'),
-            calendarGrid: document.getElementById('calendar-grid'), tripsForDayDiv: document.getElementById('trips-for-day'),
-            statsSection: document.getElementById('stats-section'), statsContent: document.getElementById('stats-content'),
-            statsTitle: document.getElementById('stats-title'),
-            notificationDiv: document.getElementById('notification')
+        // --- STATE & UTILS ---
+        let trips = [], buffer = [], calD = new Date(), sel = ["Steve", "Marc", "Julien"];
+        const clean = s => s ? s.trim().toLowerCase() : '';
+        const capitalize = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
+        const getSig = arr => arr.map(clean).sort().join(',');
+        
+        // Helper Date Relative
+        const timeAgo = (date) => {
+            const diff = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
+            if (diff === 0) return "Aujourd'hui";
+            if (diff === 1) return "Hier";
+            if (diff < 7) return `Il y a ${diff} jours`;
+            return date.toLocaleDateString('fr-FR', {day:'numeric', month:'short'});
         };
 
-            // ... (previous firebase config and dom refs) ...
-
-    let currentView = 'my-trips', trajetsUnsubscribe = null, currentCalendarDate = new Date();
-    let calendarTrips = [],
-        allTripsDataCache = null; // <-- Cache for all trip data
-    let isFetchingStats = false,
-        notificationTimeoutId = null;
-
-    // --- New function to fetch ALL trips (for suggestions and stats) ---
-    async function fetchAllTripsData() {
-        if (allTripsDataCache) {
-            console.log("Using cached trip data for suggestions/stats.");
-            return allTripsDataCache;
-        }
-        console.log("Fetching all trip data for suggestions/stats...");
-        try {
-            // Fetch all documents. Consider adding limits or date ranges if the collection grows very large.
-            // For suggestions and stats calculation over potentially all history, we need everything.
-            const snapshot = await db.collection(COLLECTION_TRAJETS).orderBy("date", "asc").get();
-            allTripsDataCache = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            console.log(`Fetched ${allTripsDataCache.length} trips.`);
-            return allTripsDataCache;
-        } catch (error) {
-            console.error("Error fetching all trip data:", error);
-            // Optionally show a notification, but don't block other functionality
-            // showNotification("Erreur chargement données pour suggestions/aperçu.", true);
-            allTripsDataCache = null; // Ensure cache is cleared on error
-            return null;
-        }
-    }
-
-    // --- New function to update suggestion datalists based on fetched data ---
-    async function updateSuggestionDatalists() {
-        const allTrips = await fetchAllTripsData();
-        if (!allTrips) {
-            // If fetch failed, just populate with group members as a fallback
-             const memberOptionsHTML = GROUP_MEMBERS.map(member => `<option value="${member}"></option>`).join('');
-             dom.conducteurList.innerHTML = memberOptionsHTML;
-             dom.passagerList.innerHTML = memberOptionsHTML;
-             return;
-        }
-
-        const frequencyMap = {};
-
-        allTrips.forEach(trip => {
-            // Count drivers
-            const driver = trip.conducteur?.trim();
-            if (driver && driver !== '') {
-                frequencyMap[driver] = (frequencyMap[driver] || 0) + 1;
-            }
-            // Count passengers
-            trip.passagers?.forEach(p => {
-                const passenger = String(p)?.trim();
-                if (passenger && passenger !== '') {
-                    frequencyMap[passenger] = (frequencyMap[passenger] || 0) + 1;
-                }
-            });
-        });
-
-        // Get unique names, sort by frequency (desc) then name (asc)
-        const sortedNames = Object.keys(frequencyMap)
-            .filter(name => name && name !== '') // Filter out empty names
-            .sort((a, b) => {
-                // Sort by frequency descending
-                if (frequencyMap[b] !== frequencyMap[a]) {
-                    return frequencyMap[b] - frequencyMap[a];
-                }
-                // Sort by name ascending for ties
-                return a.localeCompare(b);
-            });
-
-        // Create final list: GROUP_MEMBERS first, then sorted frequent names (unique)
-        const uniqueSuggestionNames = [...GROUP_MEMBERS];
-        sortedNames.forEach(name => {
-            if (!uniqueSuggestionNames.includes(name)) {
-                uniqueSuggestionNames.push(name);
-            }
-        });
-
-        // Limit the list size if necessary (optional, but good practice for very large datasets)
-        // const limitedSuggestionNames = uniqueSuggestionNames.slice(0, 100); // e.g., limit to 100 names
-
-        const optionsHTML = uniqueSuggestionNames.map(name => `<option value="${name}"></option>`).join('');
-
-        // Update both datalists
-        dom.conducteurList.innerHTML = optionsHTML;
-        dom.passagerList.innerHTML = optionsHTML;
-
-        console.log("Suggestion datalists updated.");
-    }
-
-    function showNotification(message, isError = false) { /* ... (existing function) ... */
-        dom.notificationDiv.textContent = message;
-        dom.notificationDiv.className = `notification ${isError ? 'error' : ''} show`;
-        if (notificationTimeoutId) clearTimeout(notificationTimeoutId);
-        notificationTimeoutId = setTimeout(() => { dom.notificationDiv.classList.remove('show'); notificationTimeoutId = null; }, 3500);
-    }
-
-    function populateYearFilter() { /* ... (existing function) ... */
-        const currentYear = new Date().getFullYear();
-        while (dom.filterYear.options.length > 1) { dom.filterYear.remove(1); }
-        dom.filterYear.add(new Option(currentYear + 1, currentYear + 1), 1);
-        dom.filterYear.add(new Option(currentYear, currentYear), 1);
-        for (let year = currentYear - 1; year >= currentYear - 5; year--) { dom.filterYear.add(new Option(year, year)); }
-        dom.filterYear.value = currentYear; if (!dom.filterYear.value) { dom.filterYear.value = ''; }
-    }
-
-    // --- Modify addPassengerField to ensure datalist attribute is set ---
-    function addPassengerField(value = '') {
-        const row = document.createElement('div');
-        row.className = 'passenger-row';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'passenger-input';
-        input.placeholder = 'Nom du passager (optionnel)';
-        input.value = value;
-        input.setAttribute('list', 'passager-list'); // <-- Ensure datalist attribute is set
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'remove-passenger-btn';
-        removeBtn.innerHTML = '<i class="fas fa-minus"></i>';
-        removeBtn.title = "Supprimer passager";
-        row.append(input, removeBtn);
-        dom.passengerContainer.appendChild(row);
-        updatePassengerRemoveButtonsState();
-    }
-
-    function updatePassengerRemoveButtonsState() { /* ... (existing function) ... */
-        const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
-        rows.forEach((row) => {
-            const btn = row.querySelector('.remove-passenger-btn');
-            if (btn) btn.style.display = (rows.length > 1) ? 'flex' : 'none';
-        });
-        if (rows.length === 0) {
-            addPassengerField();
-        }
-    }
-
-    // --- Modify resetForm to not pre-fill conductor ---
-    function resetForm() {
-        dom.form.reset();
-        dom.editIdInput.value = '';
-        dom.formTitle.textContent = 'Ajouter un Trajet';
-        dom.submitBtn.innerHTML = 'Enregistrer'; // Reset button text/icon
-        dom.cancelEditBtn.style.display = 'none';
-
-        // Clear existing passenger rows except the first one
-        const rows = dom.passengerContainer.querySelectorAll('.passenger-row');
-        rows.forEach((row, index) => {
-            if (index > 0) {
-                row.remove();
+        // --- AUTH ---
+        auth.onAuthStateChanged(u => {
+            if(u) {
+                document.getElementById('view-auth').classList.add('hidden');
+                document.getElementById('view-app').classList.remove('hidden');
+                const init = u.displayName ? u.displayName.charAt(0) : 'U';
+                const photo = u.photoURL || `https://ui-avatars.com/api/?name=${init}&background=4F46E5&color=fff`;
+                document.getElementById('user-pill').innerHTML = 
+                    `<img src="${photo}"> <span>${u.displayName.split(' ')[0]}</span> <div class="logout-btn" onclick="auth.signOut()"><i class="fas fa-power-off"></i></div>`;
+                initApp();
             } else {
-                row.querySelector('.passenger-input').value = ''; // Clear the first one
+                document.getElementById('view-auth').classList.remove('hidden');
+                document.getElementById('view-app').classList.add('hidden');
             }
         });
+        document.getElementById('btn-login').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
 
-        // Ensure there's at least one passenger field
-        if (dom.passengerContainer.querySelectorAll('.passenger-row').length === 0) {
-             addPassengerField(); // Add an empty one if none exist
-        }
-        updatePassengerRemoveButtonsState();
-
-        // Set default date to today
-        dom.dateInput.value = new Date().toISOString().split('T')[0];
-
-        // DO NOT pre-fill conductor here. Datalist provides suggestions.
-    }
-
-    // --- Modify switchView to call updateSuggestionDatalists for the form view ---
-    function switchView(view) {
-        console.log("Switching view to:", view);
-        if (!['form', 'my-trips', 'all-trips', 'calendar', 'stats'].includes(view)) {
-            console.warn("Invalid view:", view);
-            return;
-        }
-        currentView = view;
-        dom.tabButtons.forEach(button => button.classList.toggle('active', button.dataset.view === view));
-        dom.contentContainer.querySelectorAll('section').forEach(section => {
-            section.classList.remove('active');
-            section.style.display = 'none';
-        });
-        let activeSection;
-        switch (view) {
-            case 'form':
-                activeSection = dom.formSection;
-                if (!dom.editIdInput.value) resetForm(); // Reset form only if adding a new trip
-                updateSuggestionDatalists(); // <-- Update suggestions when entering form view
-                break;
-            case 'my-trips':
-            case 'all-trips':
-                activeSection = dom.tableSection;
-                subscribeToTrajets(); // Subscribe to real-time updates for table view
-                break;
-            case 'calendar':
-                activeSection = dom.calendarSection;
-                fetchCalendarTrips(currentCalendarDate); // Fetch data for calendar
-                break;
-            case 'stats':
-                activeSection = dom.statsSection;
-                fetchAndRenderDriverOverview(); // Fetch data for stats view
-                break;
-        }
-        if (activeSection) {
-            activeSection.classList.add('active');
-            activeSection.style.display = 'block';
-        } else {
-            console.error(`No section for view: ${view}`);
-        }
-        // Unsubscribe from previous view's real-time listeners if any
-        if (trajetsUnsubscribe && (view !== 'my-trips' && view !== 'all-trips')) {
-            try {
-                trajetsUnsubscribe();
-            } catch (e) {
-                console.warn(e);
-            }
-            trajetsUnsubscribe = null;
-        }
-    }
-
-    function subscribeToTrajets() { /* ... (existing function) ... */
-        if (currentView !== 'my-trips' && currentView !== 'all-trips') return;
-        if (trajetsUnsubscribe) { try { trajetsUnsubscribe(); } catch (e) { console.warn(e); } trajetsUnsubscribe = null; }
-        dom.listeTrajetsDiv.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
-        let query = db.collection(COLLECTION_TRAJETS);
-        const month = dom.filterMonth.value, year = dom.filterYear.value;
-        if (month && year) {
-            const y = parseInt(year), m = parseInt(month); const start = `${y}-${String(m).padStart(2,'0')}-01`;
-            const nextM = new Date(y, m, 1); const end = `${nextM.getFullYear()}-${String(nextM.getMonth() + 1).padStart(2,'0')}-01`;
-            query = query.where('date', '>=', start).where('date', '<', end);
-        } else if (year) { const y = parseInt(year); query = query.where('date', '>=', `${y}-01-01`).where('date', '<', `${y + 1}-01-01`); }
-        query = query.orderBy('date', 'desc');
-        trajetsUnsubscribe = query.onSnapshot((snapshot) => {
-            let trajets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            const term = dom.filterPerson.value.trim().toLowerCase();
-            if (term) { trajets = trajets.filter(t => (t.conducteur?.toLowerCase().includes(term)) || (t.passagers?.some(p => String(p)?.toLowerCase().includes(term))) ); }
-            if (currentView === 'my-trips') {
-                const user = auth.currentUser;
-                if (user?.uid) { const userName = user.displayName?.trim(); trajets = trajets.filter(t => t.createdByUid === user.uid || (userName && t.passagers?.some(p => p?.trim() === userName)) || (userName && t.conducteur?.trim() === userName) );
-                } else { trajets = []; }
-            }
-            renderTrajetsTable(trajets);
-            // We don't invalidate allTripsDataCache here, as table view only uses a filtered subset.
-            // Cache is only invalidated on add/edit/delete.
-        }, (error) => {
-            console.error("Firestore listener error (Table):", error);
-            const msg = error.code === 'permission-denied' ? "permissions" : error.message;
-            dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-${error.code === 'permission-denied' ? 'lock' : 'exclamation-triangle'}"></i> Erreur: ${msg}</div>`;
-            trajetsUnsubscribe = null;
-        });
-    }
-
-    function renderTrajetsTable(trajets) { /* ... (existing function) ... */
-        if (!Array.isArray(trajets)) {
-            dom.listeTrajetsDiv.innerHTML = `<div class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur: Données invalides.</div>`;
-            return;
-        }
-        if (trajets.length === 0) {
-            let msg = "Aucun trajet ne correspond aux filtres.";
-            if (!dom.filterMonth.value && !dom.filterYear.value && !dom.filterPerson.value) {
-                msg = currentView === 'my-trips' ? "Vous n'avez pas encore participé à des trajets." : "Aucun trajet enregistré.";
-            }
-            dom.listeTrajetsDiv.innerHTML = `<div class="empty-message"><i class="fas fa-info-circle"></i> ${msg}</div>`;
-            return;
-        }
-        let html = `<table><thead><tr><th>Date</th><th>Conducteur</th><th>Passagers</th><th>Commentaire</th><th>Ajouté par</th><th>Actions</th></tr></thead><tbody>`;
-        const isEditor = auth.currentUser?.email === EDITOR_EMAIL;
-        trajets.forEach(t => {
-            let dateStr = 'N/A';
-            if (t.date) {
-                try {
-                    dateStr = new Date(t.date + 'T00:00:00Z').toLocaleDateString('fr-FR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                    });
-                } catch (e) {
-                    dateStr = t.date;
-                    console.warn("Date parse error:", e);
-                }
-            }
-            const actions = isEditor ? `<button class="btn-edit" data-id="${t.id}" title="Modifier"><i class="fas fa-edit"></i></button><button class="btn-delete" data-id="${t.id}" title="Supprimer"><i class="fas fa-trash"></i></button>` : '';
-            const passengers = t.passagers ?.filter(p => p ?.trim()).map(p => `<span class="badge badge-passenger">${String(p).trim()}</span>`).join(' ') || '<em>Aucun</em>';
-            const driverName = t.conducteur?.trim() || '?';
-            const driverClass = getDriverClass(driverName);
-            html += `<tr class="${driverClass}"><td data-label="Date">${dateStr}</td><td data-label="Conducteur" class="${driverClass}">${driverName}</td><td data-label="Passagers">${passengers}</td><td data-label="Commentaire">${t.commentaire || '-'}</td><td data-label="Ajouté par">${t.createdByName || t.lastModifiedByName || 'Inconnu'}</td><td data-label="Actions" class="action-col">${actions}</td></tr>`;
-        });
-        html += `</tbody></table>`;
-        dom.listeTrajetsDiv.innerHTML = html;
-    }
-
-    function handleTableActions(event) { /* ... (existing function) ... */
-        const button = event.target.closest('button[data-id]');
-        if (!button) return;
-        const id = button.dataset.id;
-        // Check permissions before allowing action
-        if (auth.currentUser?.email !== EDITOR_EMAIL) {
-             showNotification("Vous n'avez pas les permissions pour cette action.", true);
-             return;
-        }
-        if (!id) { showNotification("ID du trajet manquant.", true); return; }
-
-        if (button.classList.contains('btn-edit')) editTrajet(id);
-        else if (button.classList.contains('btn-delete')) deleteTrajet(id);
-    }
-
-    function renderCalendar(date) { /* ... (existing function) ... */
-        const y = date.getFullYear(),
-            m = date.getMonth();
-        const first = new Date(y, m, 1),
-            last = new Date(y, m + 1, 0);
-        const days = last.getDate();
-        const startDay = (first.getDay() === 0) ? 6 : first.getDay() - 1;
-        const weeks = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-        dom.currentMonthYear.textContent = date.toLocaleDateString('fr-FR', {
-            month: 'long',
-            year: 'numeric'
-        });
-        let gridHTML = weeks.map(d => `<div class="calendar-day weekday-header">${d}</div>`).join('');
-        gridHTML += '<div class="calendar-day empty"></div>'.repeat(startDay);
-        const today = new Date();
-        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-        for (let d = 1; d <= days; d++) {
-            const dateStr = `${y}-${String(m + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const tripsForDay = calendarTrips.filter(t => t.date === dateStr);
-            let summary = '',
-                driverClassForDay = '';
-            if (tripsForDay.length > 0) {
-                const driverName = tripsForDay[0].conducteur?.trim() || '?';
-                driverClassForDay = getDriverClass(driverName);
-                const totalPeople = tripsForDay.reduce((sum, t) => sum + 1 + (t.passagers ?.filter(p => p ?.trim()).length || 0), 0);
-                summary = `<div class="trip-summary" title="${tripsForDay.length} Trajet(s), ${totalPeople} pers.">${tripsForDay.length}T (${totalPeople}p)</div>`;
-            }
-            gridHTML += `<div class="calendar-day ${driverClassForDay} ${tripsForDay.length ? 'has-trip':''} ${dateStr === todayStr ? 'today':''}" data-date="${dateStr}"><span class="day-number">${d}</span>${summary}</div>`;
-        }
-        gridHTML += '<div class="calendar-day empty"></div>'.repeat((7 - (startDay + days) % 7) % 7);
-        dom.calendarGrid.innerHTML = gridHTML;
-        if (!dom.calendarGrid.dataset.listenerAttached) {
-            dom.calendarGrid.addEventListener('click', handleCalendarClick);
-            dom.calendarGrid.dataset.listenerAttached = 'true';
-        }
-    }
-
-    function handleCalendarClick(event) { /* ... (existing function) ... */
-        const dayElement = event.target.closest('.calendar-day[data-date]');
-        if (dayElement && !dayElement.classList.contains('empty') && !dayElement.classList.contains('weekday-header')) {
-            const dateStr = dayElement.dataset.date;
-            displayTripsForDay(dateStr);
-            dom.calendarGrid.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-            dayElement.classList.add('selected');
-        }
-    }
-
-    function displayTripsForDay(dateStr) { /* ... (existing function) ... */
-        const trips = calendarTrips.filter(t => t.date === dateStr);
-        let detailsHTML = '';
-        try {
-            // Use Date.UTC to avoid timezone issues with YYYY-MM-DD strings
-            const dateObj = new Date(Date.UTC(...dateStr.split('-').map((p,i) => i===1 ? Number(p)-1 : Number(p))));
-            detailsHTML = `<h4>Détails pour le ${dateObj.toLocaleDateString('fr-FR', {weekday: 'long', day:'numeric', month:'long', year: 'numeric', timeZone: 'UTC'})}</h4>`;
-        } catch (e) {
-            detailsHTML = `<h4>Détails pour ${dateStr}</h4>`;
-        }
-        if (trips.length > 0) {
-            detailsHTML += '<ul>';
-            trips.forEach(t => {
-                const passengersStr = t.passagers?.filter(p => p?.trim()).join(', ') || '<em>Aucun</em>';
-                const driverName = t.conducteur?.trim() || '?';
-                const driverClass = getDriverClass(driverName);
-                detailsHTML += `<li class="${driverClass}">
-                    <strong>Conducteur:</strong><span class="driver-name ${driverClass}">${driverName}</span>
-                    <strong>Passagers:</strong><span>${passengersStr}</span>
-                </li>`;
+        // --- INIT DATA ---
+        function initApp() {
+            // Populate Year
+            const y = new Date().getFullYear();
+            const sel = document.getElementById('filter-year');
+            sel.innerHTML = '';
+            [y, y-1].forEach(yr => { let o=document.createElement('option'); o.value=yr; o.text=yr; sel.appendChild(o); });
+            
+            db.collection(COL).orderBy('date', 'desc').onSnapshot(s => {
+                trips = s.docs.map(d => ({id:d.id, ...d.data()}));
+                renderList(); renderCal(); calcRot(); updateDL();
             });
-            detailsHTML += '</ul>';
-        } else {
-            detailsHTML += '<p>Aucun trajet enregistré pour ce jour.</p>';
-        }
-        dom.tripsForDayDiv.innerHTML = detailsHTML;
-    }
-
-    function goToPreviousMonth() {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-        fetchCalendarTrips(currentCalendarDate);
-    }
-
-    function goToNextMonth() {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-        fetchCalendarTrips(currentCalendarDate);
-    }
-
-    async function fetchCalendarTrips(date) { /* ... (existing function) ... */
-        dom.calendarGrid.innerHTML = `<div class="loading-spinner" style="grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>`;
-        dom.tripsForDayDiv.innerHTML = '<p>Chargement des trajets...</p>';
-        const y = date.getFullYear(),
-            m = date.getMonth();
-        const start = `${y}-${String(m + 1).padStart(2,'0')}-01`;
-        const end = `${y}-${String(m + 1).padStart(2,'0')}-${String(new Date(y, m + 1, 0).getDate()).padStart(2,'0')}`;
-        try {
-            const snapshot = await db.collection(COLLECTION_TRAJETS).where('date', '>=', start).where('date', '<=', end).orderBy('date', 'asc').get();
-            calendarTrips = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            renderCalendar(currentCalendarDate);
-            dom.tripsForDayDiv.innerHTML = '<p>Cliquez sur un jour pour voir les détails.</p>';
-        } catch (error) {
-            console.error("Error fetching calendar trips:", error);
-            showNotification("Erreur chargement calendrier.", true);
-            dom.calendarGrid.innerHTML = `<div class="empty-message error-message" style="grid-column: 1 / -1;"><i class="fas fa-exclamation-triangle"></i> Erreur.</div>`;
-            calendarTrips = [];
-            dom.tripsForDayDiv.innerHTML = '<p>Erreur chargement détails.</p>';
-        }
-    }
-
-    // --- New fetchAndRenderDriverOverview for Scenario-Based Suggestions ---
-    async function fetchAndRenderDriverOverview() {
-        if (isFetchingStats) return;
-        isFetchingStats = true;
-        dom.statsContent.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Chargement des scénarios...</div>`;
-
-        try {
-            const allTrips = await fetchAllTripsData();
-            if (!allTrips) {
-                dom.statsContent.innerHTML = `<p class="empty-message"><i class="fas fa-info-circle"></i> Aucune donnée de trajet pour générer des suggestions.</p>`;
-                isFetchingStats = false;
-                return;
-            }
-
-            // Helper to generate combinations
-            function getCombinations(array, size) {
-                const result = [];
-                function combination(index, currentCombo) {
-                    if (currentCombo.length === size) {
-                        result.push([...currentCombo]);
-                        return;
-                    }
-                    if (index === array.length) return;
-                    currentCombo.push(array[index]);
-                    combination(index + 1, currentCombo);
-                    currentCombo.pop();
-                    combination(index + 1, currentCombo);
-                }
-                combination(0, []);
-                return result;
-            }
-
-            const scenarios = [
-                ...getCombinations(GROUP_MEMBERS, 3),
-                ...getCombinations(GROUP_MEMBERS, 2)
-            ].sort((a, b) => b.length - a.length || a.join(',').localeCompare(b.join(','))); // Sort by size then name
-
-            let cardsHtml = '<div class="scenario-cards-container">';
-            const todayStr = new Date().toISOString().split('T')[0];
-
-            for (const group of scenarios) {
-                const groupSet = new Set(group);
-
-                // Filter trips relevant to this specific group
-                const groupTrips = allTrips.filter(trip => {
-                    const participants = new Set([trip.conducteur?.trim(), ...(trip.passagers?.map(p => String(p)?.trim()) || [])]);
-                    if (participants.size !== groupSet.size) return false;
-                    return [...participants].every(p => groupSet.has(p));
-                });
-
-                const groupStats = {};
-                group.forEach(member => {
-                    groupStats[member] = { name: member, timesDriven: 0, lastDriveDate: null, futureDrives: 0 };
-                });
-
-                groupTrips.forEach(trip => {
-                    const driver = trip.conducteur?.trim();
-                    if (group.includes(driver)) {
-                        groupStats[driver].timesDriven++;
-                        if (trip.date > (groupStats[driver].lastDriveDate || '')) {
-                             groupStats[driver].lastDriveDate = trip.date;
-                        }
-                        if (trip.date > todayStr) {
-                             groupStats[driver].futureDrives++;
-                        }
-                    }
-                });
-
-                let suggestedDriver = null;
-                let reason = "Aucun historique de trajet pour ce groupe.";
-
-                if (groupTrips.length > 0) {
-                    // Sort members to find the best candidate
-                    const sortedGroupMembers = [...group].sort((a, b) => {
-                        const sA = groupStats[a], sB = groupStats[b];
-                        // 1. Prioritize members with no future drives scheduled
-                        if (sA.futureDrives !== sB.futureDrives) return sA.futureDrives - sB.futureDrives;
-                        // 2. Prioritize member who drove longest ago (or never)
-                        const dateA = sA.lastDriveDate ? new Date(sA.lastDriveDate) : new Date(0);
-                        const dateB = sB.lastDriveDate ? new Date(sB.lastDriveDate) : new Date(0);
-                        if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
-                        // 3. Prioritize member who drove the least number of times
-                        if (sA.timesDriven !== sB.timesDriven) return sA.timesDriven - sB.timesDriven;
-                        // 4. Alphabetical tie-breaker
-                        return a.localeCompare(b);
-                    });
-
-                    suggestedDriver = sortedGroupMembers[0];
-                    const stats = groupStats[suggestedDriver];
-                    if (stats.futureDrives > 0) {
-                        reason = `Conduira ${stats.futureDrives}x prochainement mais reste le meilleur choix.`;
-                    } else if (stats.lastDriveDate) {
-                        const daysAgo = Math.round((new Date(todayStr) - new Date(stats.lastDriveDate)) / (1000 * 60 * 60 * 24));
-                        reason = `Dernière conduite il y a ${daysAgo} jour(s).`;
-                    } else {
-                        reason = `N'a jamais conduit dans cette configuration.`;
-                    }
-                } else {
-                    // If no history, suggest the first person alphabetically
-                    suggestedDriver = [...group].sort()[0];
-                }
-
-                cardsHtml += `
-                    <div class="scenario-card">
-                        <div class="scenario-header">
-                            <i class="fas fa-users"></i>
-                            <span>Groupe : ${group.join(', ')}</span>
-                        </div>`;
-
-                if (suggestedDriver) {
-                    cardsHtml += `
-                        <div class="suggestion-body">
-                            <div class="suggestion-label">Conducteur Suggéré</div>
-                            <div class="suggested-driver">
-                                <i class="fas fa-star"></i>
-                                <span>${suggestedDriver}</span>
-                            </div>
-                            <div class="suggestion-reason">${reason}</div>
-                        </div>`;
-                } else {
-                    cardsHtml += `<div class="no-history">Aucune suggestion disponible.</div>`;
-                }
-                cardsHtml += `</div>`;
-            }
-            cardsHtml += '</div>';
-            dom.statsContent.innerHTML = cardsHtml;
-
-        } catch (error) {
-            console.error("Error in fetchAndRenderDriverOverview:", error);
-            const msg = error.code === 'permission-denied' ? "permissions." : error.message;
-            dom.statsContent.innerHTML = `<p class="empty-message error-message"><i class="fas fa-exclamation-triangle"></i> Erreur: ${msg}</p>`;
-        } finally {
-            isFetchingStats = false;
-        }
-    }
-
-
-    function editTrajet(trajetId) { /* ... (existing function) ... */
-        if (!trajetId) {
-            showNotification("ID manquant.", true);
-            return;
-        }
-        // Ensure datalists are updated before filling the form for editing
-        updateSuggestionDatalists().then(() => {
-             switchView('form');
-             db.collection(COLLECTION_TRAJETS).doc(trajetId).get()
-                 .then(doc => {
-                     if (!doc.exists) {
-                         showNotification("Trajet non trouvé.", true);
-                         resetForm();
-                         return;
-                     }
-                     const t = doc.data();
-                     dom.dateInput.value = t.date || '';
-                     dom.conducteurInput.value = t.conducteur || '';
-                     dom.commentaireInput.value = t.commentaire || '';
-                     dom.editIdInput.value = trajetId;
-                     dom.formTitle.textContent = 'Modifier le Trajet';
-                     dom.submitBtn.innerHTML = '<i class="fas fa-save"></i> Mettre à jour';
-                     dom.cancelEditBtn.style.display = 'inline-flex';
-                     dom.passengerContainer.querySelectorAll('.passenger-row').forEach(row => row.remove());
-                     if (t.passagers?.filter(p => p?.trim()).length > 0) {
-                         t.passagers.filter(p => p?.trim()).forEach(p => addPassengerField(String(p).trim()));
-                     }
-                     // Ensure there's at least one empty passenger field even if passagers array was empty
-                     if (dom.passengerContainer.querySelectorAll('.passenger-row').length === 0) {
-                         addPassengerField();
-                     }
-                     updatePassengerRemoveButtonsState();
-                 }).catch(error => {
-                     const msg = error.code === 'permission-denied' ? "permissions" : error.message;
-                     showNotification(`Erreur récupération: ${msg}`, true);
-                     resetForm(); // Reset form on error
-                 });
-        }).catch(error => {
-            // Handle potential error during updateSuggestionDatalists fetch
-            showNotification(`Erreur préparation formulaire: ${error.message}`, true);
-            resetForm(); // Reset form on error
-        });
-    }
-
-    // --- Modify deleteTrajet to invalidate cache after deletion ---
-    function deleteTrajet(trajetId) {
-        if (!trajetId) {
-            showNotification("ID manquant.", true);
-            return;
-        }
-        // Check permissions before attempting deletion
-        if (auth.currentUser?.email !== EDITOR_EMAIL) {
-             showNotification("Vous n'avez pas les permissions pour supprimer.", true);
-             return;
-        }
-        if (window.confirm("Supprimer ce trajet ? Cette action est irréversible.")) {
-            db.collection(COLLECTION_TRAJETS).doc(trajetId).delete()
-                .then(() => {
-                    showNotification("Trajet supprimé.");
-                    allTripsDataCache = null; // <-- Invalidate the cache
-
-                    // If the deleted trip was being edited, reset the form
-                    if (dom.editIdInput.value === trajetId) {
-                        resetForm();
-                    }
-
-                    // Re-render the current view which will refetch/resubscribe if needed
-                    if (currentView === 'calendar') { fetchCalendarTrips(currentCalendarDate); }
-                    else if (currentView === 'stats') { fetchAndRenderDriverOverview(); } // This will use updated/refetched data
-                    else if (currentView === 'my-trips' || currentView === 'all-trips') { subscribeToTrajets(); } // This will resubscribe and get updated table
-
-                    // No need to explicitly call updateSuggestionDatalists here,
-                    // it will be called if the user navigates to the form or stats tab.
-
-                }).catch(error => {
-                    const msg = error.code === 'permission-denied' ? "permissions" : error.message;
-                    showNotification(`Erreur suppression: ${msg}`, true);
-                });
-        }
-    }
-
-    // --- Modify handleFormSubmit to invalidate cache after save ---
-    function handleFormSubmit(event) {
-        event.preventDefault();
-        const date = dom.dateInput.value,
-            conducteur = dom.conducteurInput.value.trim();
-        if (!date || !conducteur || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            showNotification("Date ou conducteur manquant/invalide.", true);
-            return;
-        }
-        const commentaire = dom.commentaireInput.value.trim();
-        const passagers = Array.from(dom.passengerContainer.querySelectorAll('.passenger-input')).map(input => input.value.trim()).filter(value => value);
-        const trajetId = dom.editIdInput.value;
-        const user = auth.currentUser;
-
-        // Basic data structure
-        const data = {
-            date,
-            conducteur,
-            passagers,
-            commentaire,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        // Add user info if available
-        if (user) {
-            data.lastModifiedByUid = user.uid;
-            data.lastModifiedByName = user.displayName || user.email;
-            if (!trajetId) { // Only set created fields for new entries
-                data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                data.createdByUid = user.uid;
-                data.createdByName = user.displayName || user.email;
-            }
-        } else if (!trajetId) { // Fallback for anonymous user (shouldn't happen if auth is required)
-             data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-             data.createdByUid = 'anonymous';
-             data.createdByName = 'Anonyme';
         }
 
+        // --- 1. LIST RENDER ---
+        function renderList() {
+            const y = document.getElementById('filter-year').value;
+            let data = trips;
+            if(y) data = data.filter(t => t.date.startsWith(y));
+            
+            const box = document.getElementById('list-content');
+            if(!data.length) return box.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:40px;"><i class="fas fa-wind" style="font-size:2rem; margin-bottom:10px;"></i><br>Aucun trajet trouvé.</div>';
 
-        dom.submitBtn.disabled = true;
-        dom.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...'; // Indicate saving
+            box.innerHTML = data.map(t => {
+                const dr = clean(t.conducteur);
+                const d = new Date(t.date);
+                const isSolo = (!t.passagers || t.passagers.length === 0);
+                
+                return `
+                <div class="card ${dr}" style="opacity:${isSolo?0.7:1}">
+                    <div class="card-header">
+                        <div>
+                            <span class="date-text">${d.toLocaleDateString('fr-FR', {day:'numeric', month:'long'})}</span>
+                            <span class="relative-time">${timeAgo(d)}</span>
+                        </div>
+                        <span class="driver-badge">${t.conducteur}</span>
+                    </div>
+                    
+                    <div class="passengers-row">
+                        <i class="fas fa-user-friends p-icon"></i>
+                        ${isSolo ? 'Solo (Ne compte pas)' : t.passagers.join(', ')}
+                    </div>
+                    
+                    ${t.commentaire ? `<div style="font-size:0.85rem; color:#64748B; margin-top:10px; background:#F8FAFC; padding:8px; border-radius:8px;">"${t.commentaire}"</div>` : ''}
 
-        let promise;
-        if (trajetId) {
-            promise = db.collection(COLLECTION_TRAJETS).doc(trajetId).update(data);
-        } else {
-            promise = db.collection(COLLECTION_TRAJETS).add(data);
+                    <div class="actions-row">
+                        <div class="act-btn" onclick="edit('${t.id}')"><i class="fas fa-pencil-alt"></i></div>
+                        <div class="act-btn del" onclick="del('${t.id}')"><i class="fas fa-trash-alt"></i></div>
+                    </div>
+                </div>`;
+            }).join('');
         }
+        document.getElementById('filter-year').onchange = renderList;
 
-        promise.then(() => {
-            showNotification(trajetId ? "Trajet mis à jour !" : "Trajet ajouté !");
-            allTripsDataCache = null; // <-- Invalidate the cache as data has changed
-            resetForm(); // Reset form for next entry
-            switchView('my-trips'); // Switch to view showing the new/updated trip
-            // updateSuggestionDatalists() will be called if user returns to form
-            // fetchAndRenderDriverOverview() will refetch when stats are viewed
-        }).catch(error => {
-            const msg = error.code === 'permission-denied' ? "permissions" : error.message;
-            console.error("Error saving trajet:", error);
-            showNotification(`Erreur sauvegarde: ${msg}`, true);
-        }).finally(() => {
-            dom.submitBtn.disabled = false;
-            dom.submitBtn.innerHTML = dom.editIdInput.value ? '<i class="fas fa-save"></i> Mettre à jour' : 'Enregistrer'; // Restore button text/icon
-        });
-    }
+        // --- 2. ADD / EDIT ---
+        function renderChips() {
+            document.getElementById('chips').innerHTML = buffer.map((p,i) => 
+                `<div class="chip">${p}<i class="fas fa-times-circle" onclick="rm(${i})"></i></div>`
+            ).join('');
+        }
+        window.rm = (i) => { buffer.splice(i,1); renderChips(); };
+        
+        function addPass() {
+            const inp = document.getElementById('inp-pass');
+            // Auto-Capitalize
+            const val = capitalize(inp.value.trim());
+            if(val) { buffer.push(val); inp.value=''; renderChips(); inp.focus(); }
+        }
+        document.getElementById('btn-plus').onclick = addPass;
+        
+        // Auto capitalize driver on blur
+        document.getElementById('inp-driver').onblur = (e) => { e.target.value = capitalize(e.target.value); };
 
-    function debounce(func, wait) { /* ... (existing function) ... */
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func.apply(this, args);
+        document.getElementById('form-trip').onsubmit = (e) => {
+            e.preventDefault();
+            addPass(); // Add pending text
+            
+            if(buffer.length === 0 && !confirm("Confirmer trajet SOLO ? (Ne comptera pas dans la rotation)")) return;
+
+            const id = document.getElementById('inp-id').value;
+            const data = {
+                date: document.getElementById('inp-date').value,
+                conducteur: capitalize(document.getElementById('inp-driver').value),
+                passagers: buffer,
+                commentaire: document.getElementById('inp-note').value,
+                updatedAt: new Date()
             };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
+
+            if(id) db.collection(COL).doc(id).update(data);
+            else { data.createdAt = new Date(); data.createdBy = auth.currentUser.uid; db.collection(COL).add(data); }
+            
+            resetForm(); nav('tab-list'); toast("Trajet sauvegardé avec succès !");
         };
-    }
 
-    dom.loginBtn.addEventListener('click', () => { /* ... (existing function) ... */
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(error => {
-            let msg = `Erreur connexion Google: ${error.message}`;
-            if (['auth/popup-closed-by-user', 'auth/cancelled-popup-request', 'auth/account-exists-with-different-credential', 'auth/auth-domain-config-error'].includes(error.code)) {
-                msg = {
-                    'auth/popup-closed-by-user': "Fenêtre de connexion fermée.",
-                    'auth/cancelled-popup-request': "Autre fenêtre de connexion ouverte.",
-                    'auth/account-exists-with-different-credential': "Compte existant avec autre mode de connexion.",
-                    'auth/auth-domain-config-error': "Configuration Firebase Auth invalide."
-                }[error.code];
-            }
-            showNotification(msg, true);
-        });
-    });
-
-    // --- Modify auth.onAuthStateChanged to trigger suggestion list update on login ---
-    auth.onAuthStateChanged(user => {
-        const loggedIn = !!user;
-        dom.authContainer.style.display = loggedIn ? 'none' : 'block';
-        dom.contentContainer.style.display = loggedIn ? 'block' : 'none';
-        dom.tabBar.style.display = loggedIn ? 'flex' : 'none';
-
-        // Clean up previous table listener if it exists
-        if (dom.listeTrajetsDiv.dataset.listenerAttached) {
-             dom.listeTrajetsDiv.removeEventListener('click', handleTableActions);
-             delete dom.listeTrajetsDiv.dataset.listenerAttached; // Remove the flag
-        }
-
-        if (loggedIn) {
-            dom.profileInfo.innerHTML = `<div>${user.displayName || user.email}</div><img src="${user.photoURL || 'https://via.placeholder.com/40'}" alt="Avatar" referrerpolicy="no-referrer"><button id="logout-btn" title="Déconnexion">Déconnexion</button>`;
-            document.getElementById('logout-btn').addEventListener('click', () => auth.signOut().catch(e => showNotification("Erreur déconnexion.", true)));
-            populateYearFilter();
-            // updateSuggestionDatalists() is now called in switchView('form') or other tabs if user navigates
-            resetForm(); // Reset form initially for adding a new trip
-            dom.listeTrajetsDiv.addEventListener('click', handleTableActions);
-            dom.listeTrajetsDiv.dataset.listenerAttached = 'true'; // Set flag
-            switchView('my-trips'); // Start on the default view
-            showNotification(`Bienvenue ${user.displayName || user.email} !`);
-        } else {
-            dom.profileInfo.innerHTML = '';
-            if (trajetsUnsubscribe) {
-                try {
-                    trajetsUnsubscribe();
-                } catch (e) {}
-                trajetsUnsubscribe = null;
-            }
-            // Clear content divs on logout
-            ['listeTrajetsDiv', 'calendarGrid', 'tripsForDayDiv', 'statsContent'].forEach(elId => dom[elId].innerHTML = '');
-            dom.tripsForDayDiv.innerHTML = '<p>Veuillez vous connecter.</p>';
-            currentCalendarDate = new Date(); // Reset calendar view date
-            // Hide all sections
-            dom.contentContainer.querySelectorAll('section').forEach(s => {
-                s.classList.remove('active');
-                s.style.display = 'none';
+        // --- 3. ROTATION (STRICT LOGIC) ---
+        window.toggle = (w) => {
+            if(sel.includes(w)) sel = sel.filter(x=>x!==w); else sel.push(w);
+            document.querySelectorAll('.avatar-toggle').forEach(b => {
+                if(sel.includes(b.dataset.name)) b.classList.add('active'); else b.classList.remove('active');
             });
-            // Reset active tab style
-            dom.tabButtons.forEach(b => b.classList.toggle('active', b.dataset.view === 'my-trips'));
-            allTripsDataCache = null; // <-- Clear the cache on logout
-            isFetchingStats = false; // Reset stats state
-            currentView = 'my-trips'; // Reset current view state
+            calcRot();
         }
-    });
 
-    dom.addPassengerBtn.addEventListener('click', () => addPassengerField());
-    dom.passengerContainer.addEventListener('click', (e) => { /* ... (existing function) ... */
-        if (e.target.closest('.remove-passenger-btn')) {
-            const row = e.target.closest('.passenger-row');
-            if (dom.passengerContainer.querySelectorAll('.passenger-row').length > 1) row.remove();
-            else row.querySelector('.passenger-input').value = '';
-            updatePassengerRemoveButtonsState();
-        }
-    });
-    dom.cancelEditBtn.addEventListener('click', resetForm);
-    dom.form.addEventListener('submit', handleFormSubmit);
-    const debouncedTableRefresh = debounce(subscribeToTrajets, 400);
-    ['filterMonth', 'filterYear'].forEach(id => dom[id].addEventListener('change', subscribeToTrajets));
-    dom.filterPerson.addEventListener('input', debouncedTableRefresh);
-    dom.resetFiltersBtn.addEventListener('click', () => { /* ... (existing function) ... */
-        dom.filterMonth.value = '';
-        dom.filterYear.value = new Date().getFullYear();
-        dom.filterPerson.value = '';
-        if (['my-trips', 'all-trips'].includes(currentView)) subscribeToTrajets();
-    });
-    dom.tabButtons.forEach(button => { /* ... (existing function) ... */
-        button.addEventListener('click', () => {
-            const view = button.dataset.view;
-            if (view) {
-                // Check if the form is currently being edited/added and user confirms leaving
-                if (dom.editIdInput.value && currentView === 'form' && !window.confirm("Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter sans sauvegarder ?")) {
-                    return; // Stop if user cancels leaving the form
-                }
-                 // If form was active and we are switching, reset the form (clears edit state)
-                if (currentView === 'form') {
-                     resetForm();
-                }
-                switchView(view);
+        function calcRot() {
+            const out = document.getElementById('rotation-out');
+            if(sel.length < 2) return out.innerHTML = '<div style="padding:30px; text-align:center; color:#94A3B8;">Sélectionnez au moins 2 personnes.</div>';
+
+            const currentSig = getSig(sel);
+            const validTrips = trips.filter(t => t.passagers && t.passagers.length > 0 && getSig([t.conducteur, ...t.passagers]) === currentSig);
+
+            const res = sel.map(who => {
+                const last = validTrips.find(t => clean(t.conducteur) === clean(who));
+                return {
+                    name: capitalize(who),
+                    ts: last ? new Date(last.date).getTime() : 0,
+                    dateStr: last ? timeAgo(new Date(last.date)) : 'Jamais'
+                };
+            });
+
+            res.sort((a, b) => a.ts - b.ts);
+
+            const winner = res[0];
+            const others = res.slice(1);
+            
+            // Affichage du Gagnant
+            let html = `
+            <div class="winner-card">
+                <i class="fas fa-trophy winner-bg-icon"></i>
+                <div class="winner-sub">C'est au tour de</div>
+                <div class="winner-name">${winner.name}</div>
+                <div style="font-size:0.9rem; opacity:0.8; margin-bottom:15px;">Dernier: ${winner.dateStr}</div>
+                <div class="copy-btn" onclick="copyRes('${winner.name}')"><i class="far fa-copy"></i> Copier pour WhatsApp</div>
+            </div>
+            <div style="margin-top:20px; padding:0 10px;">
+                <div style="font-size:0.75rem; font-weight:700; color:#94A3B8; margin-bottom:10px; text-transform:uppercase;">Les suivants</div>
+                ${others.map((r, i) => `
+                    <div class="loser-row">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="background:#F1F5F9; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">${i+2}</div>
+                            <span style="font-weight:600; color:var(--text-main);">${r.name}</span>
+                        </div>
+                        <span>${r.dateStr}</span>
+                    </div>
+                `).join('')}
+            </div>`;
+            
+            if(validTrips.length === 0) {
+                html = `<div class="card" style="text-align:center; background:#FFF7ED; border:1px solid #FFEDD5; color:#9A3412;">
+                    <strong>Pas d'historique exact pour ce groupe !</strong><br>
+                    L'application propose <b>${winner.name}</b> par défaut (alphabétique/hasard).
+                </div>` + html;
             }
-        });
-    });
-    dom.prevMonthBtn.addEventListener('click', goToPreviousMonth);
-    dom.nextMonthBtn.addEventListener('click', goToNextMonth);
+            out.innerHTML = html;
+        }
+        
+        window.copyRes = (name) => {
+            navigator.clipboard.writeText(`🚗 Covoiturage : C'est au tour de ${name} de conduire !`);
+            toast("Copié dans le presse-papier !");
+        };
 
-    window.addEventListener('DOMContentLoaded', () => { /* ... (existing function) ... */
-        populateYearFilter();
-        // updateSuggestionDatalists(); // No need to call here, auth state change handles it on login
-        dom.contentContainer.style.display = 'none';
-        dom.tabBar.style.display = 'none';
-        dom.authContainer.style.display = 'block';
-        dom.tabButtons.forEach(b => b.classList.toggle('active', b.dataset.view === 'my-trips'));
-    });
+        // --- 4. CALENDAR ---
+        function renderCal() {
+            const y=calD.getFullYear(), m=calD.getMonth();
+            document.getElementById('cal-title').textContent = new Date(y,m).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+            const days = new Date(y,m+1,0).getDate();
+            const off = new Date(y,m,1).getDay() === 0 ? 6 : new Date(y,m,1).getDay()-1;
+            
+            let h=''; for(let i=0;i<off;i++)h+='<div></div>';
+            for(let d=1;d<=days;d++){
+                const s = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const t = trips.find(x=>x.date===s);
+                let dot = '';
+                if(t && (!t.passagers || t.passagers.length)) { // Show dot if trip exists
+                   dot = `<div class="dot ${clean(t.conducteur)}"></div>`;
+                }
+                let cls = 'day-cell'; if(s===new Date().toISOString().split('T')[0]) cls+=' today';
+                
+                h+=`<div class="${cls}" onclick="showD('${s}')"><span>${d}</span>${dot}</div>`;
+            }
+            document.getElementById('cal-grid').innerHTML = h;
+        }
+        document.getElementById('prev-m').onclick=()=>{calD.setMonth(calD.getMonth()-1);renderCal()};
+        document.getElementById('next-m').onclick=()=>{calD.setMonth(calD.getMonth()+1);renderCal()};
+        
+        window.showD = (s) => {
+            const t = trips.find(x=>x.date===s);
+            const el = document.getElementById('cal-detail');
+            if(!t) return el.innerHTML = '';
+            const isSolo = (!t.passagers || t.passagers.length === 0);
+            el.innerHTML = `
+                <div class="card ${clean(t.conducteur)}" style="margin:0;">
+                    <div class="card-header"><span class="driver-badge">${t.conducteur}</span> <span class="date-text">${new Date(t.date).toLocaleDateString()}</span></div>
+                    <div style="font-size:0.9rem; color:#64748B;">${isSolo ? 'Solo' : t.passagers.join(', ')}</div>
+                </div>`;
+        };
+
+        // --- GLOBAL NAVIGATION & UTILS ---
+        window.nav = (id) => {
+            document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            if(id==='tab-stats') calcRot();
+            if(id==='tab-add') resetForm();
+        };
+
+        window.edit = (id) => {
+            const t = trips.find(x=>x.id===id);
+            document.getElementById('inp-id').value=id; document.getElementById('inp-date').value=t.date;
+            document.getElementById('inp-driver').value=t.conducteur; buffer=[...(t.passagers||[])]; renderChips();
+            document.getElementById('inp-note').value=t.commentaire||''; 
+            document.getElementById('btn-cancel').style.display='block';
+            nav('tab-add');
+        };
+        
+        function resetForm() {
+            document.getElementById('form-trip').reset(); document.getElementById('inp-id').value='';
+            document.getElementById('inp-date').valueAsDate=new Date(); buffer=[]; renderChips();
+            document.getElementById('btn-cancel').style.display='none';
+        }
+        document.getElementById('btn-cancel').onclick=()=>{resetForm(); nav('tab-list')};
+        window.del = (id) => { if(confirm('Supprimer définitivement ?')) db.collection(COL).doc(id).delete(); };
+        
+        function toast(m) { 
+            const t=document.getElementById('toast'); t.innerHTML = `<i class="fas fa-check-circle" style="color:#4ADE80"></i> ${m}`;
+            t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2500); 
+        }
+        
+        function updateDL() {
+            const d=new Set(), p=new Set();
+            trips.forEach(t=>{if(t.conducteur)d.add(capitalize(t.conducteur)); (t.passagers||[]).forEach(pp=>p.add(capitalize(pp)))});
+            document.getElementById('dl-drivers').innerHTML=[...d].map(v=>`<option value="${v}">`).join('');
+            document.getElementById('dl-pass').innerHTML=[...p].map(v=>`<option value="${v}">`).join('');
+        }
+
     </script>
 </body>
 </html>
