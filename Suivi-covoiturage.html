@@ -47,6 +47,7 @@
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(0,0,0,0.03);
         }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
         .brand { font-weight: 800; color: var(--primary); font-size: 1.4rem; display: flex; align-items: center; gap: 8px; }
         .brand i { font-size: 1.1rem; background: var(--primary); color: white; padding: 6px; border-radius: 10px; }
         
@@ -57,6 +58,10 @@
         }
         .user-pill img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
         .logout-btn { color: #EF4444; background: #FEE2E2; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; font-size: 0.8rem; }
+        #refresh-btn { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 1.2rem; padding: 8px; border-radius: 50%; transition: background 0.2s; }
+        #refresh-btn:hover { background: var(--primary-soft); }
+        #refresh-btn.loading i { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         /* --- AUTH SCREEN --- */
         .auth-container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: white; }
@@ -194,7 +199,8 @@
 
         /* --- CALENDAR --- */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
-        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; font-size: 0.85rem; background: white; color: var(--text-muted); border: 1px solid transparent; }
+        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; font-size: 0.85rem; background: white; color: var(--text-muted); border: 1px solid transparent; cursor: pointer; }
+        .day-cell:hover { background: var(--surface); }
         .day-cell.today { border-color: var(--primary); color: var(--primary); font-weight: 800; }
         
         .dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
@@ -225,7 +231,10 @@
     <div id="view-app" class="hidden">
         <header>
             <div class="brand"><i class="fas fa-car"></i> Co-Pilot</div>
-            <div id="user-pill" class="user-pill"></div>
+            <div class="header-actions">
+                <div id="refresh-btn" title="Forcer l'actualisation" onclick="forceRefresh()"><i class="fas fa-sync-alt"></i></div>
+                <div id="user-pill" class="user-pill"></div>
+            </div>
         </header>
 
         <section id="tab-list" class="section active">
@@ -234,9 +243,7 @@
                 <select id="filter-year" style="border:none; background:transparent; font-weight:700; color:var(--primary); font-size:1rem; outline:none; cursor:pointer; margin-bottom:20px;"></select>
             </div>
             <div id="list-content">
-                <div style="text-align:center; padding:40px;">
-                    <i class="fas fa-circle-notch fa-spin" style="color:var(--primary); font-size:2rem;"></i>
-                </div>
+                <!-- Le contenu sera injecté ici -->
             </div>
         </section>
 
@@ -349,7 +356,11 @@
         const COL = 'trajets';
 
         // --- STATE & UTILS ---
-        let trips = [], buffer = [], calD = new Date(), sel = ["Steve", "Marc", "Julien"];
+        let allTrips = []; // Stocke TOUTES les données pour les stats/cal
+        let currentYearTrips = []; // Stocke les données de l'année affichée
+        let buffer = [], calD = new Date(), sel = ["Steve", "Marc", "Julien"];
+        const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 heures
+
         const clean = s => s ? s.trim().toLowerCase() : '';
         const capitalize = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
         const getSig = arr => arr.map(clean).sort().join(',');
@@ -362,6 +373,33 @@
             if (diff < 7) return `Il y a ${diff} jours`;
             return date.toLocaleDateString('fr-FR', {day:'numeric', month:'short'});
         };
+
+        // --- GESTION DU CACHE LOCAL ---
+        function getCacheKey(year) { return `trajetsCache_${year}`; }
+        function getCacheTimestampKey(year) { return `trajetsCacheTimestamp_${year}`; }
+
+        function loadFromCache(year) {
+            const cachedData = localStorage.getItem(getCacheKey(year));
+            const cacheTimestamp = localStorage.getItem(getCacheTimestampKey(year));
+            
+            if (cachedData && cacheTimestamp) {
+                const age = Date.now() - parseInt(cacheTimestamp);
+                if (age < CACHE_DURATION) {
+                    return JSON.parse(cachedData);
+                }
+            }
+            return null;
+        }
+
+        function saveToCache(year, data) {
+            localStorage.setItem(getCacheKey(year), JSON.stringify(data));
+            localStorage.setItem(getCacheTimestampKey(year), Date.now().toString());
+        }
+
+        function invalidateCache(year) {
+            localStorage.removeItem(getCacheKey(year));
+            localStorage.removeItem(getCacheTimestampKey(year));
+        }
 
         // --- AUTH ---
         auth.onAuthStateChanged(u => {
@@ -382,28 +420,73 @@
 
         // --- INIT DATA ---
         function initApp() {
-            // Populate Year
-            const y = new Date().getFullYear();
-            const sel = document.getElementById('filter-year');
-            sel.innerHTML = '';
-            [y, y-1].forEach(yr => { let o=document.createElement('option'); o.value=yr; o.text=yr; sel.appendChild(o); });
+            const currentYear = new Date().getFullYear();
+            const yearSelect = document.getElementById('filter-year');
+            yearSelect.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const year = currentYear - i;
+                let o = document.createElement('option');
+                o.value = year;
+                o.text = year;
+                if (year === currentYear) o.selected = true;
+                yearSelect.appendChild(o);
+            }
             
-            db.collection(COL).orderBy('date', 'desc').onSnapshot(s => {
-                trips = s.docs.map(d => ({id:d.id, ...d.data()}));
-                renderList(); renderCal(); calcRot(); updateDL();
-            });
+            yearSelect.onchange = () => loadDataForYear(yearSelect.value);
+            loadDataForYear(currentYear); // Charger les données pour l'année en cours
+        }
+
+        // --- FONCTION PRINCIPALE DE CHARGEMENT DES DONNÉES ---
+        function loadDataForYear(year) {
+            const listContent = document.getElementById('list-content');
+            listContent.innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary); font-size:2rem;"></i></div>';
+
+            // 1. Essayer de charger depuis le cache
+            const cachedTrips = loadFromCache(year);
+            if (cachedTrips) {
+                currentYearTrips = cachedTrips;
+                renderList(currentYearTrips);
+                updateDL(currentYearTrips);
+                toast("Données chargées depuis le cache local");
+            }
+
+            // 2. Forcer le rafraîchissement depuis Firebase
+            const startDate = `${year}-01-01`;
+            const endDate = `${year}-12-31`;
+            db.collection(COL)
+              .where('date', '>=', startDate)
+              .where('date', '<=', endDate)
+              .orderBy('date', 'desc')
+              .get()
+              .then(snapshot => {
+                  const freshTrips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                  currentYearTrips = freshTrips;
+                  saveToCache(year, freshTrips);
+                  renderList(freshTrips);
+                  updateDL(freshTrips);
+                  // On met à jour allTrips pour les stats/cal
+                  allTrips = [...allTrips.filter(t => !t.date.startsWith(year)), ...freshTrips];
+                  renderCal(); calcRot();
+              })
+              .catch(error => {
+                  console.error("Erreur de chargement des données:", error);
+                  listContent.innerHTML = '<div style="text-align:center; color:red; padding:40px;">Impossible de charger les données. Vérifiez votre connexion.</div>';
+              });
+        }
+
+        function forceRefresh() {
+            const year = document.getElementById('filter-year').value;
+            invalidateCache(year);
+            loadDataForYear(year);
+            toast("Actualisation depuis Firebase en cours...");
         }
 
         // --- 1. LIST RENDER ---
-        function renderList() {
-            const y = document.getElementById('filter-year').value;
-            let data = trips;
-            if(y) data = data.filter(t => t.date.startsWith(y));
-            
+        function renderList(dataToShow) {
             const box = document.getElementById('list-content');
-            if(!data.length) return box.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:40px;"><i class="fas fa-wind" style="font-size:2rem; margin-bottom:10px;"></i><br>Aucun trajet trouvé.</div>';
+            if(!dataToShow.length) return box.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:40px;"><i class="fas fa-wind" style="font-size:2rem; margin-bottom:10px;"></i><br>Aucun trajet trouvé.</div>';
 
-            box.innerHTML = data.map(t => {
+            box.innerHTML = dataToShow.map(t => {
                 const dr = clean(t.conducteur);
                 const d = new Date(t.date);
                 const isSolo = (!t.passagers || t.passagers.length === 0);
@@ -432,7 +515,6 @@
                 </div>`;
             }).join('');
         }
-        document.getElementById('filter-year').onchange = renderList;
 
         // --- 2. ADD / EDIT ---
         function renderChips() {
@@ -444,18 +526,16 @@
         
         function addPass() {
             const inp = document.getElementById('inp-pass');
-            // Auto-Capitalize
             const val = capitalize(inp.value.trim());
             if(val) { buffer.push(val); inp.value=''; renderChips(); inp.focus(); }
         }
         document.getElementById('btn-plus').onclick = addPass;
         
-        // Auto capitalize driver on blur
         document.getElementById('inp-driver').onblur = (e) => { e.target.value = capitalize(e.target.value); };
 
         document.getElementById('form-trip').onsubmit = (e) => {
             e.preventDefault();
-            addPass(); // Add pending text
+            addPass();
             
             if(buffer.length === 0 && !confirm("Confirmer trajet SOLO ? (Ne comptera pas dans la rotation)")) return;
 
@@ -467,11 +547,19 @@
                 commentaire: document.getElementById('inp-note').value,
                 updatedAt: new Date()
             };
+            const tripYear = data.date.split('-')[0];
 
-            if(id) db.collection(COL).doc(id).update(data);
-            else { data.createdAt = new Date(); data.createdBy = auth.currentUser.uid; db.collection(COL).add(data); }
+            const promise = id ? 
+                db.collection(COL).doc(id).update(data) : 
+                db.collection(COL).add({...data, createdAt: new Date(), createdBy: auth.currentUser.uid});
             
-            resetForm(); nav('tab-list'); toast("Trajet sauvegardé avec succès !");
+            promise.then(() => {
+                invalidateCache(tripYear);
+                resetForm(); 
+                nav('tab-list'); 
+                toast("Trajet sauvegardé !");
+                loadDataForYear(document.getElementById('filter-year').value);
+            });
         };
 
         // --- 3. ROTATION (STRICT LOGIC) ---
@@ -488,7 +576,8 @@
             if(sel.length < 2) return out.innerHTML = '<div style="padding:30px; text-align:center; color:#94A3B8;">Sélectionnez au moins 2 personnes.</div>';
 
             const currentSig = getSig(sel);
-            const validTrips = trips.filter(t => t.passagers && t.passagers.length > 0 && getSig([t.conducteur, ...t.passagers]) === currentSig);
+            // Utilise allTrips pour le calcul sur l'ensemble des données
+            const validTrips = allTrips.filter(t => t.passagers && t.passagers.length > 0 && getSig([t.conducteur, ...t.passagers]) === currentSig);
 
             const res = sel.map(who => {
                 const last = validTrips.find(t => clean(t.conducteur) === clean(who));
@@ -500,11 +589,9 @@
             });
 
             res.sort((a, b) => a.ts - b.ts);
-
             const winner = res[0];
             const others = res.slice(1);
             
-            // Affichage du Gagnant
             let html = `
             <div class="winner-card">
                 <i class="fas fa-trophy winner-bg-icon"></i>
@@ -529,7 +616,7 @@
             if(validTrips.length === 0) {
                 html = `<div class="card" style="text-align:center; background:#FFF7ED; border:1px solid #FFEDD5; color:#9A3412;">
                     <strong>Pas d'historique exact pour ce groupe !</strong><br>
-                    L'application propose <b>${winner.name}</b> par défaut (alphabétique/hasard).
+                    L'application propose <b>${winner.name}</b> par défaut.
                 </div>` + html;
             }
             out.innerHTML = html;
@@ -550,9 +637,9 @@
             let h=''; for(let i=0;i<off;i++)h+='<div></div>';
             for(let d=1;d<=days;d++){
                 const s = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const t = trips.find(x=>x.date===s);
+                const t = allTrips.find(x=>x.date===s); // Utilise allTrips
                 let dot = '';
-                if(t && (!t.passagers || t.passagers.length)) { // Show dot if trip exists
+                if(t && (!t.passagers || t.passagers.length)) { 
                    dot = `<div class="dot ${clean(t.conducteur)}"></div>`;
                 }
                 let cls = 'day-cell'; if(s===new Date().toISOString().split('T')[0]) cls+=' today';
@@ -561,11 +648,11 @@
             }
             document.getElementById('cal-grid').innerHTML = h;
         }
-        document.getElementById('prev-m').onclick=()=>{calD.setMonth(calD.getMonth()-1);renderCal()};
-        document.getElementById('next-m').onclick=()=>{calD.setMonth(calD.getMonth()+1);renderCal()};
+        document.getElementById('prev-m').onclick=()=>{calD.setMonth(calD.getMonth()-1);renderCal();};
+        document.getElementById('next-m').onclick=()=>{calD.setMonth(calD.getMonth()+1);renderCal();};
         
         window.showD = (s) => {
-            const t = trips.find(x=>x.date===s);
+            const t = allTrips.find(x=>x.date===s); // Utilise allTrips
             const el = document.getElementById('cal-detail');
             if(!t) return el.innerHTML = '';
             const isSolo = (!t.passagers || t.passagers.length === 0);
@@ -587,7 +674,8 @@
         };
 
         window.edit = (id) => {
-            const t = trips.find(x=>x.id===id);
+            const t = currentYearTrips.find(x=>x.id===id); // Chercher dans les données de l'année courante
+            if (!t) return; // Ne pas éditer si le trajet n'est pas dans la liste affichée
             document.getElementById('inp-id').value=id; document.getElementById('inp-date').value=t.date;
             document.getElementById('inp-driver').value=t.conducteur; buffer=[...(t.passagers||[])]; renderChips();
             document.getElementById('inp-note').value=t.commentaire||''; 
@@ -601,16 +689,29 @@
             document.getElementById('btn-cancel').style.display='none';
         }
         document.getElementById('btn-cancel').onclick=()=>{resetForm(); nav('tab-list')};
-        window.del = (id) => { if(confirm('Supprimer définitivement ?')) db.collection(COL).doc(id).delete(); };
+        window.del = (id) => { 
+            if(confirm('Supprimer définitivement ?')) {
+                const trip = currentYearTrips.find(t => t.id === id);
+                if (trip) {
+                    invalidateCache(trip.date.split('-')[0]);
+                }
+                db.collection(COL).doc(id).delete().then(() => {
+                    toast("Trajet supprimé");
+                    loadDataForYear(document.getElementById('filter-year').value);
+                });
+            } 
+        };
         
         function toast(m) { 
-            const t=document.getElementById('toast'); t.innerHTML = `<i class="fas fa-check-circle" style="color:#4ADE80"></i> ${m}`;
-            t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2500); 
+            const t=document.getElementById('toast'); 
+            t.innerHTML = `<i class="fas fa-check-circle" style="color:#4ADE80"></i> ${m}`;
+            t.classList.add('show'); 
+            setTimeout(()=>t.classList.remove('show'), 2500); 
         }
         
-        function updateDL() {
+        function updateDL(data) {
             const d=new Set(), p=new Set();
-            trips.forEach(t=>{if(t.conducteur)d.add(capitalize(t.conducteur)); (t.passagers||[]).forEach(pp=>p.add(capitalize(pp)))});
+            data.forEach(t=>{if(t.conducteur)d.add(capitalize(t.conducteur)); (t.passagers||[]).forEach(pp=>p.add(capitalize(pp)))});
             document.getElementById('dl-drivers').innerHTML=[...d].map(v=>`<option value="${v}">`).join('');
             document.getElementById('dl-pass').innerHTML=[...p].map(v=>`<option value="${v}">`).join('');
         }
