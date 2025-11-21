@@ -215,6 +215,22 @@
         }
         #toast.show { transform: translateX(-50%) translateY(0); }
 
+        /* Indicateur de synchronisation */
+        .sync-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+        .sync-indicator.active {
+            transform: scaleX(1);
+        }
+
     </style>
 </head>
 <body>
@@ -235,6 +251,7 @@
                 <div id="refresh-btn" title="Forcer l'actualisation" onclick="forceRefresh()"><i class="fas fa-sync-alt"></i></div>
                 <div id="user-pill" class="user-pill"></div>
             </div>
+            <div class="sync-indicator" id="sync-indicator"></div>
         </header>
 
         <section id="tab-list" class="section active">
@@ -360,6 +377,9 @@
         let currentYearTrips = []; // Stocke les données de l'année affichée
         let buffer = [], calD = new Date(), sel = ["Steve", "Marc", "Julien"];
         const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 heures
+        let isOnline = navigator.onLine;
+        let pendingOperations = [];
+        let syncInProgress = false;
 
         const clean = s => s ? s.trim().toLowerCase() : '';
         const capitalize = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
@@ -377,6 +397,7 @@
         // --- GESTION DU CACHE LOCAL ---
         function getCacheKey(year) { return `trajetsCache_${year}`; }
         function getCacheTimestampKey(year) { return `trajetsCacheTimestamp_${year}`; }
+        function getPendingOperationsKey() { return `pendingOperations`; }
 
         function loadFromCache(year) {
             const cachedData = localStorage.getItem(getCacheKey(year));
@@ -399,6 +420,82 @@
         function invalidateCache(year) {
             localStorage.removeItem(getCacheKey(year));
             localStorage.removeItem(getCacheTimestampKey(year));
+        }
+
+        // Gestion des opérations en attente
+        function savePendingOperations() {
+            localStorage.setItem(getPendingOperationsKey(), JSON.stringify(pendingOperations));
+        }
+
+        function loadPendingOperations() {
+            const pending = localStorage.getItem(getPendingOperationsKey());
+            if (pending) {
+                pendingOperations = JSON.parse(pending);
+            }
+        }
+
+        function addPendingOperation(operation) {
+            pendingOperations.push({
+                ...operation,
+                timestamp: Date.now(),
+                id: Math.random().toString(36).substring(2, 9)
+            });
+            savePendingOperations();
+        }
+
+        function removePendingOperation(id) {
+            pendingOperations = pendingOperations.filter(op => op.id !== id);
+            savePendingOperations();
+        }
+
+        // Synchronisation des opérations en attente
+        async function syncPendingOperations() {
+            if (!isOnline || syncInProgress || pendingOperations.length === 0) return;
+            
+            syncInProgress = true;
+            showSyncIndicator();
+            
+            try {
+                // Copie des opérations pour éviter les modifications pendant la synchronisation
+                const operationsToSync = [...pendingOperations];
+                
+                for (const operation of operationsToSync) {
+                    try {
+                        if (operation.type === 'add') {
+                            await db.collection(COL).add(operation.data);
+                        } else if (operation.type === 'update') {
+                            await db.collection(COL).doc(operation.id).update(operation.data);
+                        } else if (operation.type === 'delete') {
+                            await db.collection(COL).doc(operation.id).delete();
+                        }
+                        
+                        // Opération réussie, on la retire de la liste
+                        removePendingOperation(operation.id);
+                    } catch (error) {
+                        console.error("Erreur lors de la synchronisation d'une opération:", error);
+                    }
+                }
+                
+                // Recharger les données après synchronisation
+                const currentYear = document.getElementById('filter-year').value;
+                await loadDataForYear(currentYear, true);
+                
+                toast("Synchronisation terminée");
+            } catch (error) {
+                console.error("Erreur lors de la synchronisation:", error);
+                toast("Erreur de synchronisation");
+            } finally {
+                syncInProgress = false;
+                hideSyncIndicator();
+            }
+        }
+
+        function showSyncIndicator() {
+            document.getElementById('sync-indicator').classList.add('active');
+        }
+
+        function hideSyncIndicator() {
+            document.getElementById('sync-indicator').classList.remove('active');
         }
 
         // --- AUTH ---
@@ -433,52 +530,119 @@
             }
             
             yearSelect.onchange = () => loadDataForYear(yearSelect.value);
-            loadDataForYear(currentYear); // Charger les données pour l'année en cours
+            
+            // Charger les opérations en attente
+            loadPendingOperations();
+            
+            // Charger les données pour l'année en cours
+            loadDataForYear(currentYear);
+            
+            // Tenter de synchroniser les opérations en attente
+            syncPendingOperations();
+            
+            // Configurer les écouteurs d'événements en ligne/hors ligne
+            window.addEventListener('online', () => {
+                isOnline = true;
+                syncPendingOperations();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                toast("Mode hors ligne : les modifications seront synchronisées ultérieurement");
+            });
         }
 
         // --- FONCTION PRINCIPALE DE CHARGEMENT DES DONNÉES ---
-        function loadDataForYear(year) {
+        async function loadDataForYear(year, forceRefresh = false) {
             const listContent = document.getElementById('list-content');
             listContent.innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary); font-size:2rem;"></i></div>';
 
-            // 1. Essayer de charger depuis le cache
-            const cachedTrips = loadFromCache(year);
-            if (cachedTrips) {
-                currentYearTrips = cachedTrips;
-                renderList(currentYearTrips);
-                updateDL(currentYearTrips);
-                toast("Données chargées depuis le cache local");
+            // 1. Essayer de charger depuis le cache (sauf si rafraîchissement forcé)
+            if (!forceRefresh) {
+                const cachedTrips = loadFromCache(year);
+                if (cachedTrips) {
+                    currentYearTrips = cachedTrips;
+                    renderList(currentYearTrips);
+                    updateDL(currentYearTrips);
+                    toast("Données chargées depuis le cache local");
+                }
             }
 
-            // 2. Forcer le rafraîchissement depuis Firebase
-            const startDate = `${year}-01-01`;
-            const endDate = `${year}-12-31`;
-            db.collection(COL)
-              .where('date', '>=', startDate)
-              .where('date', '<=', endDate)
-              .orderBy('date', 'desc')
-              .get()
-              .then(snapshot => {
-                  const freshTrips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                  currentYearTrips = freshTrips;
-                  saveToCache(year, freshTrips);
-                  renderList(freshTrips);
-                  updateDL(freshTrips);
-                  // On met à jour allTrips pour les stats/cal
-                  allTrips = [...allTrips.filter(t => !t.date.startsWith(year)), ...freshTrips];
-                  renderCal(); calcRot();
-              })
-              .catch(error => {
-                  console.error("Erreur de chargement des données:", error);
-                  listContent.innerHTML = '<div style="text-align:center; color:red; padding:40px;">Impossible de charger les données. Vérifiez votre connexion.</div>';
-              });
+            // 2. Charger depuis Firebase si en ligne
+            if (isOnline) {
+                try {
+                    const startDate = `${year}-01-01`;
+                    const endDate = `${year}-12-31`;
+                    const snapshot = await db.collection(COL)
+                      .where('date', '>=', startDate)
+                      .where('date', '<=', endDate)
+                      .orderBy('date', 'desc')
+                      .get();
+                    
+                    const freshTrips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                    currentYearTrips = freshTrips;
+                    saveToCache(year, freshTrips);
+                    renderList(freshTrips);
+                    updateDL(freshTrips);
+                    
+                    // On met à jour allTrips pour les stats/cal
+                    allTrips = [...allTrips.filter(t => !t.date.startsWith(year)), ...freshTrips];
+                    renderCal(); 
+                    calcRot();
+                } catch (error) {
+                    console.error("Erreur de chargement des données:", error);
+                    listContent.innerHTML = '<div style="text-align:center; color:red; padding:40px;">Impossible de charger les données. Vérifiez votre connexion.</div>';
+                }
+            } else {
+                // Mode hors ligne, appliquer les opérations en attente aux données locales
+                applyPendingOperationsToCache(year);
+            }
         }
 
         function forceRefresh() {
             const year = document.getElementById('filter-year').value;
             invalidateCache(year);
-            loadDataForYear(year);
+            loadDataForYear(year, true);
             toast("Actualisation depuis Firebase en cours...");
+        }
+
+        // Appliquer les opérations en attente aux données en cache
+        function applyPendingOperationsToCache(year) {
+            let cachedTrips = loadFromCache(year) || [];
+            
+            // Appliquer les opérations en attente
+            pendingOperations.forEach(operation => {
+                const operationYear = operation.data.date ? operation.data.date.split('-')[0] : year;
+                
+                if (operationYear !== year) return;
+                
+                if (operation.type === 'add') {
+                    // Ajouter un ID temporaire si nécessaire
+                    const tempId = operation.id || `temp_${Date.now()}`;
+                    cachedTrips.unshift({id: tempId, ...operation.data});
+                } else if (operation.type === 'update') {
+                    const index = cachedTrips.findIndex(t => t.id === operation.id);
+                    if (index !== -1) {
+                        cachedTrips[index] = {...cachedTrips[index], ...operation.data};
+                    }
+                } else if (operation.type === 'delete') {
+                    cachedTrips = cachedTrips.filter(t => t.id !== operation.id);
+                }
+            });
+            
+            // Trier par date
+            cachedTrips.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Mettre à jour le cache et l'affichage
+            currentYearTrips = cachedTrips;
+            saveToCache(year, cachedTrips);
+            renderList(cachedTrips);
+            updateDL(cachedTrips);
+            
+            // Mettre à jour allTrips pour les stats/cal
+            allTrips = [...allTrips.filter(t => !t.date.startsWith(year)), ...cachedTrips];
+            renderCal(); 
+            calcRot();
         }
 
         // --- 1. LIST RENDER ---
@@ -490,13 +654,15 @@
                 const dr = clean(t.conducteur);
                 const d = new Date(t.date);
                 const isSolo = (!t.passagers || t.passagers.length === 0);
+                const isPending = pendingOperations.some(op => op.id === t.id);
                 
                 return `
-                <div class="card ${dr}" style="opacity:${isSolo?0.7:1}">
+                <div class="card ${dr}" style="opacity:${isSolo?0.7:1}; ${isPending ? 'border-left: 4px solid #F59E0B;' : ''}">
                     <div class="card-header">
                         <div>
                             <span class="date-text">${d.toLocaleDateString('fr-FR', {day:'numeric', month:'long'})}</span>
                             <span class="relative-time">${timeAgo(d)}</span>
+                            ${isPending ? '<span style="margin-left: 8px; color: #F59E0B; font-size: 0.75rem;"><i class="fas fa-clock"></i> En attente de synchronisation</span>' : ''}
                         </div>
                         <span class="driver-badge">${t.conducteur}</span>
                     </div>
@@ -533,7 +699,7 @@
         
         document.getElementById('inp-driver').onblur = (e) => { e.target.value = capitalize(e.target.value); };
 
-        document.getElementById('form-trip').onsubmit = (e) => {
+        document.getElementById('form-trip').onsubmit = async (e) => {
             e.preventDefault();
             addPass();
             
@@ -549,17 +715,66 @@
             };
             const tripYear = data.date.split('-')[0];
 
-            const promise = id ? 
-                db.collection(COL).doc(id).update(data) : 
-                db.collection(COL).add({...data, createdAt: new Date(), createdBy: auth.currentUser.uid});
-            
-            promise.then(() => {
-                invalidateCache(tripYear);
-                resetForm(); 
-                nav('tab-list'); 
-                toast("Trajet sauvegardé !");
-                loadDataForYear(document.getElementById('filter-year').value);
-            });
+            try {
+                if (isOnline) {
+                    // Mode en ligne : envoyer directement à Firebase
+                    const promise = id ? 
+                        db.collection(COL).doc(id).update(data) : 
+                        db.collection(COL).add({...data, createdAt: new Date(), createdBy: auth.currentUser.uid});
+                    
+                    await promise;
+                    
+                    // Invalider le cache et recharger les données
+                    invalidateCache(tripYear);
+                    resetForm(); 
+                    nav('tab-list'); 
+                    toast("Trajet sauvegardé !");
+                    loadDataForYear(document.getElementById('filter-year').value);
+                } else {
+                    // Mode hors ligne : ajouter aux opérations en attente
+                    const operation = {
+                        type: id ? 'update' : 'add',
+                        id: id,
+                        data: data
+                    };
+                    
+                    addPendingOperation(operation);
+                    
+                    // Mettre à jour localement
+                    if (id) {
+                        const index = currentYearTrips.findIndex(t => t.id === id);
+                        if (index !== -1) {
+                            currentYearTrips[index] = {...currentYearTrips[index], ...data};
+                        }
+                    } else {
+                        // Ajouter un ID temporaire
+                        const tempId = `temp_${Date.now()}`;
+                        currentYearTrips.unshift({id: tempId, ...data});
+                        operation.id = tempId; // Mettre à jour l'ID dans l'opération
+                        savePendingOperations();
+                    }
+                    
+                    // Trier par date
+                    currentYearTrips.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    // Mettre à jour le cache et l'affichage
+                    saveToCache(tripYear, currentYearTrips);
+                    renderList(currentYearTrips);
+                    updateDL(currentYearTrips);
+                    
+                    // Mettre à jour allTrips pour les stats/cal
+                    allTrips = [...allTrips.filter(t => !t.date.startsWith(tripYear)), ...currentYearTrips];
+                    renderCal(); 
+                    calcRot();
+                    
+                    resetForm(); 
+                    nav('tab-list'); 
+                    toast("Trajet enregistré localement. Synchronisation automatique lors de la reconnexion.");
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'enregistrement du trajet:", error);
+                toast("Erreur lors de l'enregistrement. Veuillez réessayer.");
+            }
         };
 
         // --- 3. ROTATION (STRICT LOGIC) ---
@@ -656,9 +871,15 @@
             const el = document.getElementById('cal-detail');
             if(!t) return el.innerHTML = '';
             const isSolo = (!t.passagers || t.passagers.length === 0);
+            const isPending = pendingOperations.some(op => op.id === t.id);
+            
             el.innerHTML = `
-                <div class="card ${clean(t.conducteur)}" style="margin:0;">
-                    <div class="card-header"><span class="driver-badge">${t.conducteur}</span> <span class="date-text">${new Date(t.date).toLocaleDateString()}</span></div>
+                <div class="card ${clean(t.conducteur)}" style="margin:0; ${isPending ? 'border-left: 4px solid #F59E0B;' : ''}">
+                    <div class="card-header">
+                        <span class="driver-badge">${t.conducteur}</span> 
+                        <span class="date-text">${new Date(t.date).toLocaleDateString()}</span>
+                        ${isPending ? '<span style="color: #F59E0B; font-size: 0.75rem;"><i class="fas fa-clock"></i> En attente de synchronisation</span>' : ''}
+                    </div>
                     <div style="font-size:0.9rem; color:#64748B;">${isSolo ? 'Solo' : t.passagers.join(', ')}</div>
                 </div>`;
         };
@@ -689,16 +910,51 @@
             document.getElementById('btn-cancel').style.display='none';
         }
         document.getElementById('btn-cancel').onclick=()=>{resetForm(); nav('tab-list')};
-        window.del = (id) => { 
+        
+        window.del = async (id) => { 
             if(confirm('Supprimer définitivement ?')) {
                 const trip = currentYearTrips.find(t => t.id === id);
-                if (trip) {
-                    invalidateCache(trip.date.split('-')[0]);
+                if (!trip) return;
+                
+                try {
+                    if (isOnline) {
+                        // Mode en ligne : supprimer directement de Firebase
+                        await db.collection(COL).doc(id).delete();
+                        
+                        // Invalider le cache et recharger les données
+                        invalidateCache(trip.date.split('-')[0]);
+                        toast("Trajet supprimé");
+                        loadDataForYear(document.getElementById('filter-year').value);
+                    } else {
+                        // Mode hors ligne : ajouter aux opérations en attente
+                        const operation = {
+                            type: 'delete',
+                            id: id,
+                            data: null
+                        };
+                        
+                        addPendingOperation(operation);
+                        
+                        // Mettre à jour localement
+                        currentYearTrips = currentYearTrips.filter(t => t.id !== id);
+                        
+                        // Mettre à jour le cache et l'affichage
+                        const tripYear = trip.date.split('-')[0];
+                        saveToCache(tripYear, currentYearTrips);
+                        renderList(currentYearTrips);
+                        updateDL(currentYearTrips);
+                        
+                        // Mettre à jour allTrips pour les stats/cal
+                        allTrips = allTrips.filter(t => t.id !== id);
+                        renderCal(); 
+                        calcRot();
+                        
+                        toast("Trajet supprimé localement. Synchronisation automatique lors de la reconnexion.");
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la suppression du trajet:", error);
+                    toast("Erreur lors de la suppression. Veuillez réessayer.");
                 }
-                db.collection(COL).doc(id).delete().then(() => {
-                    toast("Trajet supprimé");
-                    loadDataForYear(document.getElementById('filter-year').value);
-                });
             } 
         };
         
