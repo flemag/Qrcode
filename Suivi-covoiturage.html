@@ -357,6 +357,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
     <script>
         // --- CONFIGURATION ---
         const cfg = {
@@ -438,7 +442,7 @@
             pendingOperations.push({
                 ...operation,
                 timestamp: Date.now(),
-                id: Math.random().toString(36).substring(2, 9)
+                id: Math.random().toString(36).substring(2, 9) // ID unique pour l'opération
             });
             savePendingOperations();
         }
@@ -464,9 +468,9 @@
                         if (operation.type === 'add') {
                             await db.collection(COL).add(operation.data);
                         } else if (operation.type === 'update') {
-                            await db.collection(COL).doc(operation.id).update(operation.data);
+                            await db.collection(COL).doc(operation.tripId).update(operation.data); // Utiliser tripId
                         } else if (operation.type === 'delete') {
-                            await db.collection(COL).doc(operation.id).delete();
+                            await db.collection(COL).doc(operation.tripId).delete(); // Utiliser tripId
                         }
                         
                         // Opération réussie, on la retire de la liste
@@ -621,12 +625,12 @@
                     const tempId = operation.id || `temp_${Date.now()}`;
                     cachedTrips.unshift({id: tempId, ...operation.data});
                 } else if (operation.type === 'update') {
-                    const index = cachedTrips.findIndex(t => t.id === operation.id);
+                    const index = cachedTrips.findIndex(t => t.id === operation.tripId);
                     if (index !== -1) {
                         cachedTrips[index] = {...cachedTrips[index], ...operation.data};
                     }
                 } else if (operation.type === 'delete') {
-                    cachedTrips = cachedTrips.filter(t => t.id !== operation.id);
+                    cachedTrips = cachedTrips.filter(t => t.id !== operation.tripId);
                 }
             });
             
@@ -654,7 +658,7 @@
                 const dr = clean(t.conducteur);
                 const d = new Date(t.date);
                 const isSolo = (!t.passagers || t.passagers.length === 0);
-                const isPending = pendingOperations.some(op => op.id === t.id);
+                const isPending = pendingOperations.some(op => (op.tripId === t.id) || (op.type === 'add' && op.id === t.id));
                 
                 return `
                 <div class="card ${dr}" style="opacity:${isSolo?0.7:1}; ${isPending ? 'border-left: 4px solid #F59E0B;' : ''}">
@@ -718,59 +722,31 @@
             try {
                 if (isOnline) {
                     // Mode en ligne : envoyer directement à Firebase
-                    const promise = id ? 
-                        db.collection(COL).doc(id).update(data) : 
-                        db.collection(COL).add({...data, createdAt: new Date(), createdBy: auth.currentUser.uid});
+                    if (id) {
+                        await db.collection(COL).doc(id).update(data);
+                    } else {
+                        await db.collection(COL).add({...data, createdAt: new Date(), createdBy: auth.currentUser.uid});
+                    }
                     
-                    await promise;
-                    
-                    // Invalider le cache et recharger les données
-                    invalidateCache(tripYear);
-                    resetForm(); 
-                    nav('tab-list'); 
                     toast("Trajet sauvegardé !");
-                    loadDataForYear(document.getElementById('filter-year').value);
                 } else {
                     // Mode hors ligne : ajouter aux opérations en attente
                     const operation = {
                         type: id ? 'update' : 'add',
-                        id: id,
+                        tripId: id, // Utiliser un champ distinct pour l'ID du trajet
                         data: data
                     };
                     
                     addPendingOperation(operation);
-                    
-                    // Mettre à jour localement
-                    if (id) {
-                        const index = currentYearTrips.findIndex(t => t.id === id);
-                        if (index !== -1) {
-                            currentYearTrips[index] = {...currentYearTrips[index], ...data};
-                        }
-                    } else {
-                        // Ajouter un ID temporaire
-                        const tempId = `temp_${Date.now()}`;
-                        currentYearTrips.unshift({id: tempId, ...data});
-                        operation.id = tempId; // Mettre à jour l'ID dans l'opération
-                        savePendingOperations();
-                    }
-                    
-                    // Trier par date
-                    currentYearTrips.sort((a, b) => new Date(b.date) - new Date(a.date));
-                    
-                    // Mettre à jour le cache et l'affichage
-                    saveToCache(tripYear, currentYearTrips);
-                    renderList(currentYearTrips);
-                    updateDL(currentYearTrips);
-                    
-                    // Mettre à jour allTrips pour les stats/cal
-                    allTrips = [...allTrips.filter(t => !t.date.startsWith(tripYear)), ...currentYearTrips];
-                    renderCal(); 
-                    calcRot();
-                    
-                    resetForm(); 
-                    nav('tab-list'); 
-                    toast("Trajet enregistré localement. Synchronisation automatique lors de la reconnexion.");
+                    toast("Trajet enregistré localement. Synchronisation automatique à la reconnexion.");
                 }
+
+                // Mettre à jour l'interface dans tous les cas
+                invalidateCache(tripYear);
+                resetForm(); 
+                nav('tab-list'); 
+                await loadDataForYear(document.getElementById('filter-year').value);
+
             } catch (error) {
                 console.error("Erreur lors de l'enregistrement du trajet:", error);
                 toast("Erreur lors de l'enregistrement. Veuillez réessayer.");
@@ -791,7 +767,6 @@
             if(sel.length < 2) return out.innerHTML = '<div style="padding:30px; text-align:center; color:#94A3B8;">Sélectionnez au moins 2 personnes.</div>';
 
             const currentSig = getSig(sel);
-            // Utilise allTrips pour le calcul sur l'ensemble des données
             const validTrips = allTrips.filter(t => t.passagers && t.passagers.length > 0 && getSig([t.conducteur, ...t.passagers]) === currentSig);
 
             const res = sel.map(who => {
@@ -852,7 +827,7 @@
             let h=''; for(let i=0;i<off;i++)h+='<div></div>';
             for(let d=1;d<=days;d++){
                 const s = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const t = allTrips.find(x=>x.date===s); // Utilise allTrips
+                const t = allTrips.find(x=>x.date===s);
                 let dot = '';
                 if(t && (!t.passagers || t.passagers.length)) { 
                    dot = `<div class="dot ${clean(t.conducteur)}"></div>`;
@@ -867,18 +842,18 @@
         document.getElementById('next-m').onclick=()=>{calD.setMonth(calD.getMonth()+1);renderCal();};
         
         window.showD = (s) => {
-            const t = allTrips.find(x=>x.date===s); // Utilise allTrips
+            const t = allTrips.find(x=>x.date===s);
             const el = document.getElementById('cal-detail');
             if(!t) return el.innerHTML = '';
             const isSolo = (!t.passagers || t.passagers.length === 0);
-            const isPending = pendingOperations.some(op => op.id === t.id);
+            const isPending = pendingOperations.some(op => (op.tripId === t.id) || (op.type === 'add' && op.id === t.id));
             
             el.innerHTML = `
                 <div class="card ${clean(t.conducteur)}" style="margin:0; ${isPending ? 'border-left: 4px solid #F59E0B;' : ''}">
                     <div class="card-header">
                         <span class="driver-badge">${t.conducteur}</span> 
                         <span class="date-text">${new Date(t.date).toLocaleDateString()}</span>
-                        ${isPending ? '<span style="color: #F59E0B; font-size: 0.75rem;"><i class="fas fa-clock"></i> En attente de synchronisation</span>' : ''}
+                        ${isPending ? '<span style="color: #F59E0B; font-size: 0.75rem;"><i class="fas fa-clock"></i> En attente</span>' : ''}
                     </div>
                     <div style="font-size:0.9rem; color:#64748B;">${isSolo ? 'Solo' : t.passagers.join(', ')}</div>
                 </div>`;
@@ -889,14 +864,20 @@
             document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            
+            // Trouver le bouton de navigation correct à activer
+            const targetButton = document.querySelector(`.nav-item[onclick*="nav('${id}')"]`);
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
+
             if(id==='tab-stats') calcRot();
             if(id==='tab-add') resetForm();
         };
 
         window.edit = (id) => {
-            const t = currentYearTrips.find(x=>x.id===id); // Chercher dans les données de l'année courante
-            if (!t) return; // Ne pas éditer si le trajet n'est pas dans la liste affichée
+            const t = currentYearTrips.find(x=>x.id===id);
+            if (!t) return;
             document.getElementById('inp-id').value=id; document.getElementById('inp-date').value=t.date;
             document.getElementById('inp-driver').value=t.conducteur; buffer=[...(t.passagers||[])]; renderChips();
             document.getElementById('inp-note').value=t.commentaire||''; 
@@ -912,50 +893,29 @@
         document.getElementById('btn-cancel').onclick=()=>{resetForm(); nav('tab-list')};
         
         window.del = async (id) => { 
-            if(confirm('Supprimer définitivement ?')) {
-                const trip = currentYearTrips.find(t => t.id === id);
-                if (!trip) return;
-                
-                try {
-                    if (isOnline) {
-                        // Mode en ligne : supprimer directement de Firebase
-                        await db.collection(COL).doc(id).delete();
-                        
-                        // Invalider le cache et recharger les données
-                        invalidateCache(trip.date.split('-')[0]);
-                        toast("Trajet supprimé");
-                        loadDataForYear(document.getElementById('filter-year').value);
-                    } else {
-                        // Mode hors ligne : ajouter aux opérations en attente
-                        const operation = {
-                            type: 'delete',
-                            id: id,
-                            data: null
-                        };
-                        
-                        addPendingOperation(operation);
-                        
-                        // Mettre à jour localement
-                        currentYearTrips = currentYearTrips.filter(t => t.id !== id);
-                        
-                        // Mettre à jour le cache et l'affichage
-                        const tripYear = trip.date.split('-')[0];
-                        saveToCache(tripYear, currentYearTrips);
-                        renderList(currentYearTrips);
-                        updateDL(currentYearTrips);
-                        
-                        // Mettre à jour allTrips pour les stats/cal
-                        allTrips = allTrips.filter(t => t.id !== id);
-                        renderCal(); 
-                        calcRot();
-                        
-                        toast("Trajet supprimé localement. Synchronisation automatique lors de la reconnexion.");
-                    }
-                } catch (error) {
-                    console.error("Erreur lors de la suppression du trajet:", error);
-                    toast("Erreur lors de la suppression. Veuillez réessayer.");
+            if(!confirm('Supprimer définitivement ?')) return;
+            
+            const trip = currentYearTrips.find(t => t.id === id);
+            if (!trip) return;
+            
+            try {
+                if (isOnline) {
+                    await db.collection(COL).doc(id).delete();
+                    toast("Trajet supprimé");
+                } else {
+                    const operation = { type: 'delete', tripId: id, data: null };
+                    addPendingOperation(operation);
+                    toast("Trajet supprimé localement. Synchronisation automatique à la reconnexion.");
                 }
-            } 
+
+                // Mettre à jour l'interface dans tous les cas
+                invalidateCache(trip.date.split('-')[0]);
+                await loadDataForYear(document.getElementById('filter-year').value);
+
+            } catch (error) {
+                console.error("Erreur lors de la suppression du trajet:", error);
+                toast("Erreur lors de la suppression. Veuillez réessayer.");
+            }
         };
         
         function toast(m) { 
