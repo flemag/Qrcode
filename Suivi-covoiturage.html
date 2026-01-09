@@ -750,11 +750,10 @@
                 <i class="fas fa-trophy winner-bg-icon"></i>
                 <div class="winner-sub">C'est au tour de</div>
                 <div class="winner-name">${winner.name}</div>
-                <div style="font-size:0.9rem; opacity:0.8; margin-bottom:15px;">Dernier: ${winner.dateStr}</div>
-                <div class="copy-btn" onclick="copyRes('${winner.name}')"><i class="far fa-copy"></i> Copier pour WhatsApp</div>
+                <div style="font-size:0.9rem; opacity:0.8;">Dernier: ${winner.dateStr}</div>
             </div>
             <div style="margin-top:20px; padding:0 10px;">
-                <div style="font-size:0.75rem; font-weight:700; color:#94A3B8; margin-bottom:10px; text-transform:uppercase;">Les suivants</div>
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase;">Les suivants</div>
                 ${others.map((r, i) => `
                     <div class="loser-row">
                         <div style="display:flex; align-items:center; gap:10px;">
@@ -775,11 +774,6 @@
             out.innerHTML = html;
         }
         
-        window.copyRes = (name) => {
-            navigator.clipboard.writeText(`🚗 Covoiturage : C'est au tour de ${name} de conduire !`);
-            toast("Copié dans le presse-papier !");
-        };
-
         // --- 4. CALENDAR ---
         function renderCal() {
             const y=calD.getFullYear(), m=calD.getMonth();
