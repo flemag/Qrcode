@@ -14,57 +14,77 @@
 
     <style>
         :root {
-            /* Palette Premium */
-            --primary: #4F46E5; /* Indigo vibrant */
+            --primary: #4F46E5;
             --primary-soft: #E0E7FF;
-            --surface: #F2F6FF; /* Gris bleuté très clair */
-            --card-bg: #FFFFFF;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
+            --c-steve: #10B981; --c-steve-soft: #DCFCE7; --t-steve: #065F46;
+            --c-marc: #F97316; --c-marc-soft: #FFEDD5; --t-marc: #9A3412;
+            --c-julien: #8B5CF6; --c-julien-soft: #F3E8FF; --t-julien: #5B21B6;
             
-            /* Couleurs Conducteurs (Plus douces) */
-            --c-steve: #DCFCE7; --t-steve: #166534; /* Vert Émeraude */
-            --c-marc: #FFEDD5; --t-marc: #9A3412;  /* Orange Brûlé */
-            --c-julien: #F3E8FF; --t-julien: #6B21A8; /* Violet Royal */
-            
-            --radius: 20px;
-            --nav-h: 85px;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
-            --shadow-float: 0 12px 30px rgba(79, 70, 229, 0.15);
+            --shadow-lg: 0 12px 30px rgba(79, 70, 229, 0.15);
+
+            /* Light Mode (Default) */
+            --bg: #F1F5F9;
+            --surface: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+        }
+
+        .dark-mode {
+             /* Dark Mode */
+            --bg: #111827;
+            --surface: #1F2937;
+            --text: #F9FAFB;
+            --text-muted: #9CA3AF;
+            --border: #374151;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--surface); color: var(--text-main); margin: 0; padding-bottom: 110px; overflow-x: hidden; }
+        body {
+            background: var(--bg); color: var(--text);
+            margin: 0; padding-bottom: 110px; overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
         .hidden { display: none !important; }
 
-        /* --- HEADER GLASSED --- */
+        /* --- HEADER --- */
         header {
             padding: 15px 24px; position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(242, 246, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.03);
+            background: var(--bg-t, rgba(241, 245, 249, 0.8));
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s, border-color 0.3s;
         }
-        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .dark-mode header { --bg-t: rgba(17, 24, 39, 0.8); }
+
         .brand { font-weight: 800; color: var(--primary); font-size: 1.4rem; display: flex; align-items: center; gap: 8px; }
         .brand i { font-size: 1.1rem; background: var(--primary); color: white; padding: 6px; border-radius: 10px; }
         
-        .user-pill { 
-            background: white; padding: 4px 4px 4px 12px; border-radius: 30px; 
-            font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 10px;
-            box-shadow: var(--shadow-sm); color: var(--text-main);
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .action-icon {
+            background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
         }
-        .user-pill img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-        .logout-btn { color: #EF4444; background: #FEE2E2; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; font-size: 0.8rem; }
-        #refresh-btn { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 1.2rem; padding: 8px; border-radius: 50%; transition: background 0.2s; }
-        #refresh-btn:hover { background: var(--primary-soft); }
-        #refresh-btn.loading i { animation: spin 1s linear infinite; }
+        .action-icon:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+        .action-icon.loading i { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
+        .user-pill { 
+            background: var(--surface); padding: 4px; border-radius: 30px;
+            display: flex; align-items: center; gap: 8px;
+            border: 1px solid var(--border);
+        }
+        .user-pill span { font-size: 0.85rem; font-weight: 700; padding: 0 8px 0 4px; }
+        .user-pill img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .logout-btn { color: #EF4444; background: #FEE2E2; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; font-size: 0.8rem; margin-right: 2px;}
+
         /* --- AUTH SCREEN --- */
-        .auth-container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: white; }
+        .auth-container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; background: var(--surface); }
         .hero-icon { font-size: 4rem; color: var(--primary); margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(79, 70, 229, 0.3)); }
         .auth-btn { 
             background: #1E1E1E; color: white; border: none; padding: 16px 32px; 
@@ -74,79 +94,69 @@
         }
         .auth-btn:active { transform: scale(0.95); }
 
-        /* --- SECTIONS & ANIMATIONS --- */
-        .section { display: none; padding: 20px 20px; max-width: 600px; margin: 0 auto; }
+        /* --- SECTIONS & UI --- */
+        .section { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
         .section.active { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        h2 { font-size: 1.5rem; font-weight: 800; margin: 10px 0 20px 0; color: var(--text-main); letter-spacing: -0.5px; }
+        h2 { font-size: 1.5rem; font-weight: 800; margin: 10px 0 20px 0; color: var(--text); letter-spacing: -0.5px; }
+        .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
 
         /* --- CARDS --- */
         .card { 
-            background: var(--card-bg); padding: 20px; border-radius: 24px; margin-bottom: 16px; 
-            box-shadow: var(--shadow-sm); position: relative; overflow: hidden; transition: transform 0.2s;
-            border: 1px solid rgba(0,0,0,0.02);
+            background: var(--surface); padding: 20px; border-radius: 20px; margin-bottom: 16px;
+            box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, background 0.3s, border-color 0.3s;
         }
         .card:active { transform: scale(0.98); }
-        /* Indicateur latéral coloré */
         .card::before { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
-        .card.steve::before { background: var(--t-steve); }
-        .card.marc::before { background: var(--t-marc); }
-        .card.julien::before { background: var(--t-julien); }
+        .card.steve::before { background: var(--c-steve); } .card.marc::before { background: var(--c-marc); } .card.julien::before { background: var(--c-julien); }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .date-text { font-weight: 700; font-size: 1.05rem; }
         .relative-time { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-left: 8px; }
         
         .driver-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .steve .driver-badge { background: var(--c-steve); color: var(--t-steve); }
-        .marc .driver-badge { background: var(--c-marc); color: var(--t-marc); }
-        .julien .driver-badge { background: var(--c-julien); color: var(--t-julien); }
+        .steve .driver-badge { background: var(--c-steve-soft); color: var(--t-steve); }
+        .marc .driver-badge { background: var(--c-marc-soft); color: var(--t-marc); }
+        .julien .driver-badge { background: var(--c-julien-soft); color: var(--t-julien); }
 
-        .passengers-row { display: flex; gap: 8px; align-items: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; }
-        .p-icon { color: #CBD5E1; }
+        .passengers-row { display: flex; gap: 8px; align-items: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; }
+        .passengers-row i { color: #CBD5E1; }
         
-        .actions-row { 
-            display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; padding-top: 12px; 
-            border-top: 1px dashed #F1F5F9; 
-        }
-        .act-btn { color: var(--text-muted); background: #F8FAFC; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .actions-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--border); }
+        .act-btn { color: var(--text-muted); background: var(--bg); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; border:1px solid var(--border); }
         .act-btn:hover { background: var(--primary-soft); color: var(--primary); }
         .act-btn.del:hover { background: #FEE2E2; color: #EF4444; }
 
         /* --- ROTATION UI --- */
-        .presence-panel { 
-            background: white; padding: 24px; border-radius: 28px; text-align: center; 
-            box-shadow: var(--shadow-md); margin-bottom: 24px;
-        }
+        .presence-panel { background: var(--surface); padding: 24px; border-radius: 24px; text-align: center; box-shadow: var(--shadow-md); margin-bottom: 24px; border: 1px solid var(--border); }
         .label-sm { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; display: block; }
         
         .avatars-grid { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .avatar-toggle { 
-            width: 60px; height: 60px; border-radius: 50%; background: #F8FAFC; 
-            border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 60px; height: 60px; border-radius: 50%; background: var(--bg);
+            border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative; color: var(--text-muted);
         }
         .avatar-toggle span { font-size: 0.7rem; font-weight: 700; margin-top: 2px; }
         .avatar-toggle i { font-size: 1.2rem; }
         
-        /* Active States */
         .avatar-toggle.active { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); color: white; border:none; }
-        .avatar-toggle[data-name="Steve"].active { background: #10B981; }
-        .avatar-toggle[data-name="Marc"].active { background: #F97316; }
-        .avatar-toggle[data-name="Julien"].active { background: #8B5CF6; }
+        .avatar-toggle[data-name="Steve"].active { background: var(--c-steve); }
+        .avatar-toggle[data-name="Marc"].active { background: var(--c-marc); }
+        .avatar-toggle[data-name="Julien"].active { background: var(--c-julien); }
         
-        /* Checkmark badge */
         .avatar-toggle.active::after {
-            content: '✓'; position: absolute; top: -2px; right: -2px; background: white; color: black;
+            content: '✓'; position: absolute; top: -2px; right: -2px; background: var(--surface); color: var(--text);
             width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .winner-card {
-            background: linear-gradient(135deg, #4F46E5, #818CF8); color: white;
+            background: linear-gradient(135deg, var(--primary), #818CF8); color: white;
             padding: 24px; border-radius: 24px; text-align: center; margin-top: 20px;
-            box-shadow: var(--shadow-float); animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow-lg); animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative; overflow: hidden;
         }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
@@ -162,15 +172,17 @@
 
         .loser-row {
             display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;
-            background: white; margin-top: 8px; border-radius: 16px; font-size: 0.9rem; color: var(--text-muted);
+            background: var(--surface); margin-top: 8px; border-radius: 16px; font-size: 0.9rem; color: var(--text-muted);
+            border: 1px solid var(--border);
         }
 
         /* --- FORMS --- */
         .form-group { margin-bottom: 20px; }
-        .input-wrap { position: relative; background: white; border-radius: 16px; border: 1px solid #E2E8F0; transition: 0.2s; }
+        .input-wrap { position: relative; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); transition: 0.2s; }
         .input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
-        .input-field { width: 100%; padding: 16px; border: none; background: transparent; font-size: 1rem; outline: none; border-radius: 16px; }
-        .input-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; }
+        .input-field { width: 100%; padding: 16px; border: none; background: transparent; font-size: 1rem; outline: none; border-radius: 16px; color: var(--text); }
+        .input-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        select#filter-year { appearance: none; -webkit-appearance: none; background: var(--surface); color: var(--primary); border: 1px solid var(--border); padding: 8px 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; }
 
         .chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .chip { background: var(--primary-soft); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; animation: fadeIn 0.2s; }
@@ -179,19 +191,23 @@
         .btn-primary {
             width: 100%; padding: 18px; background: var(--primary); color: white; border: none;
             border-radius: 20px; font-weight: 700; font-size: 1rem; margin-top: 10px;
-            box-shadow: var(--shadow-float); cursor: pointer; transition: transform 0.2s;
+            box-shadow: var(--shadow-lg); cursor: pointer; transition: transform 0.2s;
         }
         .btn-primary:active { transform: scale(0.98); }
 
         /* --- NAV --- */
         .bottom-nav {
             position: fixed; bottom: 20px; left: 20px; right: 20px; height: 70px;
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            background: var(--surface-t, rgba(255, 255, 255, 0.8)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            display: flex; justify-content: space-around; align-items: center; z-index: 900; border: 1px solid rgba(255,255,255,0.5);
+            display: flex; justify-content: space-around; align-items: center; z-index: 900;
+            border: 1px solid var(--border);
+            transition: background 0.3s, border-color 0.3s;
         }
+        .dark-mode .bottom-nav { --surface-t: rgba(31, 41, 55, 0.8); }
+
         .nav-item {
-            border: none; background: none; color: #94A3B8; display: flex; flex-direction: column; align-items: center;
+            border: none; background: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center;
             justify-content: center; width: 60px; height: 60px; border-radius: 50%; transition: 0.3s; cursor: pointer;
         }
         .nav-item i { font-size: 1.3rem; transition: 0.3s; }
@@ -199,12 +215,12 @@
 
         /* --- CALENDAR --- */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
-        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; font-size: 0.85rem; background: white; color: var(--text-muted); border: 1px solid transparent; cursor: pointer; }
-        .day-cell:hover { background: var(--surface); }
+        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; font-size: 0.85rem; background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); cursor: pointer; }
+        .day-cell:hover { background: var(--bg); }
         .day-cell.today { border-color: var(--primary); color: var(--primary); font-weight: 800; }
         
         .dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
-        .dot.steve { background: #10B981; } .dot.marc { background: #F97316; } .dot.julien { background: #8B5CF6; }
+        .dot.steve { background: var(--c-steve); } .dot.marc { background: var(--c-marc); } .dot.julien { background: var(--c-julien); }
 
         /* Toast */
         #toast { 
@@ -246,43 +262,39 @@
 
     <div id="view-app" class="hidden">
         <header>
-            <div class="brand"><i class="fas fa-car"></i> Co-Pilot</div>
+            <div class="brand"><i class="fas fa-car-side"></i> Co-Pilot</div>
             <div class="header-actions">
-                <div id="refresh-btn" title="Forcer l'actualisation" onclick="forceRefresh()"><i class="fas fa-sync-alt"></i></div>
+                <div id="theme-switcher" class="action-icon" title="Changer de thème"><i class="fas fa-moon"></i></div>
+                <div id="refresh-btn" class="action-icon" title="Forcer l'actualisation" onclick="forceRefresh()"><i class="fas fa-sync-alt"></i></div>
                 <div id="user-pill" class="user-pill"></div>
             </div>
             <div class="sync-indicator" id="sync-indicator"></div>
         </header>
 
         <section id="tab-list" class="section active">
-            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div class="section-header">
                 <h2>Historique</h2>
-                <select id="filter-year" style="border:none; background:transparent; font-weight:700; color:var(--primary); font-size:1rem; outline:none; cursor:pointer; margin-bottom:20px;"></select>
+                <select id="filter-year"></select>
             </div>
-            <div id="list-content">
-                <!-- Le contenu sera injecté ici -->
-            </div>
+            <div id="list-content"></div>
         </section>
 
         <section id="tab-add" class="section">
             <h2>Nouveau Trajet</h2>
             <form id="form-trip">
                 <input type="hidden" id="inp-id">
-                
                 <div class="form-group">
                     <div class="input-wrap">
                         <input type="date" id="inp-date" class="input-field" required>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <div class="input-wrap">
                         <input type="text" id="inp-driver" class="input-field" list="dl-drivers" placeholder="Conducteur" required autocomplete="off">
-                        <i class="fas fa-steering-wheel input-icon"></i>
+                        <i class="fas fa-user-tie input-icon"></i>
                     </div>
                     <datalist id="dl-drivers"></datalist>
                 </div>
-
                 <div class="form-group">
                     <div class="input-wrap">
                         <input type="text" id="inp-pass" class="input-field" list="dl-pass" placeholder="Ajouter un passager..." autocomplete="off">
@@ -291,27 +303,25 @@
                     <div id="chips" class="chips-container"></div>
                     <datalist id="dl-pass"></datalist>
                 </div>
-
                 <div class="form-group">
                     <div class="input-wrap">
-                        <input type="text" id="inp-note" class="input-field" placeholder="Petite note (optionnel)">
-                        <i class="fas fa-comment-alt input-icon"></i>
+                        <input type="text" id="inp-note" class="input-field" placeholder="Ajouter une note (ex: Autoroute)">
+                        <i class="fas fa-sticky-note input-icon"></i>
                     </div>
                 </div>
-
-                <button type="submit" class="btn-primary">Enregistrer le trajet</button>
-                <button type="button" id="btn-cancel" style="width:100%; padding:15px; background:none; border:none; color:#94A3B8; font-weight:600; display:none;">Annuler modification</button>
+                <button type="submit" class="btn-primary">Enregistrer</button>
+                <button type="button" id="btn-cancel" style="width:100%; padding:15px; background:none; border:none; color:var(--text-muted); font-weight:600; display:none;">Annuler modification</button>
             </form>
         </section>
 
         <section id="tab-cal" class="section">
-            <div style="background:white; padding:20px; border-radius:24px; box-shadow:var(--shadow-sm);">
+             <div class="card" style="padding: 24px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <button id="prev-m" style="background:var(--surface); border:none; width:36px; height:36px; border-radius:50%; color:var(--text-main); cursor:pointer;"><i class="fas fa-chevron-left"></i></button>
-                    <h3 id="cal-title" style="margin:0; font-size:1.1rem;"></h3>
-                    <button id="next-m" style="background:var(--surface); border:none; width:36px; height:36px; border-radius:50%; color:var(--text-main); cursor:pointer;"><i class="fas fa-chevron-right"></i></button>
+                    <button id="prev-m" class="action-icon"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="cal-title" style="margin:0; font-size:1.1rem; font-weight:700;"></h3>
+                    <button id="next-m" class="action-icon"><i class="fas fa-chevron-right"></i></button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem; color:var(--text-muted); font-weight:700; margin-bottom:5px;">
+                <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem; color:var(--text-muted); font-weight:700; margin: 15px 0 5px;">
                     <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>
                 </div>
                 <div id="cal-grid" class="cal-grid"></div>
@@ -320,36 +330,32 @@
         </section>
 
         <section id="tab-stats" class="section">
-            <h2>C'est à qui ?</h2>
-            
+            <h2>Qui sera le prochain ?</h2>
             <div class="presence-panel">
-                <span class="label-sm">Qui est présent ?</span>
+                <span class="label-sm">Participants au prochain trajet</span>
                 <div class="avatars-grid">
                     <div class="avatar-toggle active" data-name="Steve" onclick="toggle('Steve')">
-                        <img src="https://ui-avatars.com/api/?name=Steve&background=random&color=fff" style="width:100%; height:100%; border-radius:50%; opacity:0.8;">
+                        <img src="https://ui-avatars.com/api/?name=S&background=10B981&color=fff&bold=true" style="width:100%; height:100%; border-radius:50%;" alt="Steve">
                     </div>
                     <div class="avatar-toggle active" data-name="Marc" onclick="toggle('Marc')">
-                        <img src="https://ui-avatars.com/api/?name=Marc&background=random&color=fff" style="width:100%; height:100%; border-radius:50%; opacity:0.8;">
+                        <img src="https://ui-avatars.com/api/?name=M&background=F97316&color=fff&bold=true" style="width:100%; height:100%; border-radius:50%;" alt="Marc">
                     </div>
                     <div class="avatar-toggle active" data-name="Julien" onclick="toggle('Julien')">
-                        <img src="https://ui-avatars.com/api/?name=Julien&background=random&color=fff" style="width:100%; height:100%; border-radius:50%; opacity:0.8;">
+                         <img src="https://ui-avatars.com/api/?name=J&background=8B5CF6&color=fff&bold=true" style="width:100%; height:100%; border-radius:50%;" alt="Julien">
                     </div>
                 </div>
             </div>
-
             <div id="rotation-out"></div>
-            
             <div style="margin-top:30px; text-align:center; opacity:0.5;">
-                <img src="https://cdn-icons-png.flaticon.com/512/748/748137.png" width="40" style="filter:grayscale(100%);">
-                <p style="font-size:0.75rem; margin-top:5px;">Calcul basé sur l'historique exact du groupe.</p>
+                <p style="font-size:0.75rem; margin-top:5px; color: var(--text-muted);">Calcul basé sur le dernier trajet effectué par chaque membre du groupe.</p>
             </div>
         </section>
 
         <nav class="bottom-nav">
-            <button class="nav-item active" onclick="nav('tab-list')"><i class="fas fa-stream"></i></button>
-            <button class="nav-item" onclick="nav('tab-add')"><i class="fas fa-plus"></i></button>
-            <button class="nav-item" onclick="nav('tab-cal')"><i class="fas fa-calendar-alt"></i></button>
-            <button class="nav-item" onclick="nav('tab-stats')"><i class="fas fa-sync-alt"></i></button>
+            <button class="nav-item active" onclick="nav('tab-list')" title="Historique"><i class="fas fa-history"></i></button>
+            <button class="nav-item" onclick="nav('tab-add')" title="Ajouter"><i class="fas fa-plus-circle"></i></button>
+            <button class="nav-item" onclick="nav('tab-cal')" title="Calendrier"><i class="fas fa-calendar-alt"></i></button>
+            <button class="nav-item" onclick="nav('tab-stats')" title="Rotation"><i class="fas fa-users"></i></button>
         </nav>
     </div>
 
@@ -399,13 +405,13 @@
         };
 
         // --- GESTION DU CACHE LOCAL ---
-        function getCacheKey(year) { return `trajetsCache_${year}`; }
-        function getCacheTimestampKey(year) { return `trajetsCacheTimestamp_${year}`; }
+        function getCacheKey() { return `trajetsCache_all`; }
+        function getCacheTimestampKey() { return `trajetsCacheTimestamp_all`; }
         function getPendingOperationsKey() { return `pendingOperations`; }
 
-        function loadFromCache(year) {
-            const cachedData = localStorage.getItem(getCacheKey(year));
-            const cacheTimestamp = localStorage.getItem(getCacheTimestampKey(year));
+        function loadFromCache() {
+            const cachedData = localStorage.getItem(getCacheKey());
+            const cacheTimestamp = localStorage.getItem(getCacheTimestampKey());
             
             if (cachedData && cacheTimestamp) {
                 const age = Date.now() - parseInt(cacheTimestamp);
@@ -416,14 +422,14 @@
             return null;
         }
 
-        function saveToCache(year, data) {
-            localStorage.setItem(getCacheKey(year), JSON.stringify(data));
-            localStorage.setItem(getCacheTimestampKey(year), Date.now().toString());
+        function saveToCache(data) {
+            localStorage.setItem(getCacheKey(), JSON.stringify(data));
+            localStorage.setItem(getCacheTimestampKey(), Date.now().toString());
         }
 
-        function invalidateCache(year) {
-            localStorage.removeItem(getCacheKey(year));
-            localStorage.removeItem(getCacheTimestampKey(year));
+        function invalidateCache() {
+            localStorage.removeItem(getCacheKey());
+            localStorage.removeItem(getCacheTimestampKey());
         }
 
         // Gestion des opérations en attente
@@ -460,7 +466,6 @@
             showSyncIndicator();
             
             try {
-                // Copie des opérations pour éviter les modifications pendant la synchronisation
                 const operationsToSync = [...pendingOperations];
                 
                 for (const operation of operationsToSync) {
@@ -468,21 +473,19 @@
                         if (operation.type === 'add') {
                             await db.collection(COL).add(operation.data);
                         } else if (operation.type === 'update') {
-                            await db.collection(COL).doc(operation.tripId).update(operation.data); // Utiliser tripId
+                            await db.collection(COL).doc(operation.tripId).update(operation.data);
                         } else if (operation.type === 'delete') {
-                            await db.collection(COL).doc(operation.tripId).delete(); // Utiliser tripId
+                            await db.collection(COL).doc(operation.tripId).delete();
                         }
                         
-                        // Opération réussie, on la retire de la liste
                         removePendingOperation(operation.id);
                     } catch (error) {
                         console.error("Erreur lors de la synchronisation d'une opération:", error);
                     }
                 }
                 
-                // Recharger les données après synchronisation
-                const currentYear = document.getElementById('filter-year').value;
-                await loadDataForYear(currentYear, true);
+                // Recharger toutes les données après synchronisation
+                await loadInitialData(true);
                 
                 toast("Synchronisation terminée");
             } catch (error) {
@@ -494,13 +497,8 @@
             }
         }
 
-        function showSyncIndicator() {
-            document.getElementById('sync-indicator').classList.add('active');
-        }
-
-        function hideSyncIndicator() {
-            document.getElementById('sync-indicator').classList.remove('active');
-        }
+        function showSyncIndicator() { document.getElementById('sync-indicator').classList.add('active'); }
+        function hideSyncIndicator() { document.getElementById('sync-indicator').classList.remove('active'); }
 
         // --- AUTH ---
         auth.onAuthStateChanged(u => {
@@ -519,12 +517,13 @@
         });
         document.getElementById('btn-login').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
 
-        // --- INIT DATA ---
+        // --- INIT & DATA FLOW ---
         function initApp() {
             const currentYear = new Date().getFullYear();
             const yearSelect = document.getElementById('filter-year');
             yearSelect.innerHTML = '';
-            for (let i = 0; i < 3; i++) {
+            // Allow selecting future years and more past years
+            for (let i = -1; i < 5; i++) {
                 const year = currentYear - i;
                 let o = document.createElement('option');
                 o.value = year;
@@ -533,151 +532,116 @@
                 yearSelect.appendChild(o);
             }
             
-            yearSelect.onchange = () => loadDataForYear(yearSelect.value);
+            yearSelect.onchange = () => processDataForDisplay();
             
-            // Charger les opérations en attente
             loadPendingOperations();
+            loadInitialData(); // Load all data on startup
             
-            // Charger les données pour l'année en cours
-            loadDataForYear(currentYear);
-            
-            // Tenter de synchroniser les opérations en attente
-            syncPendingOperations();
-            
-            // Configurer les écouteurs d'événements en ligne/hors ligne
-            window.addEventListener('online', () => {
-                isOnline = true;
-                syncPendingOperations();
-            });
-            
-            window.addEventListener('offline', () => {
-                isOnline = false;
-                toast("Mode hors ligne : les modifications seront synchronisées ultérieurement");
-            });
+            window.addEventListener('online', () => { isOnline = true; syncPendingOperations(); });
+            window.addEventListener('offline', () => { isOnline = false; toast("Mode hors ligne activé"); });
         }
 
-        // --- FONCTION PRINCIPALE DE CHARGEMENT DES DONNÉES ---
-        async function loadDataForYear(year, forceRefresh = false) {
+        // New main data loading function
+        async function loadInitialData(forceRefresh = false) {
             const listContent = document.getElementById('list-content');
             listContent.innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-circle-notch fa-spin" style="color:var(--primary); font-size:2rem;"></i></div>';
 
-            // 1. Essayer de charger depuis le cache (sauf si rafraîchissement forcé)
+            let dataLoaded = false;
             if (!forceRefresh) {
-                const cachedTrips = loadFromCache(year);
+                const cachedTrips = loadFromCache();
                 if (cachedTrips) {
-                    currentYearTrips = cachedTrips;
-                    renderList(currentYearTrips);
-                    updateDL(currentYearTrips);
-                    toast("Données chargées depuis le cache local");
+                    allTrips = cachedTrips;
+                    dataLoaded = true;
+                    toast("Données chargées depuis le cache");
                 }
             }
 
-            // 2. Charger depuis Firebase si en ligne
-            if (isOnline) {
+            if (isOnline && (!dataLoaded || forceRefresh)) {
                 try {
-                    const startDate = `${year}-01-01`;
-                    const endDate = `${year}-12-31`;
-                    const snapshot = await db.collection(COL)
-                      .where('date', '>=', startDate)
-                      .where('date', '<=', endDate)
-                      .orderBy('date', 'desc')
-                      .get();
-                    
+                    const snapshot = await db.collection(COL).orderBy('date', 'desc').get();
                     const freshTrips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                    currentYearTrips = freshTrips;
-                    saveToCache(year, freshTrips);
-                    renderList(freshTrips);
-                    updateDL(freshTrips);
-                    
-                    // On met à jour allTrips pour les stats/cal
-                    allTrips = [...allTrips.filter(t => !t.date.startsWith(year)), ...freshTrips];
-                    renderCal(); 
-                    calcRot();
+                    allTrips = freshTrips;
+                    saveToCache(freshTrips);
+                    dataLoaded = true;
                 } catch (error) {
-                    console.error("Erreur de chargement des données:", error);
-                    listContent.innerHTML = '<div style="text-align:center; color:red; padding:40px;">Impossible de charger les données. Vérifiez votre connexion.</div>';
+                    console.error("Erreur de chargement Firebase:", error);
+                    if (!dataLoaded) { // Only show error if no cache is available
+                         listContent.innerHTML = '<div style="text-align:center; color:red; padding:40px;">Impossible de charger les données.</div>';
+                         return;
+                    }
                 }
-            } else {
-                // Mode hors ligne, appliquer les opérations en attente aux données locales
-                applyPendingOperationsToCache(year);
             }
+
+            applyPendingOperationsToLocalData();
+            processDataForDisplay();
+        }
+
+        // New function to handle filtering and rendering
+        function processDataForDisplay() {
+            const year = document.getElementById('filter-year').value;
+            currentYearTrips = allTrips.filter(t => t.date.startsWith(year));
+            currentYearTrips.sort((a, b) => new Date(b.date) - new Date(a.date)); // Ensure sorting
+
+            renderList(currentYearTrips);
+            updateDL(allTrips); // Use all trips for datalists
+            renderCal();
+            calcRot(); // calcRot already uses allTrips
         }
 
         function forceRefresh() {
-            const year = document.getElementById('filter-year').value;
-            invalidateCache(year);
-            loadDataForYear(year, true);
-            toast("Actualisation depuis Firebase en cours...");
+            invalidateCache();
+            loadInitialData(true);
+            toast("Actualisation depuis Firebase...");
         }
 
-        // Appliquer les opérations en attente aux données en cache
-        function applyPendingOperationsToCache(year) {
-            let cachedTrips = loadFromCache(year) || [];
+        // Apply pending operations to the `allTrips` array
+        function applyPendingOperationsToLocalData() {
+            if (pendingOperations.length === 0) return;
+
+            let localTrips = [...allTrips];
             
-            // Appliquer les opérations en attente
             pendingOperations.forEach(operation => {
-                const operationYear = operation.data.date ? operation.data.date.split('-')[0] : year;
-                
-                if (operationYear !== year) return;
-                
                 if (operation.type === 'add') {
-                    // Ajouter un ID temporaire si nécessaire
-                    const tempId = operation.id || `temp_${Date.now()}`;
-                    cachedTrips.unshift({id: tempId, ...operation.data});
+                    localTrips.unshift({ id: operation.id, ...operation.data });
                 } else if (operation.type === 'update') {
-                    const index = cachedTrips.findIndex(t => t.id === operation.tripId);
-                    if (index !== -1) {
-                        cachedTrips[index] = {...cachedTrips[index], ...operation.data};
-                    }
+                    const index = localTrips.findIndex(t => t.id === operation.tripId);
+                    if (index !== -1) localTrips[index] = { ...localTrips[index], ...operation.data };
                 } else if (operation.type === 'delete') {
-                    cachedTrips = cachedTrips.filter(t => t.id !== operation.tripId);
+                    localTrips = localTrips.filter(t => t.id !== operation.tripId);
                 }
             });
-            
-            // Trier par date
-            cachedTrips.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            // Mettre à jour le cache et l'affichage
-            currentYearTrips = cachedTrips;
-            saveToCache(year, cachedTrips);
-            renderList(cachedTrips);
-            updateDL(cachedTrips);
-            
-            // Mettre à jour allTrips pour les stats/cal
-            allTrips = [...allTrips.filter(t => !t.date.startsWith(year)), ...cachedTrips];
-            renderCal(); 
-            calcRot();
+            allTrips = localTrips;
         }
 
         // --- 1. LIST RENDER ---
         function renderList(dataToShow) {
             const box = document.getElementById('list-content');
-            if(!dataToShow.length) return box.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:40px;"><i class="fas fa-wind" style="font-size:2rem; margin-bottom:10px;"></i><br>Aucun trajet trouvé.</div>';
+            if(!dataToShow.length) {
+                box.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px;"><i class="fas fa-box-open" style="font-size:2rem; margin-bottom:10px;"></i><br>Aucun trajet pour cette année.</div>`;
+                return;
+            }
 
             box.innerHTML = dataToShow.map(t => {
                 const dr = clean(t.conducteur);
                 const d = new Date(t.date);
-                const isSolo = (!t.passagers || t.passagers.length === 0);
-                const isPending = pendingOperations.some(op => (op.tripId === t.id) || (op.type === 'add' && op.id === t.id));
+                const isSolo = !t.passagers || t.passagers.length === 0;
+                const isPending = pendingOperations.some(op => op.tripId === t.id || (op.type === 'add' && op.id === t.id));
                 
                 return `
-                <div class="card ${dr}" style="opacity:${isSolo?0.7:1}; ${isPending ? 'border-left: 4px solid #F59E0B;' : ''}">
+                <div class="card ${dr}" style="${isPending ? 'border-left-color: #F59E0B;' : ''}">
                     <div class="card-header">
                         <div>
                             <span class="date-text">${d.toLocaleDateString('fr-FR', {day:'numeric', month:'long'})}</span>
                             <span class="relative-time">${timeAgo(d)}</span>
-                            ${isPending ? '<span style="margin-left: 8px; color: #F59E0B; font-size: 0.75rem;"><i class="fas fa-clock"></i> En attente de synchronisation</span>' : ''}
                         </div>
                         <span class="driver-badge">${t.conducteur}</span>
                     </div>
-                    
                     <div class="passengers-row">
-                        <i class="fas fa-user-friends p-icon"></i>
-                        ${isSolo ? 'Solo (Ne compte pas)' : t.passagers.join(', ')}
+                        <i class="fas fa-users" style="width:14px; text-align:center; margin-right:4px;"></i>
+                        <span>${isSolo ? '<i>Trajet solo</i>' : t.passagers.join(', ')}</span>
                     </div>
-                    
-                    ${t.commentaire ? `<div style="font-size:0.85rem; color:#64748B; margin-top:10px; background:#F8FAFC; padding:8px; border-radius:8px;">"${t.commentaire}"</div>` : ''}
-
+                    ${t.commentaire ? `<div class="passengers-row" style="margin-top:8px;"><i class="fas fa-info-circle" style="width:14px; text-align:center; margin-right:4px;"></i> <span>${t.commentaire}</span></div>` : ''}
+                    ${isPending ? `<div style="margin-top:10px; font-size:0.75rem; color:#F59E0B; font-weight:500;"><i class="fas fa-clock"></i> En attente de synchronisation</div>` : ''}
                     <div class="actions-row">
                         <div class="act-btn" onclick="edit('${t.id}')"><i class="fas fa-pencil-alt"></i></div>
                         <div class="act-btn del" onclick="del('${t.id}')"><i class="fas fa-trash-alt"></i></div>
@@ -715,41 +679,40 @@
                 conducteur: capitalize(document.getElementById('inp-driver').value),
                 passagers: buffer,
                 commentaire: document.getElementById('inp-note').value,
-                updatedAt: new Date()
+                updatedAt: new Date().toISOString()
             };
-            const tripYear = data.date.split('-')[0];
 
             try {
                 if (isOnline) {
-                    // Mode en ligne : envoyer directement à Firebase
                     if (id) {
                         await db.collection(COL).doc(id).update(data);
                     } else {
-                        await db.collection(COL).add({...data, createdAt: new Date(), createdBy: auth.currentUser.uid});
+                        await db.collection(COL).add({...data, createdAt: new Date().toISOString(), createdBy: auth.currentUser.uid});
                     }
-                    
                     toast("Trajet sauvegardé !");
+                    // Invalidate cache and reload everything from Firebase for consistency
+                    invalidateCache();
+                    await loadInitialData(true);
                 } else {
-                    // Mode hors ligne : ajouter aux opérations en attente
                     const operation = {
                         type: id ? 'update' : 'add',
-                        tripId: id, // Utiliser un champ distinct pour l'ID du trajet
+                        tripId: id,
                         data: data
                     };
-                    
                     addPendingOperation(operation);
-                    toast("Trajet enregistré localement. Synchronisation automatique à la reconnexion.");
+                    toast("Modifications sauvegardées localement");
+
+                    // Apply changes locally for immediate feedback
+                    applyPendingOperationsToLocalData();
+                    processDataForDisplay();
                 }
 
-                // Mettre à jour l'interface dans tous les cas
-                invalidateCache(tripYear);
                 resetForm(); 
                 nav('tab-list'); 
-                await loadDataForYear(document.getElementById('filter-year').value);
 
             } catch (error) {
-                console.error("Erreur lors de l'enregistrement du trajet:", error);
-                toast("Erreur lors de l'enregistrement. Veuillez réessayer.");
+                console.error("Erreur enregistrement trajet:", error);
+                toast("Erreur: Impossible de sauvegarder.");
             }
         };
 
@@ -895,32 +858,30 @@
         window.del = async (id) => { 
             if(!confirm('Supprimer définitivement ?')) return;
             
-            const trip = currentYearTrips.find(t => t.id === id);
+            const trip = allTrips.find(t => t.id === id);
             if (!trip) return;
             
             try {
                 if (isOnline) {
                     await db.collection(COL).doc(id).delete();
                     toast("Trajet supprimé");
+                    invalidateCache();
+                    await loadInitialData(true);
                 } else {
-                    const operation = { type: 'delete', tripId: id, data: null };
-                    addPendingOperation(operation);
-                    toast("Trajet supprimé localement. Synchronisation automatique à la reconnexion.");
+                    addPendingOperation({ type: 'delete', tripId: id, data: null });
+                    toast("Suppression enregistrée localement");
+                    applyPendingOperationsToLocalData();
+                    processDataForDisplay();
                 }
-
-                // Mettre à jour l'interface dans tous les cas
-                invalidateCache(trip.date.split('-')[0]);
-                await loadDataForYear(document.getElementById('filter-year').value);
-
             } catch (error) {
-                console.error("Erreur lors de la suppression du trajet:", error);
-                toast("Erreur lors de la suppression. Veuillez réessayer.");
+                console.error("Erreur suppression:", error);
+                toast("Erreur: Impossible de supprimer.");
             }
         };
         
-        function toast(m) { 
+        function toast(m, icon = 'fa-check-circle', color = '#4ADE80') {
             const t=document.getElementById('toast'); 
-            t.innerHTML = `<i class="fas fa-check-circle" style="color:#4ADE80"></i> ${m}`;
+            t.innerHTML = `<i class="fas ${icon}" style="color:${color}"></i> ${m}`;
             t.classList.add('show'); 
             setTimeout(()=>t.classList.remove('show'), 2500); 
         }
@@ -931,6 +892,35 @@
             document.getElementById('dl-drivers').innerHTML=[...d].map(v=>`<option value="${v}">`).join('');
             document.getElementById('dl-pass').innerHTML=[...p].map(v=>`<option value="${v}">`).join('');
         }
+
+        // --- THEME ---
+        function setupTheme() {
+            const themeSwitcher = document.getElementById('theme-switcher');
+            const body = document.body;
+            const icon = themeSwitcher.querySelector('i');
+
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    body.classList.add('dark-mode');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    body.classList.remove('dark-mode');
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            };
+
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+
+            themeSwitcher.addEventListener('click', () => {
+                const newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', setupTheme);
 
     </script>
 </body>
