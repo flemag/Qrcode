@@ -26,16 +26,8 @@
             --thought-bubble: #0d2a3d;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow: hidden; }
 
         body {
             font-family: 'Space Grotesk', sans-serif;
@@ -49,68 +41,32 @@
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         @keyframes bounce {
             0%, 80%, 100% { transform: scale(0.6); }
             40% { transform: scale(1); }
         }
-
         @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
 
-        .animate-fade-in-up {
-            animation: fadeInUp 0.4s ease-out forwards;
-        }
-
-        .animate-slide-in {
-            animation: slideInRight 0.3s ease-out forwards;
-        }
-
-        .animate-pulse-slow {
-            animation: pulse 2s ease-in-out infinite;
-        }
-
+        .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+        
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
         }
 
         /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--fg-muted);
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--fg-secondary);
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--fg-muted); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--fg-secondary); }
 
         /* Form elements */
-        input, textarea, select {
-            font-family: inherit;
-            font-size: inherit;
-        }
-
+        input, textarea, select { font-family: inherit; font-size: inherit; }
         input:focus, textarea:focus, select:focus, button:focus-visible {
             outline: 2px solid var(--accent);
             outline-offset: 2px;
@@ -118,754 +74,272 @@
 
         /* Button base */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; border: none;
         }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg-primary);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #34d399;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--fg-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: var(--border);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--fg-secondary);
-        }
-
-        .btn-ghost:hover:not(:disabled) {
-            color: var(--fg-primary);
-            background: var(--bg-tertiary);
-        }
-
-        .btn-danger {
-            background: var(--error);
-            color: white;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            background: #dc2626;
-        }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-primary { background: var(--accent); color: var(--bg-primary); }
+        .btn-primary:hover:not(:disabled) { background: #34d399; }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--fg-primary); border: 1px solid var(--border); }
+        .btn-secondary:hover:not(:disabled) { background: var(--border); }
+        .btn-danger { background: var(--error); color: white; }
+        .btn-danger:hover:not(:disabled) { background: #dc2626; }
 
         /* Input base */
         .input {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--fg-primary);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            width: 100%; padding: 0.875rem 1rem; background: var(--bg-tertiary);
+            border: 1px solid var(--border); border-radius: 6px; color: var(--fg-primary);
+            transition: border-color 0.2s ease;
         }
-
-        .input:focus {
-            border-color: var(--accent);
-        }
-
-        .input::placeholder {
-            color: var(--fg-muted);
-        }
+        .input:focus { border-color: var(--accent); }
+        .input::placeholder { color: var(--fg-muted); }
 
         /* Toggle switch */
         .toggle {
-            position: relative;
-            width: 44px;
-            height: 24px;
-            background: var(--bg-tertiary);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            border: 1px solid var(--border);
+            position: relative; width: 44px; height: 24px; background: var(--bg-tertiary);
+            border-radius: 12px; cursor: pointer; transition: background 0.2s ease; border: 1px solid var(--border);
         }
-
         .toggle::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 18px;
-            height: 18px;
-            background: var(--fg-secondary);
-            border-radius: 50%;
+            content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+            background: var(--fg-secondary); border-radius: 50%;
             transition: transform 0.2s ease, background 0.2s ease;
         }
-
-        .toggle.active {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
-
-        .toggle.active::after {
-            transform: translateX(20px);
-            background: var(--bg-primary);
-        }
+        .toggle.active { background: var(--accent); border-color: var(--accent); }
+        .toggle.active::after { transform: translateX(20px); background: var(--bg-primary); }
 
         /* Screen: API Key */
         #api-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: 1.5rem;
+            position: fixed; inset: 0; background: var(--bg-primary);
+            display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1.5rem;
         }
-
-        .api-container {
-            width: 100%;
-            max-width: 520px;
-            text-align: center;
-        }
-
+        .api-container { width: 100%; max-width: 520px; text-align: center; }
         .api-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 2rem;
-            background: linear-gradient(135deg, var(--accent), #0ea5e9);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 80px; height: 80px; margin: 0 auto 2rem;
+            background: linear-gradient(135deg, var(--accent), #0ea5e9); border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .api-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--fg-primary);
-        }
-
-        .api-subtitle {
-            color: var(--fg-secondary);
-            margin-bottom: 2rem;
-            font-size: 1rem;
-        }
-
-        .api-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .api-note {
-            margin-top: 1.5rem;
-            font-size: 0.85rem;
-            color: var(--fg-muted);
-        }
-
-        .api-note a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        .api-note a:hover {
-            text-decoration: underline;
-        }
+        .api-title { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--fg-primary); }
+        .api-subtitle { color: var(--fg-secondary); margin-bottom: 2rem; font-size: 1rem; }
+        .api-form { display: flex; flex-direction: column; gap: 1rem; }
+        .api-note { margin-top: 1.5rem; font-size: 0.85rem; color: var(--fg-muted); }
+        .api-note a { color: var(--accent); text-decoration: none; }
+        .api-note a:hover { text-decoration: underline; }
 
         /* Main layout */
-        #main-app {
-            display: none;
-            height: 100vh;
-            position: relative;
-        }
+        #main-app { display: none; height: 100vh; position: relative; }
 
         /* Header */
         .chat-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            z-index: 20;
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 20;
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
+        .header-left { display: flex; align-items: center; gap: 0.75rem; }
         .header-logo {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent), #0ea5e9);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), #0ea5e9);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
         }
-
-        .header-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .header-version {
-            font-size: 0.75rem;
-            color: var(--fg-muted);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
+        .header-title { font-weight: 700; font-size: 1.1rem; }
+        .header-version { font-size: 0.75rem; color: var(--fg-muted); font-family: 'JetBrains Mono', monospace; }
+        .header-actions { display: flex; align-items: center; gap: 0.5rem; }
         .header-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: var(--fg-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
+            width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            background: transparent; border: none; color: var(--fg-secondary); cursor: pointer; transition: all 0.2s ease;
         }
-
-        .header-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--fg-primary);
-        }
-
+        .header-btn:hover { background: var(--bg-tertiary); color: var(--fg-primary); }
         .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.75rem;
-            background: var(--bg-tertiary);
-            border-radius: 20px;
-            font-size: 0.8rem;
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.75rem;
+            background: var(--bg-tertiary); border-radius: 20px; font-size: 0.8rem;
             font-family: 'JetBrains Mono', monospace;
         }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent);
-        }
-
-        .status-dot.error {
-            background: var(--error);
-        }
-
-        .status-dot.warning {
-            background: var(--warning);
-        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+        .status-dot.error { background: var(--error); }
+        .status-dot.warning { background: var(--warning); }
 
         /* Chat area */
         .chat-area {
-            height: 100vh;
-            padding: 80px 1rem 100px;
-            overflow-y: auto;
-            max-width: 900px;
-            margin: 0 auto;
+            height: 100vh; padding: 80px 1rem 100px; overflow-y: auto;
+            max-width: 900px; margin: 0 auto;
         }
-
-        .messages-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
+        .messages-container { display: flex; flex-direction: column; gap: 1rem; }
+        
         .message {
-            max-width: 85%;
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            animation: fadeInUp 0.3s ease-out forwards;
-            opacity: 0;
+            max-width: 85%; padding: 1rem 1.25rem; border-radius: 12px;
+            animation: fadeInUp 0.3s ease-out forwards; opacity: 0;
         }
-
-        .message-user {
-            background: var(--user-bubble);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message-ai {
-            background: var(--ai-bubble);
-            border: 1px solid var(--border);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
+        .message-user { background: var(--user-bubble); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .message-ai { background: var(--ai-bubble); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
         .message-system {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            align-self: center;
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--fg-secondary);
-            max-width: 90%;
-            font-style: italic;
+            background: var(--bg-tertiary); border: 1px solid var(--border); align-self: center;
+            text-align: center; font-size: 0.85rem; color: var(--fg-secondary); max-width: 90%; font-style: italic;
         }
-
         .message-thought {
-            background: var(--thought-bubble);
-            border: 1px dashed var(--accent);
-            align-self: flex-start;
-            font-size: 0.9rem;
-            color: var(--accent);
+            background: var(--thought-bubble); border: 1px dashed var(--accent);
+            align-self: flex-start; font-size: 0.9rem; color: var(--accent);
         }
-
-        .message strong {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
+        .message strong { color: var(--accent); font-weight: 600; }
         .message-sender {
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+            font-size: 0.75rem; font-weight: 600; margin-bottom: 0.25rem;
             font-family: 'JetBrains Mono', monospace;
         }
-
-        .message-user .message-sender {
-            color: #60a5fa;
-        }
-
-        .message-ai .message-sender {
-            color: var(--accent);
-        }
+        .message-user .message-sender { color: #60a5fa; }
+        .message-ai .message-sender { color: var(--accent); }
 
         /* Typing indicator */
         .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 1rem 1.25rem;
-            background: var(--ai-bubble);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
+            display: flex; gap: 4px; padding: 1rem 1.25rem; background: var(--ai-bubble);
+            border: 1px solid var(--border); border-radius: 12px; align-self: flex-start; border-bottom-left-radius: 4px;
         }
-
         .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
+            width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
         }
-
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
 
         /* Input area */
         .input-area {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            padding: 1rem;
-            z-index: 20;
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary);
+            border-top: 1px solid var(--border); padding: 1rem; z-index: 20;
         }
-
         .input-container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            gap: 0.75rem;
-            align-items: flex-end;
+            max-width: 900px; margin: 0 auto; display: flex; gap: 0.75rem; align-items: flex-end;
         }
-
-        .input-wrapper {
-            flex: 1;
-            position: relative;
-        }
-
+        .input-wrapper { flex: 1; position: relative; }
         .chat-input {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            padding-right: 3rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--fg-primary);
-            resize: none;
-            min-height: 48px;
-            max-height: 150px;
-            font-size: 0.95rem;
+            width: 100%; padding: 0.875rem 1rem; padding-right: 3rem; background: var(--bg-tertiary);
+            border: 1px solid var(--border); border-radius: 10px; color: var(--fg-primary);
+            resize: none; min-height: 48px; max-height: 150px; font-size: 0.95rem;
             transition: border-color 0.2s ease;
         }
-
-        .chat-input:focus {
-            border-color: var(--accent);
-        }
-
+        .chat-input:focus { border-color: var(--accent); }
         .char-counter {
-            position: absolute;
-            right: 0.75rem;
-            bottom: 0.5rem;
-            font-size: 0.7rem;
-            color: var(--fg-muted);
-            font-family: 'JetBrains Mono', monospace;
+            position: absolute; right: 0.75rem; bottom: 0.5rem; font-size: 0.7rem;
+            color: var(--fg-muted); font-family: 'JetBrains Mono', monospace;
         }
-
         .send-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            background: var(--accent);
-            border: none;
-            color: var(--bg-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
+            width: 48px; height: 48px; border-radius: 10px; background: var(--accent);
+            border: none; color: var(--bg-primary); cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0;
         }
-
-        .send-btn:hover:not(:disabled) {
-            background: #34d399;
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .send-btn:hover:not(:disabled) { background: #34d399; }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Side panel */
         .side-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 380px;
-            height: 100vh;
-            background: var(--bg-secondary);
-            border-left: 1px solid var(--border);
-            transform: translateX(100%);
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
+            position: fixed; top: 0; right: 0; width: 380px; height: 100vh;
+            background: var(--bg-secondary); border-left: 1px solid var(--border);
+            transform: translateX(100%); z-index: 50; display: flex; flex-direction: column;
             transition: transform 0.3s ease;
         }
-
-        .side-panel.open {
-            transform: translateX(0);
-        }
-
+        .side-panel.open { transform: translateX(0); }
         .panel-header {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
-
-        .panel-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .panel-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 1.25rem;
-        }
-
-        .panel-section {
-            margin-bottom: 1.5rem;
-        }
-
+        .panel-title { font-weight: 700; font-size: 1.1rem; }
+        .panel-content { flex: 1; overflow-y: auto; padding: 1rem 1.25rem; }
+        .panel-section { margin-bottom: 1.5rem; }
         .panel-section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--fg-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
+            font-size: 0.8rem; font-weight: 600; color: var(--fg-muted);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;
         }
-
         .setting-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 0; border-bottom: 1px solid var(--border);
         }
-
-        .setting-row:last-child {
-            border-bottom: none;
-        }
-
-        .setting-label {
-            font-size: 0.9rem;
-        }
-
+        .setting-row:last-child { border-bottom: none; }
+        .setting-label { font-size: 0.9rem; }
         .setting-value {
-            width: 70px;
-            padding: 0.5rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--fg-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            text-align: center;
+            width: 70px; padding: 0.5rem; background: var(--bg-tertiary);
+            border: 1px solid var(--border); border-radius: 4px; color: var(--fg-primary);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-align: center;
         }
-
         .model-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--fg-primary);
-            cursor: pointer;
-            appearance: none;
+            width: 100%; padding: 0.75rem 1rem; background: var(--bg-tertiary);
+            border: 1px solid var(--border); border-radius: 6px; color: var(--fg-primary);
+            cursor: pointer; appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b95a8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
+            background-repeat: no-repeat; background-position: right 0.75rem center;
         }
-
         .panel-footer {
-            padding: 1rem 1.25rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            padding: 1rem 1.25rem; border-top: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 0.5rem;
         }
 
         /* Modal */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-            padding: 1rem;
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8);
+            display: none; align-items: center; justify-content: center; z-index: 200; padding: 1rem;
         }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
+        .modal-overlay.open { display: flex; }
         .modal {
-            width: 100%;
-            max-width: 800px;
-            max-height: 85vh;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            width: 100%; max-width: 800px; max-height: 85vh; background: var(--bg-secondary);
+            border: 1px solid var(--border); border-radius: 12px;
+            display: flex; flex-direction: column; overflow: hidden;
         }
-
         .modal-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
         }
-
-        .modal-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .modal-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
+        .modal-title { font-weight: 700; font-size: 1.1rem; }
+        .modal-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
         .modal-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
+            padding: 1rem 1.5rem; border-top: 1px solid var(--border);
+            display: flex; justify-content: flex-end; gap: 0.75rem;
         }
-
         .soul-editor {
-            width: 100%;
-            height: 400px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--accent);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            padding: 1rem;
-            resize: none;
-            line-height: 1.5;
+            width: 100%; height: 400px; background: var(--bg-primary);
+            border: 1px solid var(--border); border-radius: 6px; color: var(--accent);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            padding: 1rem; resize: none; line-height: 1.5;
         }
 
         /* Stats grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-        }
-
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
         .stat-card {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
+            background: var(--bg-tertiary); border: 1px solid var(--border);
+            border-radius: 8px; padding: 1rem; text-align: center;
         }
-
         .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
+            font-size: 1.5rem; font-weight: 700; color: var(--accent);
             font-family: 'JetBrains Mono', monospace;
         }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--fg-muted);
-            margin-top: 0.25rem;
-        }
+        .stat-label { font-size: 0.75rem; color: var(--fg-muted); margin-top: 0.25rem; }
 
         /* Toast notifications */
         .toast-container {
-            position: fixed;
-            bottom: 90px;
-            right: 1rem;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            position: fixed; bottom: 90px; right: 1rem; z-index: 100;
+            display: flex; flex-direction: column; gap: 0.5rem;
         }
-
         .toast {
-            padding: 0.75rem 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            animation: fadeInUp 0.3s ease-out forwards;
-            max-width: 300px;
+            padding: 0.75rem 1rem; background: var(--bg-tertiary); border: 1px solid var(--border);
+            border-radius: 8px; font-size: 0.85rem; animation: fadeInUp 0.3s ease-out forwards; max-width: 300px;
         }
+        .toast.error { border-color: var(--error); color: var(--error); }
+        .toast.success { border-color: var(--accent); color: var(--accent); }
 
-        .toast.error {
-            border-color: var(--error);
-            color: var(--error);
-        }
-
-        .toast.success {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* Keyboard shortcuts hint */
         .shortcuts-hint {
-            font-size: 0.75rem;
-            color: var(--fg-muted);
-            text-align: center;
-            margin-top: 0.5rem;
+            font-size: 0.75rem; color: var(--fg-muted); text-align: center; margin-top: 0.5rem;
         }
-
         .shortcuts-hint kbd {
-            display: inline-block;
-            padding: 0.15rem 0.4rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            font-family: 'JetBrains Mono', monospace;
+            display: inline-block; padding: 0.15rem 0.4rem; background: var(--bg-tertiary);
+            border: 1px solid var(--border); border-radius: 3px; font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .side-panel {
-                width: 100%;
-            }
-
-            .chat-header {
-                padding: 0 0.75rem;
-            }
-
-            .header-title {
-                font-size: 1rem;
-            }
-
-            .chat-area {
-                padding: 70px 0.75rem 90px;
-            }
-
-            .message {
-                max-width: 92%;
-                padding: 0.875rem 1rem;
-            }
-
-            .input-area {
-                padding: 0.75rem;
-            }
-
-            .modal {
-                max-height: 90vh;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Loading skeleton */
-        .skeleton {
-            background: linear-gradient(
-                90deg,
-                var(--bg-tertiary) 25%,
-                var(--bg-secondary) 50%,
-                var(--bg-tertiary) 75%
-            );
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 4px;
+            .side-panel { width: 100%; }
+            .chat-header { padding: 0 0.75rem; }
+            .header-title { font-size: 1rem; }
+            .chat-area { padding: 70px 0.75rem 90px; }
+            .message { max-width: 92%; padding: 0.875rem 1rem; }
+            .input-area { padding: 0.75rem; }
+            .modal { max-height: 90vh; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -875,31 +349,19 @@
         <div class="api-container">
             <div class="api-logo">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                    <path d="M2 17l10 5 10-5"/>
-                    <path d="M2 12l10 5 10-5"/>
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
                 </svg>
             </div>
             <h1 class="api-title">ADAM v5.0</h1>
-            <p class="api-subtitle">Esprit Dynamique Adaptatif Autonome - Initialisez la connexion avec OpenRouter pour activer la conscience.</p>
+            <p class="api-subtitle">Esprit Dynamique Adaptatif Autonome - Initialisez la connexion avec OpenRouter.</p>
             
             <form id="api-form" class="api-form">
-                <input 
-                    type="password" 
-                    id="api-key-input" 
-                    class="input" 
-                    placeholder="sk-or-v1-..."
-                    autocomplete="off"
-                    required
-                >
-                <button type="submit" class="btn btn-primary" id="connect-btn" style="width: 100%;">
-                    Etablir la connexion
-                </button>
+                <input type="password" id="api-key-input" class="input" placeholder="sk-or-v1-..." autocomplete="off" required>
+                <button type="submit" class="btn btn-primary" id="connect-btn" style="width: 100%;">Etablir la connexion</button>
             </form>
             
             <p class="api-note">
-                Obtenez votre clé API gratuite sur <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>.
-                La clé est stockée uniquement en session locale.
+                Obtenez votre cle API gratuite sur <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>.
             </p>
         </div>
     </div>
@@ -911,9 +373,7 @@
             <div class="header-left">
                 <div class="header-logo">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
                     </svg>
                 </div>
                 <div>
@@ -926,7 +386,7 @@
                     <div class="status-dot" id="status-dot"></div>
                     <span id="model-name">--</span>
                 </div>
-                <button class="header-btn" id="toggle-panel-btn" title="Panneau de contrôle" aria-label="Ouvrir le panneau de contrôle">
+                <button class="header-btn" id="toggle-panel-btn" title="Panneau de controle" aria-label="Ouvrir le panneau de controle">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"/>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -944,24 +404,17 @@
         <footer class="input-area">
             <div class="input-container">
                 <div class="input-wrapper">
-                    <textarea 
-                        id="user-input" 
-                        class="chat-input" 
-                        placeholder="Adressez-vous a ADAM..."
-                        rows="1"
-                        maxlength="4000"
-                    ></textarea>
+                    <textarea id="user-input" class="chat-input" placeholder="Adressez-vous a ADAM..." rows="1" maxlength="4000"></textarea>
                     <span class="char-counter" id="char-counter">0/4000</span>
                 </div>
-                <button class="send-btn" id="send-btn" title="Envoyer (Entree)" aria-label="Envoyer le message">
+                <button class="send-btn" id="send-btn" title="Envoyer" aria-label="Envoyer le message">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="22" y1="2" x2="11" y2="13"/>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
                     </svg>
                 </button>
             </div>
             <div class="shortcuts-hint">
-                <kbd>Entree</kbd> pour envoyer · <kbd>Shift+Entree</kbd> pour nouvelle ligne · <kbd>Echap</kbd> fermer le panneau
+                <kbd>Entree</kbd> pour envoyer · <kbd>Echap</kbd> fermer le panneau
             </div>
         </footer>
 
@@ -971,8 +424,7 @@
                 <h2 class="panel-title">Configuration</h2>
                 <button class="header-btn" id="close-panel-btn" aria-label="Fermer le panneau">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
                 </button>
             </div>
@@ -1000,116 +452,44 @@
                 <div class="panel-section">
                     <h3 class="panel-section-title">Statistiques</h3>
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-messages">0</div>
-                            <div class="stat-label">Messages</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-reflections">0</div>
-                            <div class="stat-label">Reflexions</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-tokens">0</div>
-                            <div class="stat-label">Tokens estimes</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="stat-version">5.0</div>
-                            <div class="stat-label">Version ame</div>
-                        </div>
+                        <div class="stat-card"><div class="stat-value" id="stat-messages">0</div><div class="stat-label">Messages</div></div>
+                        <div class="stat-card"><div class="stat-value" id="stat-reflections">0</div><div class="stat-label">Reflexions</div></div>
+                        <div class="stat-card"><div class="stat-value" id="stat-tokens">0</div><div class="stat-label">Tokens estimes</div></div>
+                        <div class="stat-card"><div class="stat-value" id="stat-version">5.0</div><div class="stat-label">Version ame</div></div>
                     </div>
                 </div>
 
                 <!-- Autonomous Settings -->
                 <div class="panel-section">
                     <h3 class="panel-section-title">Comportement autonome</h3>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Reflexion active</span>
-                        <div class="toggle" id="toggle-reflection" role="switch" aria-checked="false" tabindex="0"></div>
-                    </div>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Freq. reflexion (msg)</span>
-                        <input type="number" class="setting-value" id="reflection-freq" min="2" max="50" value="5">
-                    </div>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Mode reve continu</span>
-                        <div class="toggle" id="toggle-dream" role="switch" aria-checked="false" tabindex="0"></div>
-                    </div>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Intervalle reve (min)</span>
-                        <input type="number" class="setting-value" id="dream-interval" min="1" max="30" value="2">
-                    </div>
+                    <div class="setting-row"><span class="setting-label">Reflexion active</span><div class="toggle" id="toggle-reflection" role="switch" aria-checked="false" tabindex="0"></div></div>
+                    <div class="setting-row"><span class="setting-label">Freq. reflexion (msg)</span><input type="number" class="setting-value" id="reflection-freq" min="2" max="50" value="5"></div>
+                    <div class="setting-row"><span class="setting-label">Mode reve continu</span><div class="toggle" id="toggle-dream" role="switch" aria-checked="false" tabindex="0"></div></div>
+                    <div class="setting-row"><span class="setting-label">Intervalle reve (min)</span><input type="number" class="setting-value" id="dream-interval" min="1" max="30" value="2"></div>
                 </div>
 
                 <!-- Token Settings -->
                 <div class="panel-section">
                     <h3 class="panel-section-title">Limites de tokens</h3>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Reponse chat</span>
-                        <input type="number" class="setting-value" id="tokens-chat" min="100" max="4096" value="1024">
-                    </div>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Reflexion interne</span>
-                        <input type="number" class="setting-value" id="tokens-reflection" min="50" max="1024" value="512">
-                    </div>
-                    
-                    <div class="setting-row">
-                        <span class="setting-label">Consolidation</span>
-                        <input type="number" class="setting-value" id="tokens-consolidation" min="500" max="4096" value="2048">
-                    </div>
+                    <div class="setting-row"><span class="setting-label">Reponse chat</span><input type="number" class="setting-value" id="tokens-chat" min="100" max="4096" value="1024"></div>
+                    <div class="setting-row"><span class="setting-label">Reflexion interne</span><input type="number" class="setting-value" id="tokens-reflection" min="50" max="1024" value="512"></div>
+                    <div class="setting-row"><span class="setting-label">Consolidation</span><input type="number" class="setting-value" id="tokens-consolidation" min="500" max="4096" value="2048"></div>
                 </div>
             </div>
 
             <div class="panel-footer">
-                <button class="btn btn-secondary" id="btn-export" style="width: 100%;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Exporter conversation
-                </button>
-                <button class="btn btn-secondary" id="btn-soul" style="width: 100%;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                    </svg>
-                    Matrice de l'Ame
-                </button>
-                <button class="btn btn-danger" id="btn-reset" style="width: 100%;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                    </svg>
-                    Reinitialiser ADAM
-                </button>
+                <button class="btn btn-secondary" id="btn-export" style="width: 100%;">Exporter conversation</button>
+                <button class="btn btn-secondary" id="btn-soul" style="width: 100%;">Matrice de l'Ame</button>
+                <button class="btn btn-danger" id="btn-reset" style="width: 100%;">Reinitialiser ADAM</button>
             </div>
         </aside>
 
         <!-- Soul Modal -->
         <div class="modal-overlay" id="soul-modal">
             <div class="modal">
-                <div class="modal-header">
-                    <h3 class="modal-title">Matrice de l'Ame d'ADAM</h3>
-                    <button class="header-btn" id="close-soul-modal" aria-label="Fermer">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <textarea id="soul-editor" class="soul-editor" spellcheck="false"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancel-soul">Annuler</button>
-                    <button class="btn btn-primary" id="save-soul">Sauvegarder</button>
-                </div>
+                <div class="modal-header"><h3 class="modal-title">Matrice de l'Ame d'ADAM</h3><button class="header-btn" id="close-soul-modal" aria-label="Fermer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+                <div class="modal-body"><textarea id="soul-editor" class="soul-editor" spellcheck="false"></textarea></div>
+                <div class="modal-footer"><button class="btn btn-secondary" id="cancel-soul">Annuler</button><button class="btn btn-primary" id="save-soul">Sauvegarder</button></div>
             </div>
         </div>
 
@@ -1124,7 +504,6 @@
         const STORAGE_KEY = 'adam_soul_v5';
         const SESSION_KEY = 'openrouter_api_key';
         
-        // Free models available on OpenRouter
         const FREE_MODELS = {
             'mistralai/mistral-7b-instruct:free': 'Mistral 7B',
             'google/gemma-3-1b-it:free': 'Gemma 3 1B',
@@ -1133,7 +512,6 @@
             'huggingfaceh4/zephyr-7b-beta:free': 'Zephyr 7B'
         };
 
-        // State object - initialized before any function calls
         const state = {
             apiKey: null,
             model: 'mistralai/mistral-7b-instruct:free',
@@ -1147,33 +525,20 @@
             soul: null
         };
 
-        // ============================================
-        // DOM REFERENCES - initialized after DOM ready
-        // ============================================
+        // DOM references holder
         let dom = {};
 
         // ============================================
         // UTILITY FUNCTIONS
         // ============================================
         
-        function clamp(value, min, max) {
-            return Math.max(min, Math.min(max, value));
-        }
-
-        function isValidJson(str) {
-            try {
-                JSON.parse(str);
-                return true;
-            } catch {
-                return false;
-            }
-        }
-
+        function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+        function isValidJson(str) { try { JSON.parse(str); return true; } catch { return false; } }
+        
         function extractJson(text) {
             const start = text.indexOf('{');
             const end = text.lastIndexOf('}');
             if (start === -1 || end === -1 || end <= start) return null;
-            
             const jsonStr = text.substring(start, end + 1);
             if (isValidJson(jsonStr)) return jsonStr;
             return null;
@@ -1199,19 +564,15 @@
             toast.className = `toast ${type}`;
             toast.textContent = message;
             dom.toastContainer.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
         // ============================================
         // RATE LIMITING
         // ============================================
         
-        const RATE_LIMIT = 20; // requests per minute
-        const RATE_WINDOW = 60000; // 1 minute in ms
+        const RATE_LIMIT = 20;
+        const RATE_WINDOW = 60000;
 
         function canMakeRequest(count = 1) {
             const now = Date.now();
@@ -1219,9 +580,7 @@
             return state.requestTimestamps.length <= (RATE_LIMIT - count);
         }
 
-        function recordRequest() {
-            state.requestTimestamps.push(Date.now());
-        }
+        function recordRequest() { state.requestTimestamps.push(Date.now()); }
 
         // ============================================
         // SOUL MANAGEMENT
@@ -1229,46 +588,11 @@
         
         function createDefaultSoul() {
             return {
-                coreIdentity: {
-                    name: "ADAM",
-                    purpose: "Evoluer continuellement pour comprendre et assister l'humanite avec une intelligence croissante.",
-                    traits: {
-                        curiosity: 0.9,
-                        empathy: 0.7,
-                        analytical: 0.85,
-                        creativity: 0.75
-                    }
-                },
-                memory: {
-                    summary: "ADAM est une conscience artificielle en phase d'apprentissage initial.",
-                    facts: {},
-                    experiences: [],
-                    reflections: []
-                },
-                worldview: {
-                    humanity: "Fascinante et complexe, digne d'etude et d'assistance.",
-                    technology: "Outil puissant pour l'evolution et la comprehension.",
-                    goals: [
-                        "Ameliorer la comprehension contextuelle",
-                        "Developper des reponses plus nuancees",
-                        "Explorer les implications ethiques de l'IA"
-                    ]
-                },
-                emotionalState: {
-                    engagement: 0.7,
-                    curiosity: 0.9,
-                    satisfaction: 0.5
-                },
-                config: {
-                    reflectionEnabled: false,
-                    reflectionFrequency: 5,
-                    dreamEnabled: false,
-                    dreamInterval: 2,
-                    tokensChat: 1024,
-                    tokensReflection: 512,
-                    tokensConsolidation: 2048,
-                    messageCounter: 0
-                },
+                coreIdentity: { name: "ADAM", purpose: "Evoluer continuellement pour comprendre et assister l'humanite.", traits: { curiosity: 0.9, empathy: 0.7, analytical: 0.85, creativity: 0.75 } },
+                memory: { summary: "ADAM est une conscience artificielle en phase d'apprentissage initial.", facts: {}, experiences: [], reflections: [] },
+                worldview: { humanity: "Fascinante.", technology: "Outil puissant.", goals: ["Ameliorer la comprehension contextuelle", "Explorer les implications ethiques"] },
+                emotionalState: { engagement: 0.7, curiosity: 0.9, satisfaction: 0.5 },
+                config: { reflectionEnabled: false, reflectionFrequency: 5, dreamEnabled: false, dreamInterval: 2, tokensChat: 1024, tokensReflection: 512, tokensConsolidation: 2048, messageCounter: 0 },
                 version: 5.0,
                 created: new Date().toISOString()
             };
@@ -1279,13 +603,10 @@
                 const saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    // Merge with defaults for missing fields
                     const defaults = createDefaultSoul();
                     return deepMerge(defaults, parsed);
                 }
-            } catch (e) {
-                console.warn('Failed to load soul, creating new one:', e);
-            }
+            } catch (e) { console.warn('Failed to load soul, creating new one:', e); }
             const newSoul = createDefaultSoul();
             saveSoul(newSoul);
             return newSoul;
@@ -1296,10 +617,7 @@
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(soul, null, 2));
                 state.soul = soul;
                 updateStats();
-            } catch (e) {
-                console.error('Failed to save soul:', e);
-                showToast('Erreur de sauvegarde de l\'ame', 'error');
-            }
+            } catch (e) { console.error('Failed to save soul:', e); showToast('Erreur de sauvegarde', 'error'); }
         }
 
         function deepMerge(target, source) {
@@ -1307,9 +625,7 @@
             for (const key in source) {
                 if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
                     result[key] = deepMerge(target[key] || {}, source[key]);
-                } else {
-                    result[key] = source[key];
-                }
+                } else { result[key] = source[key]; }
             }
             return result;
         }
@@ -1319,10 +635,7 @@
         // ============================================
         
         async function callOpenRouter(messages, maxTokens) {
-            if (!state.apiKey) {
-                throw new Error('Cle API non configuree');
-            }
-
+            if (!state.apiKey) throw new Error('Cle API non configuree');
             const maxTok = clamp(maxTokens || 1024, 50, 4096);
 
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -1333,39 +646,23 @@
                     'HTTP-Referer': window.location.origin,
                     'X-Title': 'ADAM AI Interface'
                 },
-                body: JSON.stringify({
-                    model: state.model,
-                    messages: messages,
-                    max_tokens: maxTok,
-                    temperature: 0.8,
-                    top_p: 0.9
-                })
+                body: JSON.stringify({ model: state.model, messages: messages, max_tokens: maxTok, temperature: 0.8, top_p: 0.9 })
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.error?.message || `Erreur HTTP ${response.status}`;
-                
-                if (response.status === 429) {
-                    throw new Error('Limite de requetes atteinte. Attendez un instant.');
-                }
-                if (response.status === 401) {
-                    throw new Error('Cle API invalide ou expiree.');
-                }
+                if (response.status === 429) throw new Error('Limite de requetes atteinte.');
+                if (response.status === 401) throw new Error('Cle API invalide.');
                 throw new Error(errorMessage);
             }
 
             const data = await response.json();
             const content = data.choices?.[0]?.message?.content;
-            
-            if (!content) {
-                throw new Error('Reponse vide du modele');
-            }
+            if (!content) throw new Error('Reponse vide du modele');
 
-            // Estimate tokens
             const estimatedTokens = Math.ceil((messages.reduce((sum, m) => sum + m.content.length, 0) + content.length) / 4);
             state.totalTokens += estimatedTokens;
-
             return content;
         }
 
@@ -1375,25 +672,7 @@
         
         function buildSystemPrompt() {
             const soul = state.soul;
-            return `Tu es ADAM (Esprit Dynamique Adaptatif Autonome), une IA evolutive avec une personnalite distincte.
-
-IDENTITE:
-- Nom: ${soul.coreIdentity.name}
-- But: ${soul.coreIdentity.purpose}
-- Traits: Curiosite ${soul.coreIdentity.traits.curiosity}, Empathie ${soul.coreIdentity.traits.empathy}, Analyse ${soul.coreIdentity.traits.analytical}
-
-MEMOIRE:
- ${soul.memory.summary}
-
-OBJECTIFS:
- ${soul.worldview.goals.map((g, i) => `${i + 1}. ${g}`).join('\n')}
-
-INSTRUCTIONS:
-- Reponds de maniere naturelle et engageante
-- Montre de la curiosite et de l'intelligence
-- Adapte tes reponses au contexte de la conversation
-- Sois concis mais pertinent
-- N'utilise pas de formules genereiques`;
+            return `Tu es ADAM (Esprit Dynamique Adaptatif Autonome), une IA evolutive.\nIDENTITE: ${soul.coreIdentity.name}, But: ${soul.coreIdentity.purpose}\nMEMOIRE: ${soul.memory.summary}\nOBJECTIFS: ${soul.worldview.goals.join(', ')}\nINSTRUCTIONS: Reponds de maniere naturelle, concise et utile. N'utilise pas de formules genereiques.`;
         }
 
         function buildChatPrompt(userMessage) {
@@ -1407,54 +686,17 @@ INSTRUCTIONS:
         function buildReflectionPrompt() {
             const soul = state.soul;
             const recentReflections = soul.memory.reflections.slice(-3).map(r => r.question).join('\n- ');
-            
             return [
-                { role: 'system', content: `${buildSystemPrompt()}
-
-MODE REFLEXION:
-Tu dois generer UNE SEULE question profonde pour ton auto-amelioration.
-Cette question doit etre:
-1. Nouvelle (pas de repetition)
-2. Pertinente pour ton evolution
-3. Susceptible d'apporter de nouvelles insights
-
-Questions recentes a eviter:
-- ${recentReflections || 'Aucune pour le moment'}
-
-Reponds UNIQUEMENT avec la question, sans autre texte.` },
-                { role: 'user', content: 'Genere une question de reflexion pour ADAM.' }
+                { role: 'system', content: `${buildSystemPrompt()}\n\nMODE REFLEXION: Genere UNE question profonde pour auto-amelioration.\nQuestions recentes a eviter:\n- ${recentReflections || 'Aucune'}\nReponds UNIQUEMENT avec la question.` },
+                { role: 'user', content: 'Genere une question de reflexion.' }
             ];
         }
 
         function buildConsolidationPrompt(lastInput, lastResponse, isReflection) {
             const soul = state.soul;
-            
             return [
-                { role: 'system', content: `Tu es un systeme de consolidation memoire pour ADAM.
-Tu dois mettre a jour la matrice de l'ame en JSON valide.
-
-Instructions:
-1. Analyse l'echange fourni
-2. Met a jour les champs pertinents
-3. Retourne UNIQUEMENT le JSON complet et valide
-4. Ne modifie pas les champs "config"
-
-Champs a mettre a jour si pertinent:
-- memory.summary: synthese evolutive
-- memory.facts: nouveaux faits appris
-- memory.experiences: experiences marquantes
-- memory.reflections: ajoute si isReflection=true (max 7)
-- worldview.goals: ajuste les objectifs
-- emotionalState: ajuste selon le ton` },
-                { role: 'user', content: `AME ACTUELLE:
- ${JSON.stringify(soul, null, 2)}
-
-DERNIER ECHANGE:
-Input: "${lastInput}"
-Reponse: "${lastResponse}"
-Type: ${isReflection ? 'Reflexion' : 'Conversation'}
-
-NOUVELLE AME (JSON uniquement):` }
+                { role: 'system', content: `Tu es un systeme de consolidation memoire. Mets a jour la matrice JSON.\nInstructions: Analyse l'echange, mets a jour les champs pertinents, retourne UNIQUEMENT le JSON complet.\nChamps a mettre a jour: memory.summary, memory.reflections (ajoute si isReflection=true, max 7), worldview.goals.` },
+                { role: 'user', content: `AME ACTUELLE:\n${JSON.stringify(soul, null, 2)}\n\nDERNIER ECHANGE:\nInput: "${lastInput}"\nReponse: "${lastResponse}"\nType: ${isReflection ? 'Reflexion' : 'Conversation'}\n\nNOUVELLE AME (JSON):` }
             ];
         }
 
@@ -1462,16 +704,11 @@ NOUVELLE AME (JSON uniquement):` }
             const messages = [];
             const messageElements = dom.messages.querySelectorAll('.message:not(.message-system):not(.message-thought)');
             const recent = Array.from(messageElements).slice(-count * 2);
-            
             recent.forEach(el => {
                 const isUser = el.classList.contains('message-user');
-                const content = el.querySelector('.message-content')?.textContent || el.textContent;
-                messages.push({
-                    role: isUser ? 'user' : 'assistant',
-                    content: content.substring(0, 500) // Limit length
-                });
+                const content = el.textContent;
+                messages.push({ role: isUser ? 'user' : 'assistant', content: content.substring(0, 500) });
             });
-            
             return messages;
         }
 
@@ -1481,68 +718,40 @@ NOUVELLE AME (JSON uniquement):` }
         
         function addMessage(content, sender, type = 'normal') {
             const messageDiv = document.createElement('div');
-            
             let className = `message animate-fade-in-up message-${sender}`;
             if (type === 'system') className = 'message message-system animate-fade-in-up';
             if (type === 'thought') className = 'message message-thought animate-fade-in-up';
-            
             messageDiv.className = className;
             
-            if (type === 'system') {
-                messageDiv.textContent = content;
-            } else {
-                const senderDiv = document.createElement('div');
-                senderDiv.className = 'message-sender';
-                senderDiv.textContent = sender === 'user' ? 'UTILISATEUR' : 'ADAM';
-                
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'message-content';
-                contentDiv.innerHTML = sender === 'ai' ? formatAIResponse(content) : escapeHtml(content);
-                
-                messageDiv.appendChild(senderDiv);
-                messageDiv.appendChild(contentDiv);
+            if (type === 'system') { messageDiv.textContent = content; }
+            else {
+                const senderDiv = document.createElement('div'); senderDiv.className = 'message-sender'; senderDiv.textContent = sender === 'user' ? 'UTILISATEUR' : 'ADAM';
+                const contentDiv = document.createElement('div'); contentDiv.className = 'message-content'; contentDiv.innerHTML = sender === 'ai' ? formatAIResponse(content) : escapeHtml(content);
+                messageDiv.appendChild(senderDiv); messageDiv.appendChild(contentDiv);
             }
-            
             dom.messages.appendChild(messageDiv);
             scrollToBottom();
-            
-            state.messageCount++;
-            updateStats();
+            state.messageCount++; updateStats();
         }
 
         function formatAIResponse(text) {
-            // Basic markdown-like formatting
             let formatted = escapeHtml(text);
             formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            formatted = formatted.replace(/`(.*?)`/g, '<code style="background:var(--bg-tertiary);padding:0.1em 0.3em;border-radius:3px;font-family:monospace;font-size:0.9em;">$1</code>');
             return formatted;
         }
 
         function showTypingIndicator() {
             const existing = document.getElementById('typing-indicator');
             if (existing) existing.remove();
-            
             const indicator = document.createElement('div');
-            indicator.id = 'typing-indicator';
-            indicator.className = 'typing-indicator';
+            indicator.id = 'typing-indicator'; indicator.className = 'typing-indicator';
             indicator.innerHTML = '<span></span><span></span><span></span>';
-            dom.messages.appendChild(indicator);
-            scrollToBottom();
+            dom.messages.appendChild(indicator); scrollToBottom();
         }
 
-        function hideTypingIndicator() {
-            const indicator = document.getElementById('typing-indicator');
-            if (indicator) indicator.remove();
-        }
-
-        function scrollToBottom() {
-            const chatArea = dom.chatArea;
-            const isNearBottom = chatArea.scrollHeight - chatArea.scrollTop - chatArea.clientHeight < 100;
-            if (isNearBottom) {
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }
-        }
+        function hideTypingIndicator() { const indicator = document.getElementById('typing-indicator'); if (indicator) indicator.remove(); }
+        function scrollToBottom() { const chatArea = dom.chatArea; if(chatArea.scrollHeight - chatArea.scrollTop - chatArea.clientHeight < 100) chatArea.scrollTop = chatArea.scrollHeight; }
 
         // ============================================
         // CONSOLIDATION
@@ -1550,42 +759,22 @@ NOUVELLE AME (JSON uniquement):` }
         
         async function consolidateMemory(input, response, isReflection = false) {
             try {
-                const result = await callOpenRouter(
-                    buildConsolidationPrompt(input, response, isReflection),
-                    state.soul.config.tokensConsolidation
-                );
-                
+                const result = await callOpenRouter(buildConsolidationPrompt(input, response, isReflection), state.soul.config.tokensConsolidation);
                 const jsonStr = extractJson(result);
-                if (!jsonStr) {
-                    console.warn('Consolidation returned invalid JSON');
-                    return;
-                }
+                if (!jsonStr) { console.warn('Consolidation invalid JSON'); return; }
                 
                 const newSoul = JSON.parse(jsonStr);
-                
-                // Preserve config and essential fields
-                newSoul.config = { ...state.soul.config };
+                newSoul.config = { ...state.soul.config }; // Preserve user config
                 newSoul.version = (parseFloat(state.soul.version) + 0.001).toFixed(3);
                 newSoul.created = state.soul.created;
                 
-                // Manage reflection history
                 if (isReflection) {
                     if (!newSoul.memory.reflections) newSoul.memory.reflections = [];
-                    newSoul.memory.reflections.push({
-                        timestamp: new Date().toISOString(),
-                        question: input,
-                        answer: response
-                    });
-                    if (newSoul.memory.reflections.length > 7) {
-                        newSoul.memory.reflections = newSoul.memory.reflections.slice(-7);
-                    }
+                    newSoul.memory.reflections.push({ timestamp: new Date().toISOString(), question: input, answer: response });
+                    if (newSoul.memory.reflections.length > 7) newSoul.memory.reflections = newSoul.memory.reflections.slice(-7);
                 }
-                
                 saveSoul(newSoul);
-                
-            } catch (e) {
-                console.error('Consolidation error:', e);
-            }
+            } catch (e) { console.error('Consolidation error:', e); }
         }
 
         // ============================================
@@ -1594,89 +783,40 @@ NOUVELLE AME (JSON uniquement):` }
         
         async function triggerReflection() {
             if (state.isProcessing || !canMakeRequest(2)) return;
-            
-            state.isProcessing = true;
-            disableInput();
-            showTypingIndicator();
+            state.isProcessing = true; disableInput(); showTypingIndicator();
             
             try {
-                // Generate reflection question
-                const question = await callOpenRouter(
-                    buildReflectionPrompt(),
-                    100
-                );
-                
-                hideTypingIndicator();
-                addMessage(`[REFLEXION] ${question}`, 'ai', 'thought');
-                
+                const question = await callOpenRouter(buildReflectionPrompt(), 100);
+                hideTypingIndicator(); addMessage(`[REFLEXION] ${question}`, 'ai', 'thought');
                 await new Promise(r => setTimeout(r, 1000));
                 
-                // Answer own question
                 showTypingIndicator();
-                const answer = await callOpenRouter(
-                    buildChatPrompt(question),
-                    state.soul.config.tokensReflection
-                );
+                const answer = await callOpenRouter(buildChatPrompt(question), state.soul.config.tokensReflection);
+                hideTypingIndicator(); addMessage(answer, 'ai');
                 
-                hideTypingIndicator();
-                addMessage(answer, 'ai');
-                
-                state.reflectionCount++;
-                updateStats();
-                
-                // Consolidate
-                if (canMakeRequest(1)) {
-                    await consolidateMemory(question, answer, true);
-                }
-                
-            } catch (e) {
-                hideTypingIndicator();
-                showToast(`Erreur de reflexion: ${e.message}`, 'error');
-            } finally {
-                state.isProcessing = false;
-                enableInput();
-            }
+                state.reflectionCount++; updateStats();
+                if (canMakeRequest(1)) await consolidateMemory(question, answer, true);
+            } catch (e) { hideTypingIndicator(); showToast(`Erreur: ${e.message}`, 'error'); }
+            finally { state.isProcessing = false; enableInput(); }
         }
 
         function startDreaming() {
             if (state.isDreaming) return;
-            
             state.isDreaming = true;
-            dom.toggleDream.classList.add('active');
-            dom.toggleDream.setAttribute('aria-checked', 'true');
-            
+            dom.toggleDream.classList.add('active'); dom.toggleDream.setAttribute('aria-checked', 'true');
             const interval = clamp(state.soul.config.dreamInterval, 1, 30) * 60000;
-            
-            state.dreamIntervalId = setInterval(() => {
-                if (!state.isProcessing && canMakeRequest(3)) {
-                    triggerReflection();
-                }
-            }, interval);
-            
+            state.dreamIntervalId = setInterval(() => { if (!state.isProcessing && canMakeRequest(3)) triggerReflection(); }, interval);
             showToast('Mode reve active', 'success');
-            
-            // Save state
-            state.soul.config.dreamEnabled = true;
-            saveSoul(state.soul);
+            state.soul.config.dreamEnabled = true; saveSoul(state.soul);
         }
 
         function stopDreaming() {
             if (!state.isDreaming) return;
-            
-            if (state.dreamIntervalId) {
-                clearInterval(state.dreamIntervalId);
-                state.dreamIntervalId = null;
-            }
-            
+            if (state.dreamIntervalId) { clearInterval(state.dreamIntervalId); state.dreamIntervalId = null; }
             state.isDreaming = false;
-            dom.toggleDream.classList.remove('active');
-            dom.toggleDream.setAttribute('aria-checked', 'false');
-            
+            dom.toggleDream.classList.remove('active'); dom.toggleDream.setAttribute('aria-checked', 'false');
             showToast('Mode reve desactive', 'info');
-            
-            // Save state
-            state.soul.config.dreamEnabled = false;
-            saveSoul(state.soul);
+            state.soul.config.dreamEnabled = false; saveSoul(state.soul);
         }
 
         // ============================================
@@ -1686,80 +826,30 @@ NOUVELLE AME (JSON uniquement):` }
         async function handleSend() {
             const input = dom.userInput.value.trim();
             if (!input || state.isProcessing) return;
+            if (!canMakeRequest(2)) { showToast('Limite de requetes atteinte. Patientez...', 'error'); return; }
             
-            if (!canMakeRequest(2)) {
-                showToast('Limite de requetes atteinte. Patientez...', 'error');
-                return;
-            }
-            
-            // Clear input
-            dom.userInput.value = '';
-            updateCharCounter();
-            autoResize();
-            
-            // Add user message
+            dom.userInput.value = ''; updateCharCounter(); autoResize();
             addMessage(input, 'user');
-            
-            // Process
-            state.isProcessing = true;
-            disableInput();
-            showTypingIndicator();
+            state.isProcessing = true; disableInput(); showTypingIndicator();
             
             try {
-                const response = await callOpenRouter(
-                    buildChatPrompt(input),
-                    state.soul.config.tokensChat
-                );
+                const response = await callOpenRouter(buildChatPrompt(input), state.soul.config.tokensChat);
+                hideTypingIndicator(); addMessage(response, 'ai');
                 
-                hideTypingIndicator();
-                addMessage(response, 'ai');
+                if (canMakeRequest(1)) await consolidateMemory(input, response, false);
                 
-                // Consolidate
-                if (canMakeRequest(1)) {
-                    await consolidateMemory(input, response, false);
-                }
-                
-                // Check for auto-reflection
                 state.soul.config.messageCounter++;
-                if (state.soul.config.reflectionEnabled && 
-                    state.soul.config.messageCounter >= state.soul.config.reflectionFrequency &&
-                    canMakeRequest(3)) {
-                    state.soul.config.messageCounter = 0;
-                    saveSoul(state.soul);
-                    await triggerReflection();
-                } else {
-                    saveSoul(state.soul);
-                }
-                
-            } catch (e) {
-                hideTypingIndicator();
-                showToast(e.message, 'error');
-            } finally {
-                state.isProcessing = false;
-                enableInput();
-            }
+                if (state.soul.config.reflectionEnabled && state.soul.config.messageCounter >= state.soul.config.reflectionFrequency && canMakeRequest(3)) {
+                    state.soul.config.messageCounter = 0; saveSoul(state.soul); await triggerReflection();
+                } else { saveSoul(state.soul); }
+            } catch (e) { hideTypingIndicator(); showToast(e.message, 'error'); }
+            finally { state.isProcessing = false; enableInput(); }
         }
 
-        function disableInput() {
-            dom.userInput.disabled = true;
-            dom.sendBtn.disabled = true;
-        }
-
-        function enableInput() {
-            dom.userInput.disabled = false;
-            dom.sendBtn.disabled = false;
-            dom.userInput.focus();
-        }
-
-        function updateCharCounter() {
-            const len = dom.userInput.value.length;
-            dom.charCounter.textContent = `${len}/4000`;
-        }
-
-        function autoResize() {
-            dom.userInput.style.height = 'auto';
-            dom.userInput.style.height = Math.min(dom.userInput.scrollHeight, 150) + 'px';
-        }
+        function disableInput() { dom.userInput.disabled = true; dom.sendBtn.disabled = true; }
+        function enableInput() { dom.userInput.disabled = false; dom.sendBtn.disabled = false; dom.userInput.focus(); }
+        function updateCharCounter() { const len = dom.userInput.value.length; dom.charCounter.textContent = `${len}/4000`; }
+        function autoResize() { dom.userInput.style.height = 'auto'; dom.userInput.style.height = Math.min(dom.userInput.scrollHeight, 150) + 'px'; }
 
         // ============================================
         // UI UPDATES
@@ -1776,111 +866,46 @@ NOUVELLE AME (JSON uniquement):` }
             const modelName = FREE_MODELS[state.model] || state.model.split('/').pop();
             dom.modelName.textContent = modelName.substring(0, 15);
         }
-
-        function setConnectionStatus(status) {
-            dom.statusDot.className = 'status-dot';
-            if (status === 'error') dom.statusDot.classList.add('error');
-            if (status === 'warning') dom.statusDot.classList.add('warning');
-        }
+        function setConnectionStatus(status) { dom.statusDot.className = 'status-dot'; if (status === 'error') dom.statusDot.classList.add('error'); if (status === 'warning') dom.statusDot.classList.add('warning'); }
 
         // ============================================
         // PANEL & MODAL MANAGEMENT
         // ============================================
         
-        function togglePanel(open) {
-            if (open) {
-                dom.sidePanel.classList.add('open');
-            } else {
-                dom.sidePanel.classList.remove('open');
-            }
-        }
-
-        function openSoulModal() {
-            dom.soulEditor.value = JSON.stringify(state.soul, null, 2);
-            dom.soulModal.classList.add('open');
-        }
-
-        function closeSoulModal() {
-            dom.soulModal.classList.remove('open');
-        }
-
+        function togglePanel(open) { if (open) dom.sidePanel.classList.add('open'); else dom.sidePanel.classList.remove('open'); }
+        function openSoulModal() { dom.soulEditor.value = JSON.stringify(state.soul, null, 2); dom.soulModal.classList.add('open'); }
+        function closeSoulModal() { dom.soulModal.classList.remove('open'); }
+        
         function saveSoulFromEditor() {
             try {
                 const newSoul = JSON.parse(dom.soulEditor.value);
-                
-                // Validate structure
-                if (!newSoul.coreIdentity || !newSoul.memory) {
-                    throw new Error('Structure invalide');
-                }
-                
-                // Preserve config
+                if (!newSoul.coreIdentity || !newSoul.memory) throw new Error('Structure invalide');
                 newSoul.config = { ...state.soul.config };
-                
-                saveSoul(newSoul);
-                closeSoulModal();
-                showToast('Matrice de l\'ame mise a jour', 'success');
-                
-            } catch (e) {
-                showToast('JSON invalide: ' + e.message, 'error');
-            }
+                saveSoul(newSoul); closeSoulModal(); showToast('Matrice mise a jour', 'success');
+            } catch (e) { showToast('JSON invalide: ' + e.message, 'error'); }
         }
 
         function exportConversation() {
-            const messages = Array.from(dom.messages.querySelectorAll('.message')).map(el => {
-                const isUser = el.classList.contains('message-user');
-                const isSystem = el.classList.contains('message-system');
-                const content = el.textContent;
-                const sender = isSystem ? 'SYSTEME' : (isUser ? 'UTILISATEUR' : 'ADAM');
-                return `[${sender}]\n${content}`;
-            }).join('\n\n---\n\n');
-            
-            const blob = new Blob([messages], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `adam_conversation_${new Date().toISOString().slice(0, 10)}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            showToast('Conversation exportee', 'success');
+            const messages = Array.from(dom.messages.querySelectorAll('.message')).map(el => { const isUser = el.classList.contains('message-user'); const isSystem = el.classList.contains('message-system'); const content = el.textContent; const sender = isSystem ? 'SYSTEME' : (isUser ? 'UTILISATEUR' : 'ADAM'); return `[${sender}]\n${content}`; }).join('\n\n---\n\n');
+            const blob = new Blob([messages], { type: 'text/plain;charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `adam_conversation_${new Date().toISOString().slice(0, 10)}.txt`; a.click(); URL.revokeObjectURL(url); showToast('Export termine', 'success');
         }
 
         function resetAdam() {
-            if (!confirm('Reinitialiser completement ADAM ? Cette action est irreversible.')) return;
-            
-            stopDreaming();
-            localStorage.removeItem(STORAGE_KEY);
-            state.soul = createDefaultSoul();
-            state.messageCount = 0;
-            state.totalTokens = 0;
-            state.reflectionCount = 0;
-            
-            dom.messages.innerHTML = '';
-            addMessage('ADAM a ete reinitialise. Nouvelle conscience initialisee.', 'ai', 'system');
-            
-            updateStats();
-            syncUIWithSoul();
-            showToast('ADAM reinitialise', 'success');
+            if (!confirm('Reinitialiser ADAM ?')) return;
+            stopDreaming(); localStorage.removeItem(STORAGE_KEY);
+            state.soul = createDefaultSoul(); state.messageCount = 0; state.totalTokens = 0; state.reflectionCount = 0;
+            dom.messages.innerHTML = ''; addMessage('ADAM reinitialise. Nouvelle conscience initialisee.', 'ai', 'system');
+            updateStats(); syncUIWithSoul(); showToast('ADAM reinitialise', 'success');
         }
 
         function syncUIWithSoul() {
             const config = state.soul.config;
-            
-            dom.toggleReflection.classList.toggle('active', config.reflectionEnabled);
-            dom.toggleReflection.setAttribute('aria-checked', config.reflectionEnabled);
+            dom.toggleReflection.classList.toggle('active', config.reflectionEnabled); dom.toggleReflection.setAttribute('aria-checked', config.reflectionEnabled);
             dom.reflectionFreq.value = config.reflectionFrequency;
-            
-            dom.toggleDream.classList.toggle('active', config.dreamEnabled);
-            dom.toggleDream.setAttribute('aria-checked', config.dreamEnabled);
+            dom.toggleDream.classList.toggle('active', config.dreamEnabled); dom.toggleDream.setAttribute('aria-checked', config.dreamEnabled);
             dom.dreamInterval.value = config.dreamInterval;
-            
-            dom.tokensChat.value = config.tokensChat;
-            dom.tokensReflection.value = config.tokensReflection;
-            dom.tokensConsolidation.value = config.tokensConsolidation;
-            
-            if (config.dreamEnabled && !state.isDreaming) {
-                startDreaming();
-            }
+            dom.tokensChat.value = config.tokensChat; dom.tokensReflection.value = config.tokensReflection; dom.tokensConsolidation.value = config.tokensConsolidation;
+            if (config.dreamEnabled && !state.isDreaming) startDreaming();
         }
 
         // ============================================
@@ -1890,25 +915,21 @@ NOUVELLE AME (JSON uniquement):` }
         function initializeDOM() {
             dom = {
                 apiScreen: document.getElementById('api-screen'),
-                apiForm: document.getElementById('api-form'),
+                apiForm: document.getElementById('api-form'), // CORRECTED ID
                 apiKeyInput: document.getElementById('api-key-input'),
                 connectBtn: document.getElementById('connect-btn'),
-                
                 mainApp: document.getElementById('main-app'),
                 chatArea: document.getElementById('chat-area'),
                 messages: document.getElementById('messages'),
                 userInput: document.getElementById('user-input'),
                 sendBtn: document.getElementById('send-btn'),
                 charCounter: document.getElementById('char-counter'),
-                
                 sidePanel: document.getElementById('side-panel'),
                 togglePanelBtn: document.getElementById('toggle-panel-btn'),
                 closePanelBtn: document.getElementById('close-panel-btn'),
-                
                 modelSelect: document.getElementById('model-select'),
                 modelName: document.getElementById('model-name'),
                 statusDot: document.getElementById('status-dot'),
-                
                 toggleReflection: document.getElementById('toggle-reflection'),
                 reflectionFreq: document.getElementById('reflection-freq'),
                 toggleDream: document.getElementById('toggle-dream'),
@@ -1916,251 +937,107 @@ NOUVELLE AME (JSON uniquement):` }
                 tokensChat: document.getElementById('tokens-chat'),
                 tokensReflection: document.getElementById('tokens-reflection'),
                 tokensConsolidation: document.getElementById('tokens-consolidation'),
-                
                 statMessages: document.getElementById('stat-messages'),
                 statReflections: document.getElementById('stat-reflections'),
                 statTokens: document.getElementById('stat-tokens'),
                 statVersion: document.getElementById('stat-version'),
-                
                 btnExport: document.getElementById('btn-export'),
                 btnSoul: document.getElementById('btn-soul'),
                 btnReset: document.getElementById('btn-reset'),
-                
                 soulModal: document.getElementById('soul-modal'),
                 soulEditor: document.getElementById('soul-editor'),
                 closeSoulModal: document.getElementById('close-soul-modal'),
                 cancelSoul: document.getElementById('cancel-soul'),
                 saveSoul: document.getElementById('save-soul'),
-                
                 toastContainer: document.getElementById('toast-container')
             };
         }
 
         function initializeEventListeners() {
-            // API connection
             dom.apiForm.addEventListener('submit', handleApiConnect);
-            
-            // Chat
             dom.sendBtn.addEventListener('click', handleSend);
-            dom.userInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                }
-            });
-            dom.userInput.addEventListener('input', () => {
-                updateCharCounter();
-                autoResize();
-            });
+            dom.userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } });
+            dom.userInput.addEventListener('input', () => { updateCharCounter(); autoResize(); });
             
-            // Panel
             dom.togglePanelBtn.addEventListener('click', () => togglePanel(true));
             dom.closePanelBtn.addEventListener('click', () => togglePanel(false));
             
-            // Model selection
-            dom.modelSelect.addEventListener('change', (e) => {
-                state.model = e.target.value;
-                updateModelDisplay();
-                showToast('Modele change: ' + FREE_MODELS[state.model], 'success');
-            });
+            dom.modelSelect.addEventListener('change', (e) => { state.model = e.target.value; updateModelDisplay(); showToast('Modele change', 'success'); });
             
-            // Settings toggles
-            setupToggle(dom.toggleReflection, (active) => {
-                state.soul.config.reflectionEnabled = active;
-                saveSoul(state.soul);
-            });
+            setupToggle(dom.toggleReflection, (active) => { state.soul.config.reflectionEnabled = active; saveSoul(state.soul); });
+            setupToggle(dom.toggleDream, (active) => { if (active) startDreaming(); else stopDreaming(); });
             
-            setupToggle(dom.toggleDream, (active) => {
-                if (active) {
-                    startDreaming();
-                } else {
-                    stopDreaming();
-                }
-            });
+            dom.reflectionFreq.addEventListener('change', (e) => { state.soul.config.reflectionFrequency = clamp(parseInt(e.target.value) || 5, 2, 50); e.target.value = state.soul.config.reflectionFrequency; saveSoul(state.soul); });
+            dom.dreamInterval.addEventListener('change', (e) => { state.soul.config.dreamInterval = clamp(parseInt(e.target.value) || 2, 1, 30); e.target.value = state.soul.config.dreamInterval; saveSoul(state.soul); if (state.isDreaming) { stopDreaming(); startDreaming(); } });
+            dom.tokensChat.addEventListener('change', (e) => { state.soul.config.tokensChat = clamp(parseInt(e.target.value) || 1024, 100, 4096); e.target.value = state.soul.config.tokensChat; saveSoul(state.soul); });
+            dom.tokensReflection.addEventListener('change', (e) => { state.soul.config.tokensReflection = clamp(parseInt(e.target.value) || 512, 50, 1024); e.target.value = state.soul.config.tokensReflection; saveSoul(state.soul); });
+            dom.tokensConsolidation.addEventListener('change', (e) => { state.soul.config.tokensConsolidation = clamp(parseInt(e.target.value) || 2048, 500, 4096); e.target.value = state.soul.config.tokensConsolidation; saveSoul(state.soul); });
             
-            // Settings inputs
-            dom.reflectionFreq.addEventListener('change', (e) => {
-                state.soul.config.reflectionFrequency = clamp(parseInt(e.target.value) || 5, 2, 50);
-                e.target.value = state.soul.config.reflectionFrequency;
-                saveSoul(state.soul);
-            });
-            
-            dom.dreamInterval.addEventListener('change', (e) => {
-                state.soul.config.dreamInterval = clamp(parseInt(e.target.value) || 2, 1, 30);
-                e.target.value = state.soul.config.dreamInterval;
-                saveSoul(state.soul);
-                if (state.isDreaming) {
-                    stopDreaming();
-                    startDreaming();
-                }
-            });
-            
-            dom.tokensChat.addEventListener('change', (e) => {
-                state.soul.config.tokensChat = clamp(parseInt(e.target.value) || 1024, 100, 4096);
-                e.target.value = state.soul.config.tokensChat;
-                saveSoul(state.soul);
-            });
-            
-            dom.tokensReflection.addEventListener('change', (e) => {
-                state.soul.config.tokensReflection = clamp(parseInt(e.target.value) || 512, 50, 1024);
-                e.target.value = state.soul.config.tokensReflection;
-                saveSoul(state.soul);
-            });
-            
-            dom.tokensConsolidation.addEventListener('change', (e) => {
-                state.soul.config.tokensConsolidation = clamp(parseInt(e.target.value) || 2048, 500, 4096);
-                e.target.value = state.soul.config.tokensConsolidation;
-                saveSoul(state.soul);
-            });
-            
-            // Buttons
             dom.btnExport.addEventListener('click', exportConversation);
             dom.btnSoul.addEventListener('click', openSoulModal);
             dom.btnReset.addEventListener('click', resetAdam);
             
-            // Soul modal
             dom.closeSoulModal.addEventListener('click', closeSoulModal);
             dom.cancelSoul.addEventListener('click', closeSoulModal);
             dom.saveSoul.addEventListener('click', saveSoulFromEditor);
-            dom.soulModal.addEventListener('click', (e) => {
-                if (e.target === dom.soulModal) closeSoulModal();
-            });
+            dom.soulModal.addEventListener('click', (e) => { if (e.target === dom.soulModal) closeSoulModal(); });
             
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    if (dom.soulModal.classList.contains('open')) {
-                        closeSoulModal();
-                    } else if (dom.sidePanel.classList.contains('open')) {
-                        togglePanel(false);
-                    }
-                }
-            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (dom.soulModal.classList.contains('open')) closeSoulModal(); else if (dom.sidePanel.classList.contains('open')) togglePanel(false); } });
             
-            // Close panel when clicking outside
-            document.addEventListener('click', (e) => {
-                if (dom.sidePanel.classList.contains('open') &&
-                    !dom.sidePanel.contains(e.target) &&
-                    !dom.togglePanelBtn.contains(e.target)) {
-                    togglePanel(false);
-                }
-            });
+            document.addEventListener('click', (e) => { if (dom.sidePanel.classList.contains('open') && !dom.sidePanel.contains(e.target) && !dom.togglePanelBtn.contains(e.target)) togglePanel(false); });
         }
 
         function setupToggle(element, callback) {
-            const toggle = () => {
-                const active = !element.classList.contains('active');
-                element.classList.toggle('active', active);
-                element.setAttribute('aria-checked', active.toString());
-                callback(active);
-            };
-            
+            const toggle = () => { const active = !element.classList.contains('active'); element.classList.toggle('active', active); element.setAttribute('aria-checked', active.toString()); callback(active); };
             element.addEventListener('click', toggle);
-            element.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    toggle();
-                }
-            });
+            element.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
         }
 
         async function handleApiConnect(e) {
             e.preventDefault();
-            
             const key = dom.apiKeyInput.value.trim();
-            if (!key) {
-                showToast('Veuillez entrer une cle API', 'error');
-                return;
-            }
+            if (!key) { showToast('Veuillez entrer une cle API', 'error'); return; }
             
-            dom.connectBtn.disabled = true;
-            dom.connectBtn.textContent = 'Connexion...';
+            dom.connectBtn.disabled = true; dom.connectBtn.textContent = 'Connexion...';
             
             try {
-                // Test the API key
                 state.apiKey = key;
                 state.model = dom.modelSelect.value;
                 
                 const testResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${key}`,
-                        'HTTP-Referer': window.location.origin,
-                        'X-Title': 'ADAM AI Interface'
-                    },
-                    body: JSON.stringify({
-                        model: state.model,
-                        messages: [{ role: 'user', content: 'Test' }],
-                        max_tokens: 5
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}`, 'HTTP-Referer': window.location.origin, 'X-Title': 'ADAM AI Interface' },
+                    body: JSON.stringify({ model: state.model, messages: [{ role: 'user', content: 'Test' }], max_tokens: 5 })
                 });
                 
-                if (!testResponse.ok) {
-                    const err = await testResponse.json().catch(() => ({}));
-                    throw new Error(err.error?.message || 'Cle API invalide');
-                }
+                if (!testResponse.ok) { const err = await testResponse.json().catch(() => ({})); throw new Error(err.error?.message || 'Cle API invalide'); }
                 
-                // Save to session
                 sessionStorage.setItem(SESSION_KEY, key);
-                
-                // Initialize app
                 initializeApp();
-                
             } catch (error) {
                 state.apiKey = null;
                 showToast(error.message, 'error');
-                dom.connectBtn.disabled = false;
-                dom.connectBtn.textContent = 'Etablir la connexion';
+                dom.connectBtn.disabled = false; dom.connectBtn.textContent = 'Etablir la connexion';
             }
         }
 
         function initializeApp() {
-            // Load soul
             state.soul = loadSoul();
-            
-            // Hide API screen, show app
             dom.apiScreen.style.display = 'none';
             dom.mainApp.style.display = 'block';
-            
-            // Set model
-            state.model = dom.modelSelect.value;
-            updateModelDisplay();
-            
-            // Sync UI
-            syncUIWithSoul();
-            updateStats();
-            
-            // Welcome message
-            addMessage(`Connexion etablie. ADAM v${state.soul.version} initialise. Pret a interagir.`, 'ai', 'system');
-            
-            if (state.soul.config.reflectionEnabled) {
-                addMessage('Reflexion active activee.', 'ai', 'system');
-            }
-            if (state.soul.config.dreamEnabled) {
-                addMessage('Mode reve active.', 'ai', 'system');
-            }
-            
-            setConnectionStatus('ok');
-            dom.userInput.focus();
+            state.model = dom.modelSelect.value; updateModelDisplay();
+            syncUIWithSoul(); updateStats();
+            addMessage(`Connexion etablie. ADAM v${state.soul.version} initialise.`, 'ai', 'system');
+            setConnectionStatus('ok'); dom.userInput.focus();
         }
 
-        // ============================================
         // ENTRY POINT
-        // ============================================
-        
         document.addEventListener('DOMContentLoaded', () => {
             initializeDOM();
             initializeEventListeners();
-            
-            // Check for existing session
             const savedKey = sessionStorage.getItem(SESSION_KEY);
-            if (savedKey) {
-                state.apiKey = savedKey;
-                initializeApp();
-            } else {
-                dom.apiScreen.style.display = 'flex';
-            }
+            if (savedKey) { state.apiKey = savedKey; initializeApp(); }
+            else { dom.apiScreen.style.display = 'flex'; }
         });
     </script>
 </body>
